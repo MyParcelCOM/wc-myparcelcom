@@ -322,6 +322,12 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
                     $packages           = WC()->shipping->get_packages();                                
                     $shipmentTrackKey   = createPartialOrderShipment($postId, $totalWeight);
                     add_post_meta($postId, 'shipment_track_key', $shipmentTrackKey); //Update the shipment key on database 
+                    /* Update the shipment key*/
+                    if(!empty($shipKey)){
+                        update_post_meta($postId, 'myparcel_shipment_key', $shipKey); //Update the shipment key on database 
+                    }else{
+                        add_post_meta($postId, 'myparcel_shipment_key', uniqid()); //Update the shipment key on database 
+                    }
                     $redirectTo = ($orderShippedCount > 0) ? add_query_arg( array('export_shipment_action' => $orderShippedCount,'check_action' => 'export_order'), $redirectTo ) : $redirectTo;
                     }
                     else{
@@ -384,7 +390,7 @@ function exportPrintBulkActionAdminNotice(): void
             printf($msgDiv);
         }
         elseif('select_shipped_order_first' == $_REQUEST['check_action']) {
-            $msgDiv = '<div id="message" class="updated notice notice-success is-dismissible" style="color:red;">ERROR: Please update  shipping quantity first!.</div>';
+            $msgDiv = '<div id="message" class="updated notice notice-success is-dismissible" style="color:red;">ERROR: Update  shipping quantity  first!.</div>';
             printf($msgDiv);
         }
         elseif('shipped_already_created' == $_REQUEST['check_action']) {
