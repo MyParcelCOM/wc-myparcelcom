@@ -1,0 +1,28 @@
+{
+  "data": {
+    "id": "eef00b32-177e-43d3-9b26-715365e4ce46",
+    "type": "carriers",
+    "attributes": {
+      "name": "Test Carrier",
+      "code": "my-parcel-com",
+      "credentials_format": {
+        "additionalProperties": false,
+        "required": [
+          "api_user",
+          "api_password"
+        ],
+        "properties": {
+          "api_user": {
+            "type": "string"
+          },
+          "api_password": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "links": {
+      "self": "https://api/carriers/eef00b32-177e-43d3-9b26-715365e4ce46"
+    }
+  }
+}

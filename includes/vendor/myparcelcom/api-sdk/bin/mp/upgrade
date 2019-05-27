@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+./mp.sh composer update

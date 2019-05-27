@@ -1,0 +1,65 @@
+{
+  "data": [
+    {
+      "id": "a3057e77-005b-4945-a41c-20ddbe4dab08",
+      "type": "services",
+      "attributes": {
+        "name": "Letter Test",
+        "package_type": "letter",
+        "transit_time": {
+          "min": 1,
+          "max": 3
+        },
+        "handover_method": "drop-off",
+        "delivery_days": [
+          "Monday",
+          "Wednesday",
+          "Saturday"
+        ],
+        "delivery_method": "delivery"
+      },
+      "links": {
+        "self": "https://api/services/a3057e77-005b-4945-a41c-20ddbe4dab08",
+        "contracts": "https://api/services/a3057e77-005b-4945-a41c-20ddbe4dab08/contracts"
+      },
+      "relationships": {
+        "carrier": {
+          "links": {
+            "related": "https://api/carriers/eef00b32-177e-43d3-9b26-715365e4ce46"
+          },
+          "data": {
+            "id": "eef00b32-177e-43d3-9b26-715365e4ce46",
+            "type": "carriers"
+          }
+        },
+        "region_from": {
+          "links": {
+            "related": "https://api/regions/region-id-1"
+          },
+          "data": {
+            "id": "region-id-1",
+            "type": "regions"
+          }
+        },
+        "region_to": {
+          "links": {
+            "related": "https://api/regions/region-id-1"
+          },
+          "data": {
+            "id": "region-id-1",
+            "type": "regions"
+          }
+        }
+      }
+    }
+  ],
+  "meta": {
+    "total_pages": 1,
+    "total_records": 1
+  },
+  "links": {
+    "self": "https://api/services?filter[region_from]=region-id-1&filter[region_to]=region-id-1&page[size]=30&page[number]=1",
+    "first": "https://api/services?filter[region_from]=region-id-1&filter[region_to]=region-id-1&page[size]=30&page[number]=1",
+    "last": "https://api/services?filter[region_from]=region-id-1&filter[region_to]=region-id-1&page[size]=30&page[number]=1"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "data": {
+    "type": "carrier-contracts",
+    "id": "f1630e62-4645-448d-af22-7d5bac0f502d",
+    "attributes": {
+      "currency": "EUR",
+      "status": "verified",
+      "name": "My Custom contract",
+      "active": true
+    },
+    "relationships": {
+      "carrier": {
+        "data": {
+          "type": "carriers",
+          "id": "eef00b32-177e-43d3-9b26-715365e4ce46"
+        }
+      },
+      "service_contracts": {
+        "links": {
+          "related": "https://api/v1/service-contracts?filter[carrier_contract]=f1630e62-4645-448d-af22-7d5bac0f502d"
+        }
+      }
+    }
+  }
+}

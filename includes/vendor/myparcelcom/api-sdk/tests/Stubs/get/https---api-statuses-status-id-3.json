@@ -1,0 +1,16 @@
+{
+  "data": {
+    "type": "statuses",
+    "id": "status-id-3",
+    "attributes": {
+      "code": "shipment-received-by-carrier",
+      "resource_type": "shipments",
+      "level": "success",
+      "name": "At carrier",
+      "description": "The shipment is at the carrier"
+    },
+    "links": {
+      "self": "https://api/statuses/status-id-3"
+    }
+  }
+}

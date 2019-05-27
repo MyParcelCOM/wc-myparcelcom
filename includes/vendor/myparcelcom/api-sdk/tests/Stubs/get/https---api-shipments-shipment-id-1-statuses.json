@@ -1,0 +1,203 @@
+{
+  "data": [
+    {
+      "type": "shipment-statuses",
+      "id": "shipment-status-id-1",
+      "attributes": {
+        "carrier_statuses": [
+          {
+            "code": "9001",
+            "description": "Confirmed at destination",
+            "assigned_at": 1504801719
+          }
+        ],
+        "created_at": 1504801719
+      },
+      "relationships": {
+        "status": {
+          "data": {
+            "type": "statuses",
+            "id": "status-id-1"
+          },
+          "links": {
+            "related": "https://api/statuses/status-id-1"
+          }
+        },
+        "shipment": {
+          "data": {
+            "type": "shipments",
+            "id": "shipment-id-1"
+          },
+          "links": {
+            "related": "https://api/shipments/shipment-id-1"
+          }
+        }
+      },
+      "links": {
+        "self": "https://api/shipments/shipment-id-1/statuses/shipment-status-id-1"
+      }
+    },
+    {
+      "type": "shipment-statuses",
+      "id": "shipment-status-id-2",
+      "attributes": {
+        "carrier_statuses": [
+          {
+            "code": "4567-1",
+            "description": "Delivery moved a couple of meters",
+            "assigned_at": 1504701750
+          },
+          {
+            "code": "4567",
+            "description": "Delivery on it's way",
+            "assigned_at": 1504701719
+          }
+        ],
+        "created_at": 1504701719
+      },
+      "relationships": {
+        "status": {
+          "data": {
+            "type": "statuses",
+            "id": "status-id-2"
+          },
+          "links": {
+            "related": "https://api/statuses/status-id-2"
+          }
+        },
+        "shipment": {
+          "data": {
+            "type": "shipments",
+            "id": "shipment-id-1"
+          },
+          "links": {
+            "related": "https://api/shipments/shipment-id-1"
+          }
+        }
+      },
+      "links": {
+        "self": "https://api/shipments/shipment-id-1/statuses/shipment-status-id-2"
+      }
+    },
+    {
+      "type": "shipment-statuses",
+      "id": "shipment-status-id-3",
+      "attributes": {
+        "carrier_statuses": [
+          {
+            "code": "10001",
+            "description": "Parcel received",
+            "assigned_at": 1504501719
+          }
+        ],
+        "created_at": 1504501720
+      },
+      "relationships": {
+        "status": {
+          "data": {
+            "type": "statuses",
+            "id": "status-id-3"
+          },
+          "links": {
+            "related": "https://api/statuses/status-id-3"
+          }
+        },
+        "shipment": {
+          "data": {
+            "type": "shipments",
+            "id": "shipment-id-1"
+          },
+          "links": {
+            "related": "https://api/shipments/shipment-id-1"
+          }
+        }
+      },
+      "links": {
+        "self": "https://api/shipments/shipment-id-1/statuses/shipment-status-id-3"
+      }
+    },
+    {
+      "type": "shipment-statuses",
+      "id": "shipment-status-id-4",
+      "attributes": {
+        "carrier_statuses": [
+          {
+            "code": null,
+            "description": null,
+            "assigned_at": 1504101719
+          }
+        ],
+        "created_at": 1504101722
+      },
+      "relationships": {
+        "status": {
+          "data": {
+            "type": "statuses",
+            "id": "status-id-4"
+          },
+          "links": {
+            "related": "https://api/statuses/status-id-4"
+          }
+        },
+        "shipment": {
+          "data": {
+            "type": "shipments",
+            "id": "shipment-id-1"
+          },
+          "links": {
+            "related": "https://api/shipments/shipment-id-1"
+          }
+        }
+      },
+      "links": {
+        "self": "https://api/shipments/shipment-id-1/statuses/shipment-status-id-4"
+      }
+    },
+    {
+      "type": "shipment-statuses",
+      "id": "shipment-status-id-5",
+      "attributes": {
+        "carrier_statuses": [
+          {
+            "code": null,
+            "description": null,
+            "assigned_at": 1504101718
+          }
+        ],
+        "created_at": 1504101718
+      },
+      "relationships": {
+        "status": {
+          "data": {
+            "type": "statuses",
+            "id": "status-id-5"
+          },
+          "links": {
+            "related": "https://api/statuses/status-id-5"
+          }
+        },
+        "shipment": {
+          "data": {
+            "type": "shipments",
+            "id": "shipment-id-1"
+          },
+          "links": {
+            "related": "https://api/shipments/shipment-id-1"
+          }
+        }
+      },
+      "links": {
+        "self": "https://api/shipments/shipment-id-1/statuses/shipment-status-id-5"
+      }
+    }
+  ],
+  "meta": {
+    "total_pages": 1,
+    "total_records": 5
+  },
+  "links": {
+    "self": "https://api/shipments/shipment-id-1/statuses?page[number]=1&page[size]=30",
+    "first": "https://api/shipments/shipment-id-1/statuses?page[number]=1&page[size]=30",
+    "last": "https://api/shipments/shipment-id-1/statuses?page[number]=1&page[size]=30"
+  }
+}

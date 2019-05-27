@@ -1,0 +1,234 @@
+{
+  "data": [
+    {
+      "id": "88b3d2a3-4761-4608-b502-ccf410200e5a",
+      "type": "regions",
+      "attributes": {
+        "country_code": "VI",
+        "currency": "USD",
+        "name": "Virgin Islands"
+      },
+      "links": {
+        "self": "https://api/regions/88b3d2a3-4761-4608-b502-ccf410200e5a"
+      }
+    },
+    {
+      "id": "b8488ea6-0a3a-4bf3-a47e-e82dd49f5494",
+      "type": "regions",
+      "attributes": {
+        "country_code": "BF",
+        "currency": "XOF",
+        "name": "Burkina Faso"
+      },
+      "links": {
+        "self": "https://api/regions/b8488ea6-0a3a-4bf3-a47e-e82dd49f5494"
+      }
+    },
+    {
+      "id": "a1d34dc7-543f-47d9-9ffb-5c3061242d5a",
+      "type": "regions",
+      "attributes": {
+        "country_code": "UY",
+        "currency": "UYU",
+        "name": "Uruguay"
+      },
+      "links": {
+        "self": "https://api/regions/a1d34dc7-543f-47d9-9ffb-5c3061242d5a"
+      }
+    },
+    {
+      "id": "19fec87c-34fb-45b7-9ece-9466fad2658f",
+      "type": "regions",
+      "attributes": {
+        "country_code": "UZ",
+        "currency": "UZS",
+        "name": "Uzbekistan"
+      },
+      "links": {
+        "self": "https://api/regions/19fec87c-34fb-45b7-9ece-9466fad2658f"
+      }
+    },
+    {
+      "id": "07c055e5-7e2a-427d-91a3-7ea62c12b40e",
+      "type": "regions",
+      "attributes": {
+        "country_code": "VE",
+        "currency": "VEF",
+        "name": "Venezuela"
+      },
+      "links": {
+        "self": "https://api/regions/07c055e5-7e2a-427d-91a3-7ea62c12b40e"
+      }
+    },
+    {
+      "id": "c83066a9-2a1d-4104-beaf-e84c9d46187a",
+      "type": "regions",
+      "attributes": {
+        "country_code": "WF",
+        "currency": "XPF",
+        "name": "Wallis and Futuna"
+      },
+      "links": {
+        "self": "https://api/regions/c83066a9-2a1d-4104-beaf-e84c9d46187a"
+      }
+    },
+    {
+      "id": "5f35cabc-932c-4a20-bcba-593e8198f8c3",
+      "type": "regions",
+      "attributes": {
+        "country_code": "WS",
+        "currency": "WST",
+        "name": "Samoa"
+      },
+      "links": {
+        "self": "https://api/regions/5f35cabc-932c-4a20-bcba-593e8198f8c3"
+      }
+    },
+    {
+      "id": "a7e9823d-3421-4499-a5fd-9b690dc3b2e1",
+      "type": "regions",
+      "attributes": {
+        "country_code": "YE",
+        "currency": "YER",
+        "name": "Yemen"
+      },
+      "links": {
+        "self": "https://api/regions/a7e9823d-3421-4499-a5fd-9b690dc3b2e1"
+      }
+    },
+    {
+      "id": "50329913-ca33-4c7d-8916-ee7d080e73ee",
+      "type": "regions",
+      "attributes": {
+        "country_code": "ZM",
+        "currency": "ZMK",
+        "name": "Zambia"
+      },
+      "links": {
+        "self": "https://api/regions/50329913-ca33-4c7d-8916-ee7d080e73ee"
+      }
+    },
+    {
+      "id": "region-id-1",
+      "type": "regions",
+      "attributes": {
+        "country_code": "GB",
+        "currency": "GBP",
+        "name": "Northern Ireland",
+        "region_code": "NIR"
+      },
+      "links": {
+        "self": "https://api/regions/region-id-1"
+      }
+    },
+    {
+      "id": "c905587e-fbe4-47d3-9b36-bf094bb79d72",
+      "type": "regions",
+      "attributes": {
+        "country_code": "GB",
+        "currency": "GBP",
+        "name": "Channel Islands",
+        "region_code": "CIS"
+      },
+      "links": {
+        "self": "https://api/regions/c905587e-fbe4-47d3-9b36-bf094bb79d72"
+      }
+    },
+    {
+      "id": "d0bbf713-5d87-452b-a2de-4e782804ab44",
+      "type": "regions",
+      "attributes": {
+        "country_code": "GB",
+        "currency": "GBP",
+        "name": "Scottish Highlands",
+        "region_code": "SCH"
+      },
+      "links": {
+        "self": "https://api/regions/d0bbf713-5d87-452b-a2de-4e782804ab44"
+      }
+    },
+    {
+      "id": "45835998-a115-49e6-a0d8-136747f54e90",
+      "type": "regions",
+      "attributes": {
+        "country_code": "GB",
+        "currency": "GBP",
+        "name": "Scottish Islands",
+        "region_code": "SCI"
+      },
+      "links": {
+        "self": "https://api/regions/45835998-a115-49e6-a0d8-136747f54e90"
+      }
+    },
+    {
+      "id": "c1048135-db45-404e-adac-fdecd0c7134a",
+      "type": "regions",
+      "attributes": {
+        "country_code": "GB",
+        "name": "United Kingdom",
+        "region_code": null
+      },
+      "links": {
+        "self": "https://api/regions/c1048135-db45-404e-adac-fdecd0c7134a"
+      }
+    },
+    {
+      "id": "3f587d4e-fbec-4534-9dfd-9667ea725002",
+      "type": "regions",
+      "attributes": {
+        "country_code": "BM",
+        "currency": "SLL",
+        "name": "Antarctica (the territory South of 60 deg S)"
+      },
+      "links": {
+        "self": "https://api/regions/3f587d4e-fbec-4534-9dfd-9667ea725002"
+      }
+    },
+    {
+      "id": "c6642bd6-3684-47b9-855b-d5dd7f3791f1",
+      "type": "regions",
+      "attributes": {
+        "country_code": "ER",
+        "currency": "KPW",
+        "name": "Brunei Darussalam"
+      },
+      "links": {
+        "self": "https://api/regions/c6642bd6-3684-47b9-855b-d5dd7f3791f1"
+      }
+    },
+    {
+      "id": "28aaac58-87d3-4d03-aebe-19b11ceec6fb",
+      "type": "regions",
+      "attributes": {
+        "country_code": "MF",
+        "currency": "MNT",
+        "name": "Pitcairn Islands"
+      },
+      "links": {
+        "self": "https://api/regions/28aaac58-87d3-4d03-aebe-19b11ceec6fb"
+      }
+    },
+    {
+      "id": "e6d6bbea-1719-4828-a41a-ac9322eb382b",
+      "type": "regions",
+      "attributes": {
+        "country_code": "TK",
+        "currency": "FJD",
+        "name": "Heard Island and McDonald Islands"
+      },
+      "links": {
+        "self": "https://api/regions/e6d6bbea-1719-4828-a41a-ac9322eb382b"
+      }
+    }
+  ],
+  "meta": {
+    "total_pages": 3,
+    "total_records": 78
+  },
+  "links": {
+    "self": "https://api/regions?page[size]=30&page[number]=3",
+    "first": "https://api/regions?page[size]=30&page[number]=1",
+    "prev": "https://api/regions?page[size]=30&page[number]=2",
+    "last": "https://api/regions?page[size]=30&page[number]=3"
+  }
+}

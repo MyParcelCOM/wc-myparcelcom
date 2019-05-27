@@ -1,0 +1,10 @@
+{
+  "errors": [
+    {
+      "status": "500",
+      "code": "10001",
+      "title": "Internal Server Error",
+      "detail": "Something went wrong. Please try again. If the problem persists, contact support."
+    }
+  ]
+}

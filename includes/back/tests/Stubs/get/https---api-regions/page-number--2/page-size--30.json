@@ -1,0 +1,370 @@
+{
+  "data": [
+    {
+      "id": "6e3f38a7-4e38-4d19-8a3f-7dfab8164d41",
+      "type": "regions",
+      "attributes": {
+        "country_code": "BG",
+        "currency": "BGN",
+        "name": "Bulgaria"
+      },
+      "links": {
+        "self": "https://api/regions/6e3f38a7-4e38-4d19-8a3f-7dfab8164d41"
+      }
+    },
+    {
+      "id": "ad8d7a69-91b4-488a-80df-44a65265e4d4",
+      "type": "regions",
+      "attributes": {
+        "country_code": "MM",
+        "name": "Myanmar"
+      },
+      "links": {
+        "self": "https://api/regions/ad8d7a69-91b4-488a-80df-44a65265e4d4"
+      }
+    },
+    {
+      "id": "8b0791e1-a316-4fb1-a35a-7a1d88362b84",
+      "type": "regions",
+      "attributes": {
+        "country_code": "BI",
+        "currency": "BIF",
+        "name": "Burundi"
+      },
+      "links": {
+        "self": "https://api/regions/8b0791e1-a316-4fb1-a35a-7a1d88362b84"
+      }
+    },
+    {
+      "id": "ddd448ed-c665-48ea-bcb6-5aac5379a219",
+      "type": "regions",
+      "attributes": {
+        "country_code": "BY",
+        "currency": "BYR",
+        "name": "Belarus"
+      },
+      "links": {
+        "self": "https://api/regions/ddd448ed-c665-48ea-bcb6-5aac5379a219"
+      }
+    },
+    {
+      "id": "d5db5f7f-27e7-4193-bba9-26e9c08437f3",
+      "type": "regions",
+      "attributes": {
+        "country_code": "KH",
+        "currency": "KHR",
+        "name": "Cambodia"
+      },
+      "links": {
+        "self": "https://api/regions/d5db5f7f-27e7-4193-bba9-26e9c08437f3"
+      }
+    },
+    {
+      "id": "75f3d200-b04d-475e-978d-dbebb0769134",
+      "type": "regions",
+      "attributes": {
+        "country_code": "CM",
+        "currency": "XAF",
+        "name": "Cameroon"
+      },
+      "links": {
+        "self": "https://api/regions/75f3d200-b04d-475e-978d-dbebb0769134"
+      }
+    },
+    {
+      "id": "deda05a0-bb49-4ec0-acc0-2ed6826b8d05",
+      "type": "regions",
+      "attributes": {
+        "country_code": "CA",
+        "currency": "CAD",
+        "name": "Canada"
+      },
+      "links": {
+        "self": "https://api/regions/deda05a0-bb49-4ec0-acc0-2ed6826b8d05"
+      }
+    },
+    {
+      "id": "55d2e494-da24-4912-8f9e-ace825238c5c",
+      "type": "regions",
+      "attributes": {
+        "country_code": "CV",
+        "name": "Cabo Verde"
+      },
+      "links": {
+        "self": "https://api/regions/55d2e494-da24-4912-8f9e-ace825238c5c"
+      }
+    },
+    {
+      "id": "50b879be-b6dc-4b2f-9536-540dec2c20cf",
+      "type": "regions",
+      "attributes": {
+        "country_code": "KY",
+        "currency": "KYD",
+        "name": "Cayman Islands "
+      },
+      "links": {
+        "self": "https://api/regions/50b879be-b6dc-4b2f-9536-540dec2c20cf"
+      }
+    },
+    {
+      "id": "03e0d2dd-6cb4-49ee-a90e-799fae97e92f",
+      "type": "regions",
+      "attributes": {
+        "country_code": "CF",
+        "currency": "XAF",
+        "name": "Central African Republic"
+      },
+      "links": {
+        "self": "https://api/regions/03e0d2dd-6cb4-49ee-a90e-799fae97e92f"
+      }
+    },
+    {
+      "id": "df73eeeb-20cc-4f63-b93c-1c47cb003e8e",
+      "type": "regions",
+      "attributes": {
+        "country_code": "LK",
+        "name": "Sri Lanka"
+      },
+      "links": {
+        "self": "https://api/regions/df73eeeb-20cc-4f63-b93c-1c47cb003e8e"
+      }
+    },
+    {
+      "id": "ec374431-e1e6-4b83-8941-5ab89ee7eb67",
+      "type": "regions",
+      "attributes": {
+        "country_code": "TD",
+        "currency": "XAF",
+        "name": "Chad"
+      },
+      "links": {
+        "self": "https://api/regions/ec374431-e1e6-4b83-8941-5ab89ee7eb67"
+      }
+    },
+    {
+      "id": "a84c67a7-6e45-4610-928c-51b0eef5d4da",
+      "type": "regions",
+      "attributes": {
+        "country_code": "CL",
+        "currency": "CLP",
+        "name": "Chile"
+      },
+      "links": {
+        "self": "https://api/regions/a84c67a7-6e45-4610-928c-51b0eef5d4da"
+      }
+    },
+    {
+      "id": "52fe8acf-3266-49c5-ada6-8f8ebda5e4a5",
+      "type": "regions",
+      "attributes": {
+        "country_code": "CN",
+        "currency": "CNY",
+        "name": "China"
+      },
+      "links": {
+        "self": "https://api/regions/52fe8acf-3266-49c5-ada6-8f8ebda5e4a5"
+      }
+    },
+    {
+      "id": "e5788bee-e82a-4ded-b72e-30efbfdb45b5",
+      "type": "regions",
+      "attributes": {
+        "country_code": "TW",
+        "name": "Taiwan "
+      },
+      "links": {
+        "self": "https://api/regions/e5788bee-e82a-4ded-b72e-30efbfdb45b5"
+      }
+    },
+    {
+      "id": "7b2047e5-6ef1-42aa-9307-eb20e94330cf",
+      "type": "regions",
+      "attributes": {
+        "country_code": "CX",
+        "currency": "AUD",
+        "name": "Christmas Island"
+      },
+      "links": {
+        "self": "https://api/regions/7b2047e5-6ef1-42aa-9307-eb20e94330cf"
+      }
+    },
+    {
+      "id": "40c4ce89-7914-48f1-a3a7-41b6b72dbef6",
+      "type": "regions",
+      "attributes": {
+        "country_code": "CC",
+        "currency": "AUD",
+        "name": "Cocos (Keeling) Islands"
+      },
+      "links": {
+        "self": "https://api/regions/40c4ce89-7914-48f1-a3a7-41b6b72dbef6"
+      }
+    },
+    {
+      "id": "f86d8878-2f27-450b-8d6b-480440daa53c",
+      "type": "regions",
+      "attributes": {
+        "country_code": "CO",
+        "currency": "COP",
+        "name": "Colombia"
+      },
+      "links": {
+        "self": "https://api/regions/f86d8878-2f27-450b-8d6b-480440daa53c"
+      }
+    },
+    {
+      "id": "9aee37aa-9431-40e3-9692-67ebecb4b56f",
+      "type": "regions",
+      "attributes": {
+        "country_code": "KM",
+        "currency": "KMF",
+        "name": "Comoros"
+      },
+      "links": {
+        "self": "https://api/regions/9aee37aa-9431-40e3-9692-67ebecb4b56f"
+      }
+    },
+    {
+      "id": "ba55bbcf-9b1d-4984-bd72-c6d82e49f2e4",
+      "type": "regions",
+      "attributes": {
+        "country_code": "YT",
+        "name": "Mayotte"
+      },
+      "links": {
+        "self": "https://api/regions/ba55bbcf-9b1d-4984-bd72-c6d82e49f2e4"
+      }
+    },
+    {
+      "id": "c2f922c7-2ad5-4637-9263-c411574596e9",
+      "type": "regions",
+      "attributes": {
+        "country_code": "CG",
+        "currency": "CDF",
+        "name": "Congo, demographic republic of"
+      },
+      "links": {
+        "self": "https://api/regions/c2f922c7-2ad5-4637-9263-c411574596e9"
+      }
+    },
+    {
+      "id": "87850905-076c-4a0e-9ec1-dfd260137f1b",
+      "type": "regions",
+      "attributes": {
+        "country_code": "CD",
+        "currency": "XAF",
+        "name": "Congo, republic of"
+      },
+      "links": {
+        "self": "https://api/regions/87850905-076c-4a0e-9ec1-dfd260137f1b"
+      }
+    },
+    {
+      "id": "63c19c0f-80d5-45a8-8be6-ede237ba97bb",
+      "type": "regions",
+      "attributes": {
+        "country_code": "CK",
+        "currency": "NZD",
+        "name": "Cook Islands"
+      },
+      "links": {
+        "self": "https://api/regions/63c19c0f-80d5-45a8-8be6-ede237ba97bb"
+      }
+    },
+    {
+      "id": "dadaa29e-1c6f-437d-a47c-35721c026026",
+      "type": "regions",
+      "attributes": {
+        "country_code": "CR",
+        "currency": "CRC",
+        "name": "Costa Rica"
+      },
+      "links": {
+        "self": "https://api/regions/dadaa29e-1c6f-437d-a47c-35721c026026"
+      }
+    },
+    {
+      "id": "a20299d7-4f50-41e5-97f2-0064c1e8b377",
+      "type": "regions",
+      "attributes": {
+        "country_code": "HR",
+        "currency": "HRK",
+        "name": "Croatia"
+      },
+      "links": {
+        "self": "https://api/regions/a20299d7-4f50-41e5-97f2-0064c1e8b377"
+      }
+    },
+    {
+      "id": "ca3e201e-fcfd-4569-9970-dd230ca29143",
+      "type": "regions",
+      "attributes": {
+        "country_code": "CU",
+        "currency": "CUP",
+        "name": "Cuba"
+      },
+      "links": {
+        "self": "https://api/regions/ca3e201e-fcfd-4569-9970-dd230ca29143"
+      }
+    },
+    {
+      "id": "17f51326-0d4b-478a-bf1b-a2708b2e3ca8",
+      "type": "regions",
+      "attributes": {
+        "country_code": "CY",
+        "currency": "TRY",
+        "name": "Cyprus"
+      },
+      "links": {
+        "self": "https://api/regions/17f51326-0d4b-478a-bf1b-a2708b2e3ca8"
+      }
+    },
+    {
+      "id": "86051d0f-90c3-41a3-8fc6-8290c57c17df",
+      "type": "regions",
+      "attributes": {
+        "country_code": "CZ",
+        "currency": "CZK",
+        "name": "Czechia"
+      },
+      "links": {
+        "self": "https://api/regions/86051d0f-90c3-41a3-8fc6-8290c57c17df"
+      }
+    },
+    {
+      "id": "f9d4d598-1888-4268-a56d-f2598962f881",
+      "type": "regions",
+      "attributes": {
+        "country_code": "BJ",
+        "currency": "XOF",
+        "name": "Benin"
+      },
+      "links": {
+        "self": "https://api/regions/f9d4d598-1888-4268-a56d-f2598962f881"
+      }
+    },
+    {
+      "id": "c695f9a8-7d0d-45a2-8e41-fde27222c61b",
+      "type": "regions",
+      "attributes": {
+        "country_code": "DK",
+        "currency": "DKK",
+        "name": "Denmark"
+      },
+      "links": {
+        "self": "https://api/regions/c695f9a8-7d0d-45a2-8e41-fde27222c61b"
+      }
+    }
+  ],
+  "meta": {
+    "total_pages": 3,
+    "total_records": 78
+  },
+  "links": {
+    "self": "https://api/regions?page[size]=30&page[number]=2",
+    "first": "https://api/regions?page[size]=30&page[number]=1",
+    "prev": "https://api/regions?page[size]=30&page[number]=1",
+    "next": "https://api/regions?page[size]=30&page[number]=3",
+    "last": "https://api/regions?page[size]=30&page[number]=3"
+  }
+}

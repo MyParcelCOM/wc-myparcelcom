@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  php:
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+    image: myparcelcom/sdk-php:v2-dev
+    working_dir: /opt/sdk
+    volumes:
+      - .:/opt/sdk
+      - composercache:/root/.composer/cache
+
+  php70:
+    build:
+      context: ./docker/php70
+      dockerfile: Dockerfile
+    image: myparcelcom/sdk-php70:v2-dev
+    working_dir: /opt/sdk
+    volumes:
+      - .:/opt/sdk
+      - composercache:/root/.composer/cache
+
+  php71:
+    build:
+      context: ./docker/php71
+      dockerfile: Dockerfile
+    image: myparcelcom/sdk-php71:v2-dev
+    working_dir: /opt/sdk
+    volumes:
+      - .:/opt/sdk
+      - composercache:/root/.composer/cache
+
+  php72:
+    build:
+      context: ./docker/php72
+      dockerfile: Dockerfile
+    image: myparcelcom/sdk-php72:v1-dev
+    working_dir: /opt/sdk
+    volumes:
+      - .:/opt/sdk
+      - composercache:/root/.composer/cache
+
+volumes:
+  composercache:
+    driver: local

@@ -1,0 +1,21 @@
+{
+  "data": {
+    "id": "01a4a016-ff29-45ca-832d-92382f9ae243",
+    "type": "service-groups",
+    "attributes": {
+      "weight": {
+        "min": 0,
+        "max": 10000
+      },
+      "step_size": 1,
+      "price": {
+        "amount": 800,
+        "currency": "EUR"
+      },
+      "step_price": {
+        "amount": 0,
+        "currency": "EUR"
+      }
+    }
+  }
+}

@@ -1,0 +1,725 @@
+{
+  "data": [
+    {
+      "id": "176227",
+      "type": "pickup-dropoff-locations",
+      "attributes": {
+        "code": "176227",
+        "address": {
+          "street_1": "Polderplein",
+          "street_number": 3,
+          "postal_code": "2132BA",
+          "city": "Hoofddorp",
+          "country_code": "NL",
+          "company": "Primera Sanders",
+          "phone_number": "023-5640556"
+        },
+        "opening_hours": [
+          {
+            "day": "Monday",
+            "open": "11:00",
+            "closed": "18:00"
+          },
+          {
+            "day": "Tuesday",
+            "open": "09:00",
+            "closed": "18:00"
+          },
+          {
+            "day": "Wednesday",
+            "open": "09:00",
+            "closed": "18:00"
+          },
+          {
+            "day": "Thursday",
+            "open": "09:00",
+            "closed": "18:00"
+          },
+          {
+            "day": "Friday",
+            "open": "09:00",
+            "closed": "21:00"
+          },
+          {
+            "day": "Saturday",
+            "open": "09:00",
+            "closed": "17:00"
+          },
+          {
+            "day": "Sunday",
+            "open": "12:00",
+            "closed": "17:00"
+          }
+        ],
+        "position": {
+          "latitude": 52.3032936742545,
+          "longitude": 4.69476214016944
+        }
+      },
+      "meta": {
+        "distance": 318
+      },
+      "relationships": {
+        "carrier": {
+          "links": {
+            "related": "https://api/carriers/eef00b32-177e-43d3-9b26-715365e4ce46"
+          },
+          "data": {
+            "id": "eef00b32-177e-43d3-9b26-715365e4ce46",
+            "type": "carriers"
+          }
+        }
+      }
+    },
+    {
+      "id": "205604",
+      "type": "pickup-dropoff-locations",
+      "attributes": {
+        "code": "205604",
+        "address": {
+          "street_1": "Paxlaan",
+          "street_number": 10,
+          "postal_code": "2131PZ",
+          "city": "Hoofddorp",
+          "country_code": "NL",
+          "company": "pax shop",
+          "phone_number": "023-5626572"
+        },
+        "opening_hours": [
+          {
+            "day": "Monday",
+            "open": "08:00",
+            "closed": "22:00"
+          },
+          {
+            "day": "Tuesday",
+            "open": "08:00",
+            "closed": "22:00"
+          },
+          {
+            "day": "Wednesday",
+            "open": "08:00",
+            "closed": "22:00"
+          },
+          {
+            "day": "Thursday",
+            "open": "08:00",
+            "closed": "22:00"
+          },
+          {
+            "day": "Friday",
+            "open": "08:00",
+            "closed": "22:00"
+          },
+          {
+            "day": "Saturday",
+            "open": "08:00",
+            "closed": "22:00"
+          },
+          {
+            "day": "Sunday",
+            "open": "10:00",
+            "closed": "22:00"
+          }
+        ],
+        "position": {
+          "latitude": 52.3089878674629,
+          "longitude": 4.68188672729443
+        }
+      },
+      "meta": {
+        "distance": 764
+      },
+      "relationships": {
+        "carrier": {
+          "links": {
+            "related": "https://api/carriers/eef00b32-177e-43d3-9b26-715365e4ce46"
+          },
+          "data": {
+            "id": "eef00b32-177e-43d3-9b26-715365e4ce46",
+            "type": "carriers"
+          }
+        }
+      }
+    },
+    {
+      "id": "167536",
+      "type": "pickup-dropoff-locations",
+      "attributes": {
+        "code": "167536",
+        "address": {
+          "street_1": "Noordmeerstraat",
+          "street_number": 22,
+          "street_number_suffix": "-30",
+          "postal_code": "2131AD",
+          "city": "Hoofddorp",
+          "country_code": "NL",
+          "company": "GAMMA Hoofddorp",
+          "phone_number": "023-5657656"
+        },
+        "opening_hours": [
+          {
+            "day": "Monday",
+            "open": "09:00",
+            "closed": "21:00"
+          },
+          {
+            "day": "Tuesday",
+            "open": "09:00",
+            "closed": "21:00"
+          },
+          {
+            "day": "Wednesday",
+            "open": "09:00",
+            "closed": "21:00"
+          },
+          {
+            "day": "Thursday",
+            "open": "09:00",
+            "closed": "21:00"
+          },
+          {
+            "day": "Friday",
+            "open": "09:00",
+            "closed": "21:00"
+          },
+          {
+            "day": "Saturday",
+            "open": "09:00",
+            "closed": "18:00"
+          },
+          {
+            "day": "Sunday",
+            "open": "12:00",
+            "closed": "17:00"
+          }
+        ],
+        "position": {
+          "latitude": 52.3143764678125,
+          "longitude": 4.69640792135398
+        }
+      },
+      "meta": {
+        "distance": 1137
+      },
+      "relationships": {
+        "carrier": {
+          "links": {
+            "related": "https://api/carriers/eef00b32-177e-43d3-9b26-715365e4ce46"
+          },
+          "data": {
+            "id": "eef00b32-177e-43d3-9b26-715365e4ce46",
+            "type": "carriers"
+          }
+        }
+      }
+    },
+    {
+      "id": "171963",
+      "type": "pickup-dropoff-locations",
+      "attributes": {
+        "code": "171963",
+        "address": {
+          "street_1": "Noordmeerstraat",
+          "street_number": 32,
+          "street_number_suffix": "-36",
+          "postal_code": "2131AD",
+          "city": "Hoofddorp",
+          "country_code": "NL",
+          "company": "Karwei Hoofddorp",
+          "phone_number": "023-5651215"
+        },
+        "opening_hours": [
+          {
+            "day": "Monday",
+            "open": "09:00",
+            "closed": "21:00"
+          },
+          {
+            "day": "Tuesday",
+            "open": "09:00",
+            "closed": "21:00"
+          },
+          {
+            "day": "Wednesday",
+            "open": "09:00",
+            "closed": "21:00"
+          },
+          {
+            "day": "Thursday",
+            "open": "09:00",
+            "closed": "21:00"
+          },
+          {
+            "day": "Friday",
+            "open": "09:00",
+            "closed": "21:00"
+          },
+          {
+            "day": "Saturday",
+            "open": "09:00",
+            "closed": "18:00"
+          },
+          {
+            "day": "Sunday",
+            "open": "00:00",
+            "closed": "00:00"
+          }
+        ],
+        "position": {
+          "latitude": 52.3155020752417,
+          "longitude": 4.69523182366827
+        }
+      },
+      "meta": {
+        "distance": 1233
+      },
+      "relationships": {
+        "carrier": {
+          "links": {
+            "related": "https://api/carriers/eef00b32-177e-43d3-9b26-715365e4ce46"
+          },
+          "data": {
+            "id": "eef00b32-177e-43d3-9b26-715365e4ce46",
+            "type": "carriers"
+          }
+        }
+      }
+    },
+    {
+      "id": "173804",
+      "type": "pickup-dropoff-locations",
+      "attributes": {
+        "code": "173804",
+        "address": {
+          "street_1": "Skagerrak",
+          "street_number": 218,
+          "postal_code": "2133DW",
+          "city": "Hoofddorp",
+          "country_code": "NL",
+          "company": "Primera Sanders Skagerhof",
+          "phone_number": "023-5631358"
+        },
+        "opening_hours": [
+          {
+            "day": "Monday",
+            "open": "08:30",
+            "closed": "18:00"
+          },
+          {
+            "day": "Tuesday",
+            "open": "08:30",
+            "closed": "18:00"
+          },
+          {
+            "day": "Wednesday",
+            "open": "08:30",
+            "closed": "18:00"
+          },
+          {
+            "day": "Thursday",
+            "open": "08:30",
+            "closed": "18:00"
+          },
+          {
+            "day": "Friday",
+            "open": "08:30",
+            "closed": "18:00"
+          },
+          {
+            "day": "Saturday",
+            "open": "08:30",
+            "closed": "17:00"
+          },
+          {
+            "day": "Sunday",
+            "open": "00:00",
+            "closed": "00:00"
+          }
+        ],
+        "position": {
+          "latitude": 52.3094281618872,
+          "longitude": 4.67139513180198
+        }
+      },
+      "meta": {
+        "distance": 1413
+      },
+      "relationships": {
+        "carrier": {
+          "links": {
+            "related": "https://api/carriers/eef00b32-177e-43d3-9b26-715365e4ce46"
+          },
+          "data": {
+            "id": "eef00b32-177e-43d3-9b26-715365e4ce46",
+            "type": "carriers"
+          }
+        }
+      }
+    },
+    {
+      "id": "161807",
+      "type": "pickup-dropoff-locations",
+      "attributes": {
+        "code": "161807",
+        "address": {
+          "street_1": "Markenburg",
+          "street_number": 73,
+          "postal_code": "2135DS",
+          "city": "Hoofddorp",
+          "country_code": "NL",
+          "company": "Bruna",
+          "phone_number": "023-5628403"
+        },
+        "opening_hours": [
+          {
+            "day": "Monday",
+            "open": "11:00",
+            "closed": "18:00"
+          },
+          {
+            "day": "Tuesday",
+            "open": "09:00",
+            "closed": "18:00"
+          },
+          {
+            "day": "Wednesday",
+            "open": "09:00",
+            "closed": "18:00"
+          },
+          {
+            "day": "Thursday",
+            "open": "09:00",
+            "closed": "18:00"
+          },
+          {
+            "day": "Friday",
+            "open": "09:00",
+            "closed": "20:00"
+          },
+          {
+            "day": "Saturday",
+            "open": "09:00",
+            "closed": "17:30"
+          },
+          {
+            "day": "Sunday",
+            "open": "00:00",
+            "closed": "00:00"
+          }
+        ],
+        "position": {
+          "latitude": 52.3013913423774,
+          "longitude": 4.66375416731004
+        }
+      },
+      "meta": {
+        "distance": 1872
+      },
+      "relationships": {
+        "carrier": {
+          "links": {
+            "related": "https://api/carriers/eef00b32-177e-43d3-9b26-715365e4ce46"
+          },
+          "data": {
+            "id": "eef00b32-177e-43d3-9b26-715365e4ce46",
+            "type": "carriers"
+          }
+        }
+      }
+    },
+    {
+      "id": "173187",
+      "type": "pickup-dropoff-locations",
+      "attributes": {
+        "code": "173187",
+        "address": {
+          "street_1": "Jacobus Spijkerdreef",
+          "street_number": 10,
+          "postal_code": "2132PZ",
+          "city": "Hoofddorp",
+          "country_code": "NL",
+          "company": "Staples Office Centre",
+          "phone_number": "023-5576310"
+        },
+        "opening_hours": [
+          {
+            "day": "Monday",
+            "open": "09:00",
+            "closed": "18:30"
+          },
+          {
+            "day": "Tuesday",
+            "open": "09:00",
+            "closed": "18:30"
+          },
+          {
+            "day": "Wednesday",
+            "open": "09:00",
+            "closed": "18:30"
+          },
+          {
+            "day": "Thursday",
+            "open": "09:00",
+            "closed": "18:30"
+          },
+          {
+            "day": "Friday",
+            "open": "09:00",
+            "closed": "18:30"
+          },
+          {
+            "day": "Saturday",
+            "open": "09:00",
+            "closed": "17:00"
+          },
+          {
+            "day": "Sunday",
+            "open": "00:00",
+            "closed": "00:00"
+          }
+        ],
+        "position": {
+          "latitude": 52.2864669620795,
+          "longitude": 4.68239055845954
+        }
+      },
+      "meta": {
+        "distance": 2110
+      },
+      "relationships": {
+        "carrier": {
+          "links": {
+            "related": "https://api/carriers/eef00b32-177e-43d3-9b26-715365e4ce46"
+          },
+          "data": {
+            "id": "eef00b32-177e-43d3-9b26-715365e4ce46",
+            "type": "carriers"
+          }
+        }
+      }
+    },
+    {
+      "id": "163365",
+      "type": "pickup-dropoff-locations",
+      "attributes": {
+        "code": "163365",
+        "address": {
+          "street_1": "Muiderbos",
+          "street_number": 124,
+          "postal_code": "2134SV",
+          "city": "Hoofddorp",
+          "country_code": "NL",
+          "company": "AKO",
+          "phone_number": "088-1338104"
+        },
+        "opening_hours": [
+          {
+            "day": "Monday",
+            "open": "09:00",
+            "closed": "18:00"
+          },
+          {
+            "day": "Tuesday",
+            "open": "09:00",
+            "closed": "18:00"
+          },
+          {
+            "day": "Wednesday",
+            "open": "09:00",
+            "closed": "18:00"
+          },
+          {
+            "day": "Thursday",
+            "open": "09:00",
+            "closed": "18:00"
+          },
+          {
+            "day": "Friday",
+            "open": "09:00",
+            "closed": "18:00"
+          },
+          {
+            "day": "Saturday",
+            "open": "09:00",
+            "closed": "17:00"
+          },
+          {
+            "day": "Sunday",
+            "open": "00:00",
+            "closed": "00:00"
+          }
+        ],
+        "position": {
+          "latitude": 52.3147095499762,
+          "longitude": 4.65903497807609
+        }
+      },
+      "meta": {
+        "distance": 2422
+      },
+      "relationships": {
+        "carrier": {
+          "links": {
+            "related": "https://api/carriers/eef00b32-177e-43d3-9b26-715365e4ce46"
+          },
+          "data": {
+            "id": "eef00b32-177e-43d3-9b26-715365e4ce46",
+            "type": "carriers"
+          }
+        }
+      }
+    },
+    {
+      "id": "161766",
+      "type": "pickup-dropoff-locations",
+      "attributes": {
+        "code": "161766",
+        "address": {
+          "street_1": "Genderenplein",
+          "street_number": 20,
+          "postal_code": "2134DP",
+          "city": "Hoofddorp",
+          "country_code": "NL",
+          "company": "Bruna Genderenplein",
+          "phone_number": "023-5619043"
+        },
+        "opening_hours": [
+          {
+            "day": "Monday",
+            "open": "09:00",
+            "closed": "18:00"
+          },
+          {
+            "day": "Tuesday",
+            "open": "09:00",
+            "closed": "18:00"
+          },
+          {
+            "day": "Wednesday",
+            "open": "09:00",
+            "closed": "18:00"
+          },
+          {
+            "day": "Thursday",
+            "open": "09:00",
+            "closed": "18:00"
+          },
+          {
+            "day": "Friday",
+            "open": "09:00",
+            "closed": "21:00"
+          },
+          {
+            "day": "Saturday",
+            "open": "09:00",
+            "closed": "17:00"
+          },
+          {
+            "day": "Sunday",
+            "open": "00:00",
+            "closed": "00:00"
+          }
+        ],
+        "position": {
+          "latitude": 52.3066891744711,
+          "longitude": 4.63838904899413
+        }
+      },
+      "meta": {
+        "distance": 3565
+      },
+      "relationships": {
+        "carrier": {
+          "links": {
+            "related": "https://api/carriers/eef00b32-177e-43d3-9b26-715365e4ce46"
+          },
+          "data": {
+            "id": "eef00b32-177e-43d3-9b26-715365e4ce46",
+            "type": "carriers"
+          }
+        }
+      }
+    },
+    {
+      "id": "203330",
+      "type": "pickup-dropoff-locations",
+      "attributes": {
+        "code": "203330",
+        "address": {
+          "street_1": "Alseïdenstraat",
+          "street_number": 20,
+          "street_number_suffix": "PBA",
+          "postal_code": "1363SR",
+          "city": "Almere",
+          "country_code": "NL",
+          "company": "Pakket- en Briefautomaat"
+        },
+        "opening_hours": [
+          {
+            "day": "Monday",
+            "open": "00:00",
+            "closed": "23:59"
+          },
+          {
+            "day": "Tuesday",
+            "open": "00:00",
+            "closed": "23:59"
+          },
+          {
+            "day": "Wednesday",
+            "open": "00:00",
+            "closed": "23:59"
+          },
+          {
+            "day": "Thursday",
+            "open": "00:00",
+            "closed": "23:59"
+          },
+          {
+            "day": "Friday",
+            "open": "00:00",
+            "closed": "23:59"
+          },
+          {
+            "day": "Saturday",
+            "open": "00:00",
+            "closed": "23:59"
+          },
+          {
+            "day": "Sunday",
+            "open": "00:00",
+            "closed": "23:59"
+          }
+        ],
+        "position": {
+          "latitude": 52.3569768014508,
+          "longitude": 5.15416255988611
+        }
+      },
+      "meta": {
+        "distance": 32019
+      },
+      "relationships": {
+        "carrier": {
+          "links": {
+            "related": "https://api/carriers/eef00b32-177e-43d3-9b26-715365e4ce46"
+          },
+          "data": {
+            "id": "eef00b32-177e-43d3-9b26-715365e4ce46",
+            "type": "carriers"
+          }
+        }
+      }
+    }
+  ],
+  "meta": {
+    "total_pages": 1,
+    "total_records": 10
+  },
+  "links": {
+    "self": "https://api/carriers/eef00b32-177e-43d3-9b26-715365e4ce46/pickup-dropoff-locations/NL/2131BC?page[size]=30&page[number]=1",
+    "first": "https://api/carriers/eef00b32-177e-43d3-9b26-715365e4ce46/pickup-dropoff-locations/NL/2131BC?page[size]=30&page[number]=1",
+    "last": "https://api/carriers/eef00b32-177e-43d3-9b26-715365e4ce46/pickup-dropoff-locations/NL/2131BC?page[size]=30&page[number]=1"
+  }
+}

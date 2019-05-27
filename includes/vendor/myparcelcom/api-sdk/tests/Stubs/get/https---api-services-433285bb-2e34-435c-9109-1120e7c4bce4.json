@@ -1,0 +1,55 @@
+{
+  "data": {
+    "id": "433285bb-2e34-435c-9109-1120e7c4bce4",
+    "type": "services",
+    "attributes": {
+      "name": "Letterbox Test",
+      "package_type": "letterbox",
+      "transit_time": {
+        "min": 2,
+        "max": 3
+      },
+      "handover_method": "collection",
+      "delivery_days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday"
+      ],
+      "delivery_method": "delivery"
+    },
+    "links": {
+      "self": "https://api/services/433285bb-2e34-435c-9109-1120e7c4bce4",
+      "contracts": "https://api/services/433285bb-2e34-435c-9109-1120e7c4bce4/contracts"
+    },
+    "relationships": {
+      "carrier": {
+        "links": {
+          "related": "https://api/carriers/eef00b32-177e-43d3-9b26-715365e4ce46"
+        },
+        "data": {
+          "id": "eef00b32-177e-43d3-9b26-715365e4ce46",
+          "type": "carriers"
+        }
+      },
+      "region_from": {
+        "links": {
+          "related": "https://api/regions/c1048135-db45-404e-adac-fdecd0c7134a"
+        },
+        "data": {
+          "id": "c1048135-db45-404e-adac-fdecd0c7134a",
+          "type": "regions"
+        }
+      },
+      "region_to": {
+        "links": {
+          "related": "https://api/regions/c1048135-db45-404e-adac-fdecd0c7134a"
+        },
+        "data": {
+          "id": "c1048135-db45-404e-adac-fdecd0c7134a",
+          "type": "regions"
+        }
+      }
+    }
+  }
+}

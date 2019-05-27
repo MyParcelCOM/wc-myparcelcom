@@ -1,0 +1,16 @@
+{
+  "data": {
+    "type": "statuses",
+    "id": "status-id-2",
+    "attributes": {
+      "code": "shipment-with-courier",
+      "resource_type": "shipments",
+      "level": "success",
+      "name": "At courier",
+      "description": "The shipment is at the courier"
+    },
+    "links": {
+      "self": "https://api/statuses/status-id-2"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "data": {
+    "id": "new-shipment",
+    "attributes": {
+      "price": 6000
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "data": {
+    "id": "c1048135-db45-404e-adac-fdecd0c7134a",
+    "type": "regions",
+    "attributes": {
+      "country_code": "GB",
+      "name": "United Kingdom",
+      "region_code": "ENG",
+      "category": "country"
+    },
+    "relationships": {
+      "parent": {
+        "data": {
+          "type": "regions",
+          "id": "3844a94a-49bf-434f-9f67-3ff7ec071821"
+        },
+        "links": {
+          "related": "https://api/regions/3844a94a-49bf-434f-9f67-3ff7ec071821"
+        }
+      }
+    }
+  },
+  "links": {
+    "self": "https://api/regions/c1048135-db45-404e-adac-fdecd0c7134a"
+  }
+}

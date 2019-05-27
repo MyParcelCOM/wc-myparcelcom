@@ -1,0 +1,61 @@
+{
+  "data": {
+    "type": "shipment-statuses",
+    "id": "shipment-status-id-1",
+    "attributes": {
+      "carrier_statuses": [
+        {
+          "code": "9001",
+          "description": "Confirmed at destination",
+          "assigned_at": 1504801719
+        }
+      ],
+      "errors": [
+        {
+          "status": "422",
+          "code": "12345",
+          "title": "Value is too long",
+          "detail": "The description field exceeds the limit of 25 characters.",
+          "source": {
+            "pointer": "/data/attributes/description",
+            "parameter": "include"
+          },
+          "meta": {
+            "carrier_response": "ParcelDescription1 exceeds character limit.",
+            "carrier_status": "400",
+            "carrier_rules": [
+              {
+                "type": "max-length",
+                "value": "35"
+              }
+            ]
+          }
+        }
+      ],
+      "created_at": 1504801719
+    },
+    "relationships": {
+      "status": {
+        "data": {
+          "type": "statuses",
+          "id": "status-id-1"
+        },
+        "links": {
+          "related": "https://api/statuses/status-id-1"
+        }
+      },
+      "shipment": {
+        "data": {
+          "type": "shipments",
+          "id": "shipment-id-1"
+        },
+        "links": {
+          "related": "https://api/shipments/shipment-id-1"
+        }
+      }
+    },
+    "links": {
+      "self": "https://api/shipments/shipment-id-1/statuses/shipment-status-id-1"
+    }
+  }
+}

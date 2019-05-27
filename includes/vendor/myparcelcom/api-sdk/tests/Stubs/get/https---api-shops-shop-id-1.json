@@ -1,0 +1,61 @@
+{
+  "data": {
+    "id": "shop-id-1",
+    "type": "shops",
+    "attributes": {
+      "name": "Testshop",
+      "website": "https://test.shop",
+      "billing_address": {
+        "street_1": "Hoofdweg",
+        "street_number": 679,
+        "postal_code": "1AA BB2",
+        "city": "London",
+        "country_code": "GB",
+        "first_name": "Mister",
+        "last_name": "Billing",
+        "company": "MyParcel.com",
+        "email": "info@myparcel.com",
+        "phone_number": "+31 85 208 5997"
+      },
+      "sender_address": {
+        "street_1": "Hoofdweg",
+        "street_number": 679,
+        "postal_code": "1AA BB2",
+        "city": "London",
+        "country_code": "GB",
+        "first_name": "Mister",
+        "last_name": "Return",
+        "company": "MyParcel.com",
+        "email": "info@myparcel.com",
+        "phone_number": "+31 85 208 5997"
+      },
+      "return_address": {
+        "street_1": "Hoofdweg",
+        "street_number": 679,
+        "postal_code": "1AA BB2",
+        "city": "London",
+        "country_code": "GB",
+        "first_name": "Mister",
+        "last_name": "Return",
+        "company": "MyParcel.com",
+        "email": "info@myparcel.com",
+        "phone_number": "+31 85 208 5997"
+      },
+      "created_at": 1509378904
+    },
+    "links": {
+      "self": "https://api/shops/shop-id-1"
+    },
+    "relationships": {
+      "region": {
+        "data": {
+          "id": "c1048135-db45-404e-adac-fdecd0c7134a",
+          "type": "regions"
+        },
+        "links": {
+          "related": "https://api/regions/shop-id-1"
+        }
+      }
+    }
+  }
+}

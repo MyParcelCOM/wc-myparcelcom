@@ -1,0 +1,52 @@
+.partial-status-td a.partial-anchor-top{
+    display: block;
+    min-width: 150px;
+}
+
+.partial-status-td a.partial-anchor-top .ship-status{
+    text-align: center;
+    padding: 5px;
+    display: block;
+}
+
+.partial-status-td a.partial-anchor-top span.not-shipped-color{
+    color: #D8000C;
+    background-color: #FFBABA;
+}
+
+.partial-status-td a.partial-anchor-top span.partial-shipped-color{
+    color: #9F6000;
+    background-color: #FEEFB3;
+}
+.partial-status-td a.partial-anchor-top span.shipped-color{
+    color: #270;
+    background-color: #DFF2BF;
+}
+
+.partial_item_head{
+    min-width:40px!important;
+}
+
+td.partital-td-item{
+    text-align: center;
+}
+
+a.partial-anchor-top{
+    text-decoration:none!important;
+}
+
+.btn-success{
+    display: inline-block !important;
+    color: #fff !important;
+    background-color: #5cb85c !important;
+    border-color: #4cae4c !important;
+}
+
+.qty-error{
+    color:red;
+}
+
+body .myparcel-font-deco{
+    font-weight: 600;
+    font-size: 15px;
+}

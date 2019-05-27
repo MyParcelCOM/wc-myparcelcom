@@ -1,0 +1,16 @@
+{
+  "data": {
+    "type": "statuses",
+    "id": "status-id-5",
+    "attributes": {
+      "code": "shipment-concept",
+      "resource_type": "shipments",
+      "level": "concept",
+      "name": "Concept",
+      "description": "The shipment is a concept"
+    },
+    "links": {
+      "self": "https://api/statuses/status-id-5"
+    }
+  }
+}

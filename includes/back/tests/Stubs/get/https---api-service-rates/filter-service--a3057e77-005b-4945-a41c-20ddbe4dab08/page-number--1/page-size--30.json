@@ -1,0 +1,208 @@
+{
+  "data": [
+    {
+      "id": "f5bf6b2a-f6ef-4866-85e0-af9fb3460410",
+      "type": "service-rates",
+      "attributes": {
+        "weight_min": 0,
+        "weight_max": 25000,
+        "width_max": 300,
+        "height_max": 560,
+        "volume_max": 126,
+        "length_max": 750,
+        "step_size": 1000,
+        "price": {
+          "amount": 400,
+          "currency": "EUR"
+        }
+      },
+      "links": {
+        "self": "https://api/service-rates/f5bf6b2a-f6ef-4866-85e0-af9fb3460410"
+      },
+      "relationships": {
+        "service_options": {
+          "data": [
+            {
+              "id": "91e45009-c7bf-46ea-92e0-c55120f38225",
+              "type": "service-options",
+              "meta": {
+                "included": false,
+                "price": {
+                  "currency": "EUR",
+                  "amount": 250
+                }
+              }
+            },
+            {
+              "id": "8ce66012-99de-47fb-9d6e-81b6cdf40708",
+              "type": "service-options",
+              "meta": {
+                "included": false,
+                "price": {
+                  "currency": "EUR",
+                  "amount": 100
+                }
+              }
+            },
+            {
+              "id": "8e24afc1-2edf-48a1-a531-95ab6c0c750b",
+              "type": "service-options",
+              "meta": {
+                "included": true,
+                "price": {
+                  "currency": "EUR",
+                  "amount": 0
+                }
+              }
+            },
+            {
+              "id": "6dd892c1-9b84-4de5-9209-4f8fed1aa165",
+              "type": "service-options",
+              "meta": {
+                "included": false,
+                "price": {
+                  "currency": "EUR",
+                  "amount": 100
+                }
+              }
+            },
+            {
+              "id": "86bc4b41-e064-4653-b850-2b4a738ac2fc",
+              "type": "service-options",
+              "meta": {
+                "included": false,
+                "price": {
+                  "currency": "GBP",
+                  "amount": 775
+                }
+              }
+            },
+            {
+              "id": "b2edbf69-2dae-4e75-bca1-3d473d765fcd",
+              "type": "service-options",
+              "meta": {
+                "included": false,
+                "price": {
+                  "currency": "GBP",
+                  "amount": 400
+                }
+              }
+            },
+            {
+              "id": "b73d7bf2-8705-4509-bb63-a2fa1f19d4b2",
+              "type": "service-options",
+              "meta": {
+                "included": false,
+                "price": {
+                  "currency": "GBP",
+                  "amount": 400
+                }
+              }
+            },
+            {
+              "id": "a3119bf8-0e96-476f-afc7-6f403b302bd4",
+              "type": "service-options",
+              "meta": {
+                "included": true,
+                "price": {
+                  "currency": "GBP",
+                  "amount": 0
+                }
+              }
+            }
+          ]
+        },
+        "service": {
+          "data": {
+            "id": "a3057e77-005b-4945-a41c-20ddbe4dab08",
+            "type": "services"
+          },
+          "links": {
+            "related": "https://api/services/a3057e77-005b-4945-a41c-20ddbe4dab08"
+          }
+        },
+        "contract": {
+          "data": {
+            "id": "a33dadb9-de8e-4731-90d2-cf760e3f7cff",
+            "type": "contracts"
+          },
+          "links": {
+            "related": "https://api/contracts/a33dadb9-de8e-4731-90d2-cf760e3f7cff"
+          }
+        }
+      }
+    },
+    {
+      "id": "897ab6cf-101d-4886-87a8-398aef225cbe",
+      "type": "service-rates",
+      "attributes": {
+        "weight_min": 400,
+        "weight_max": 1000,
+        "length_max": 200,
+        "step_size": 1000,
+        "price": {
+          "amount": 589,
+          "currency": "GBP"
+        }
+      },
+      "links": {
+        "self": "https://api/service-rates/897ab6cf-101d-4886-87a8-398aef225cbe"
+      },
+      "relationships": {
+        "service_options": {
+          "data": [
+            {
+              "id": "3760473a-f588-445d-9738-d84933efab5f",
+              "type": "service-options",
+              "meta": {
+                "included": false,
+                "price": {
+                  "currency": "GBP",
+                  "amount": 650
+                }
+              }
+            },
+            {
+              "id": "a3119bf8-0e96-476f-afc7-6f403b302bd4",
+              "type": "service-options",
+              "meta": {
+                "included": true,
+                "price": {
+                  "currency": "GBP",
+                  "amount": 90
+                }
+              }
+            }
+          ]
+        },
+        "service": {
+          "data": {
+            "id": "a3057e77-005b-4945-a41c-20ddbe4dab08",
+            "type": "services"
+          },
+          "links": {
+            "related": "https://api/services/a3057e77-005b-4945-a41c-20ddbe4dab08"
+          }
+        },
+        "contract": {
+          "data": {
+            "id": "2e3bfa85-e5a9-4538-b81a-46b85d244bfb",
+            "type": "contracts"
+          },
+          "links": {
+            "related": "https://api/contracts/2e3bfa85-e5a9-4538-b81a-46b85d244bfb"
+          }
+        }
+      }
+    }
+  ],
+  "meta": {
+    "total_pages": 1,
+    "total_records": 2
+  },
+  "links": {
+    "self": "https://api/service-rates?filter[service]=a3057e77-005b-4945-a41c-20ddbe4dab08&page[size]=30&page[number]=1",
+    "first": "https://api/service-rates?filter[service]=a3057e77-005b-4945-a41c-20ddbe4dab08&page[size]=30&page[number]=1",
+    "last": "https://api/service-rates?filter[service]=a3057e77-005b-4945-a41c-20ddbe4dab08&page[size]=30&page[number]=1"
+  }
+}

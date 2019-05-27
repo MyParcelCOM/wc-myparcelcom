@@ -1,0 +1,367 @@
+{
+  "data": [
+    {
+      "id": "82400fee-5ed3-462a-9637-19f0bc87e09f",
+      "type": "regions",
+      "attributes": {
+        "country_code": "AF",
+        "currency": "AFN",
+        "name": "Afghanistan"
+      },
+      "links": {
+        "self": "https://api/regions/82400fee-5ed3-462a-9637-19f0bc87e09f"
+      }
+    },
+    {
+      "id": "bb76ec34-bc45-4f8d-ab77-d9838f1fa463",
+      "type": "regions",
+      "attributes": {
+        "country_code": "AL",
+        "currency": "ALL",
+        "name": "Albania"
+      },
+      "links": {
+        "self": "https://api/regions/bb76ec34-bc45-4f8d-ab77-d9838f1fa463"
+      }
+    },
+    {
+      "id": "d35109f4-2dad-4d0d-8c15-96cc0f39a105",
+      "type": "regions",
+      "attributes": {
+        "country_code": "AQ",
+        "name": "Antarctica"
+      },
+      "links": {
+        "self": "https://api/regions/d35109f4-2dad-4d0d-8c15-96cc0f39a105"
+      }
+    },
+    {
+      "id": "f1c9caac-1f55-4a26-9dca-45001b73bc1b",
+      "type": "regions",
+      "attributes": {
+        "country_code": "DZ",
+        "name": "Algeria"
+      },
+      "links": {
+        "self": "https://api/regions/f1c9caac-1f55-4a26-9dca-45001b73bc1b"
+      }
+    },
+    {
+      "id": "26b680a3-3778-4810-b41a-d62f7f65f5e6",
+      "type": "regions",
+      "attributes": {
+        "country_code": "AS",
+        "name": "American Samoa"
+      },
+      "links": {
+        "self": "https://api/regions/26b680a3-3778-4810-b41a-d62f7f65f5e6"
+      }
+    },
+    {
+      "id": "29dfdbcb-a1b6-498d-88c7-aa0ecd740587",
+      "type": "regions",
+      "attributes": {
+        "country_code": "AD",
+        "currency": "EUR",
+        "name": "Andorra"
+      },
+      "links": {
+        "self": "https://api/regions/29dfdbcb-a1b6-498d-88c7-aa0ecd740587"
+      }
+    },
+    {
+      "id": "56e68c4c-d656-4e8e-bd8f-e88e303c3736",
+      "type": "regions",
+      "attributes": {
+        "country_code": "AO",
+        "currency": "AOA",
+        "name": "Angola"
+      },
+      "links": {
+        "self": "https://api/regions/56e68c4c-d656-4e8e-bd8f-e88e303c3736"
+      }
+    },
+    {
+      "id": "5a91dbea-811b-40af-8bf7-beec7d88ac40",
+      "type": "regions",
+      "attributes": {
+        "country_code": "AG",
+        "currency": "XCD",
+        "name": "Antigua and Barbuda"
+      },
+      "links": {
+        "self": "https://api/regions/5a91dbea-811b-40af-8bf7-beec7d88ac40"
+      }
+    },
+    {
+      "id": "440ba940-d7ce-47e9-91bb-fe4d0f9707d2",
+      "type": "regions",
+      "attributes": {
+        "country_code": "AZ",
+        "currency": "AZN",
+        "name": "Azerbaijan"
+      },
+      "links": {
+        "self": "https://api/regions/440ba940-d7ce-47e9-91bb-fe4d0f9707d2"
+      }
+    },
+    {
+      "id": "9305ba36-bbb2-45e1-8266-eb3501bd8eef",
+      "type": "regions",
+      "attributes": {
+        "country_code": "AR",
+        "currency": "ARS",
+        "name": "Argentina"
+      },
+      "links": {
+        "self": "https://api/regions/9305ba36-bbb2-45e1-8266-eb3501bd8eef"
+      }
+    },
+    {
+      "id": "c831568c-4f00-4a92-b11e-4596ab6331bc",
+      "type": "regions",
+      "attributes": {
+        "country_code": "AU",
+        "currency": "AUD",
+        "name": "Australia"
+      },
+      "links": {
+        "self": "https://api/regions/c831568c-4f00-4a92-b11e-4596ab6331bc"
+      }
+    },
+    {
+      "id": "5def6f47-1965-41e7-b373-6f96677bfcf5",
+      "type": "regions",
+      "attributes": {
+        "country_code": "AT",
+        "currency": "EUR",
+        "name": "Austria"
+      },
+      "links": {
+        "self": "https://api/regions/5def6f47-1965-41e7-b373-6f96677bfcf5"
+      }
+    },
+    {
+      "id": "c57ee7fb-73b5-48fa-a3b7-5b956cde155f",
+      "type": "regions",
+      "attributes": {
+        "country_code": "BS",
+        "currency": "BSD",
+        "name": "Bahamas"
+      },
+      "links": {
+        "self": "https://api/regions/c57ee7fb-73b5-48fa-a3b7-5b956cde155f"
+      }
+    },
+    {
+      "id": "8edbd774-bfc6-4149-b395-ac366a325b1c",
+      "type": "regions",
+      "attributes": {
+        "country_code": "BH",
+        "currency": "BHD",
+        "name": "Bahrain"
+      },
+      "links": {
+        "self": "https://api/regions/8edbd774-bfc6-4149-b395-ac366a325b1c"
+      }
+    },
+    {
+      "id": "95d1f4dd-85a1-4623-b1c8-a403f845d9c9",
+      "type": "regions",
+      "attributes": {
+        "country_code": "BD",
+        "currency": "BDT",
+        "name": "Bangladesh"
+      },
+      "links": {
+        "self": "https://api/regions/95d1f4dd-85a1-4623-b1c8-a403f845d9c9"
+      }
+    },
+    {
+      "id": "95b77948-62bc-4305-8033-2fb114babcb2",
+      "type": "regions",
+      "attributes": {
+        "country_code": "AM",
+        "currency": "AMD",
+        "name": "Armenia"
+      },
+      "links": {
+        "self": "https://api/regions/95b77948-62bc-4305-8033-2fb114babcb2"
+      }
+    },
+    {
+      "id": "970cde28-4bed-4adf-a65d-c4e5b81e6213",
+      "type": "regions",
+      "attributes": {
+        "country_code": "BB",
+        "currency": "BBD",
+        "name": "Barbados"
+      },
+      "links": {
+        "self": "https://api/regions/970cde28-4bed-4adf-a65d-c4e5b81e6213"
+      }
+    },
+    {
+      "id": "19cfd6ff-1f89-41bf-ba1f-752e81fb3851",
+      "type": "regions",
+      "attributes": {
+        "country_code": "BE",
+        "currency": "EUR",
+        "name": "Belgium"
+      },
+      "links": {
+        "self": "https://api/regions/19cfd6ff-1f89-41bf-ba1f-752e81fb3851"
+      }
+    },
+    {
+      "id": "91b79f90-f232-4da6-9981-0d92de95706a",
+      "type": "regions",
+      "attributes": {
+        "country_code": "BM",
+        "currency": "BMD",
+        "name": "Bermuda"
+      },
+      "links": {
+        "self": "https://api/regions/91b79f90-f232-4da6-9981-0d92de95706a"
+      }
+    },
+    {
+      "id": "69327d33-d170-41aa-84ec-ac2e2b631778",
+      "type": "regions",
+      "attributes": {
+        "country_code": "BT",
+        "currency": "INR",
+        "name": "Bhutan"
+      },
+      "links": {
+        "self": "https://api/regions/69327d33-d170-41aa-84ec-ac2e2b631778"
+      }
+    },
+    {
+      "id": "0953b0f9-1f9d-4744-8b3d-6da1a29c4183",
+      "type": "regions",
+      "attributes": {
+        "country_code": "BO",
+        "currency": "BOB",
+        "name": "Bolivia "
+      },
+      "links": {
+        "self": "https://api/regions/0953b0f9-1f9d-4744-8b3d-6da1a29c4183"
+      }
+    },
+    {
+      "id": "904f345a-ad7d-4f08-ad9b-536f75eea18c",
+      "type": "regions",
+      "attributes": {
+        "country_code": "BA",
+        "currency": "BAM",
+        "name": "Bosnia and Herzegovina"
+      },
+      "links": {
+        "self": "https://api/regions/904f345a-ad7d-4f08-ad9b-536f75eea18c"
+      }
+    },
+    {
+      "id": "3bac1187-e65e-4263-90a0-96c192b589a2",
+      "type": "regions",
+      "attributes": {
+        "country_code": "BW",
+        "currency": "BWP",
+        "name": "Botswana"
+      },
+      "links": {
+        "self": "https://api/regions/3bac1187-e65e-4263-90a0-96c192b589a2"
+      }
+    },
+    {
+      "id": "c43b143e-42e6-4826-93f5-cf827059676e",
+      "type": "regions",
+      "attributes": {
+        "country_code": "BV",
+        "name": "Bouvet Island"
+      },
+      "links": {
+        "self": "https://api/regions/c43b143e-42e6-4826-93f5-cf827059676e"
+      }
+    },
+    {
+      "id": "b00f4600-fbcf-46ad-98bf-1ff7eb46633a",
+      "type": "regions",
+      "attributes": {
+        "country_code": "BR",
+        "currency": "BRL",
+        "name": "Brazil"
+      },
+      "links": {
+        "self": "https://api/regions/b00f4600-fbcf-46ad-98bf-1ff7eb46633a"
+      }
+    },
+    {
+      "id": "127de915-1240-4d10-a17c-4ab2e079516b",
+      "type": "regions",
+      "attributes": {
+        "country_code": "BZ",
+        "currency": "BZD",
+        "name": "Belize"
+      },
+      "links": {
+        "self": "https://api/regions/127de915-1240-4d10-a17c-4ab2e079516b"
+      }
+    },
+    {
+      "id": "1dd53412-a489-4f65-9240-250f49064511",
+      "type": "regions",
+      "attributes": {
+        "country_code": "IO",
+        "name": "British Indian Ocean Territory"
+      },
+      "links": {
+        "self": "https://api/regions/1dd53412-a489-4f65-9240-250f49064511"
+      }
+    },
+    {
+      "id": "6faf294b-7ead-4936-b581-2318a9296efb",
+      "type": "regions",
+      "attributes": {
+        "country_code": "SB",
+        "name": "Solomon Islands"
+      },
+      "links": {
+        "self": "https://api/regions/6faf294b-7ead-4936-b581-2318a9296efb"
+      }
+    },
+    {
+      "id": "ed09b47f-d6d4-454a-afc9-65d84a2eb3b5",
+      "type": "regions",
+      "attributes": {
+        "country_code": "VG",
+        "name": "Virgin Islands "
+      },
+      "links": {
+        "self": "https://api/regions/ed09b47f-d6d4-454a-afc9-65d84a2eb3b5"
+      }
+    },
+    {
+      "id": "b92c011d-1b74-4284-a0b6-88f9c7714437",
+      "type": "regions",
+      "attributes": {
+        "country_code": "BN",
+        "currency": "BND",
+        "name": "Brunei Darussalam"
+      },
+      "links": {
+        "self": "https://api/regions/b92c011d-1b74-4284-a0b6-88f9c7714437"
+      }
+    }
+  ],
+  "meta": {
+    "total_pages": 3,
+    "total_records": 78
+  },
+  "links": {
+    "self": "https://api/regions?page[size]=30&page[number]=1",
+    "first": "https://api/regions?page[size]=30&page[number]=1",
+    "next": "https://api/regions?page[size]=30&page[number]=2",
+    "last": "https://api/regions?page[size]=30&page[number]=3"
+  }
+}

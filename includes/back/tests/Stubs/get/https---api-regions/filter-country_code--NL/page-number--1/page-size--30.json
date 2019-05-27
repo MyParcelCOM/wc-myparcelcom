@@ -1,0 +1,36 @@
+{
+  "data": [
+    {
+      "id": "9bc528b0-93df-4522-964c-06abd17a3de1",
+      "type": "regions",
+      "attributes": {
+        "name": "Netherlands",
+        "country_code": "NL",
+        "currency": "EUR"
+      },
+      "links": {
+        "self": "https://api/regions/9bc528b0-93df-4522-964c-06abd17a3de1"
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "bb428358-b176-43a1-adda-a43349e11665",
+            "type": "regions"
+          },
+          "links": {
+            "related": "https://api/regions/bb428358-b176-43a1-adda-a43349e11665"
+          }
+        }
+      }
+    }
+  ],
+  "meta": {
+    "total_pages": 1,
+    "total_records": 1
+  },
+  "links": {
+    "self": "https://api/regions?filter[country_code]=NL&page[size]=30&page[number]=1",
+    "first": "https://api/regions?filter[country_code]=NL&page[size]=30&page[number]=1",
+    "last": "https://api/regions?filter[country_code]=NL&page[size]=30&page[number]=1"
+  }
+}

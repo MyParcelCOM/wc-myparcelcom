@@ -1,0 +1,5 @@
+{
+    "require": {
+        "myparcelcom/api-sdk": "^0.7.4"
+    }
+}

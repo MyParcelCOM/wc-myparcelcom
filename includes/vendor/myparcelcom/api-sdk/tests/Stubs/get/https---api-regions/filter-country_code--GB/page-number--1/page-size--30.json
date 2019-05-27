@@ -1,0 +1,228 @@
+{
+  "data": [
+    {
+      "id": "59f129d1-23fa-427e-b0d3-50a498a99044",
+      "type": "regions",
+      "attributes": {
+        "name": "England",
+        "country_code": "GB",
+        "region_code": "ENG",
+        "currency": "GBP"
+      },
+      "links": {
+        "self": "https://api/regions/59f129d1-23fa-427e-b0d3-50a498a99044"
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "4e433f7b-96a7-4bcd-b0e2-d6ef7322bab2",
+            "type": "regions"
+          },
+          "links": {
+            "related": "https://api/regions/4e433f7b-96a7-4bcd-b0e2-d6ef7322bab2"
+          }
+        }
+      }
+    },
+    {
+      "id": "aa67ef5a-e4c2-4154-9e36-eb50c6149b0b",
+      "type": "regions",
+      "attributes": {
+        "name": "Wales",
+        "country_code": "GB",
+        "region_code": "WLS",
+        "currency": "GBP"
+      },
+      "links": {
+        "self": "https://api/regions/aa67ef5a-e4c2-4154-9e36-eb50c6149b0b"
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "4e433f7b-96a7-4bcd-b0e2-d6ef7322bab2",
+            "type": "regions"
+          },
+          "links": {
+            "related": "https://api/regions/4e433f7b-96a7-4bcd-b0e2-d6ef7322bab2"
+          }
+        }
+      }
+    },
+    {
+      "id": "567ca2f5-0706-4983-bfae-30c1f59cd16f",
+      "type": "regions",
+      "attributes": {
+        "name": "Scotland",
+        "country_code": "GB",
+        "region_code": "SCT",
+        "currency": "GBP"
+      },
+      "links": {
+        "self": "https://api/regions/567ca2f5-0706-4983-bfae-30c1f59cd16f"
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "4e433f7b-96a7-4bcd-b0e2-d6ef7322bab2",
+            "type": "regions"
+          },
+          "links": {
+            "related": "https://api/regions/4e433f7b-96a7-4bcd-b0e2-d6ef7322bab2"
+          }
+        }
+      }
+    },
+    {
+      "id": "86b33370-1991-402d-81ca-66c6d4aafd6c",
+      "type": "regions",
+      "attributes": {
+        "name": "Scottish lowlands",
+        "country_code": "GB",
+        "region_code": "SCL",
+        "currency": "GBP"
+      },
+      "links": {
+        "self": "https://api/regions/86b33370-1991-402d-81ca-66c6d4aafd6c"
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "567ca2f5-0706-4983-bfae-30c1f59cd16f",
+            "type": "regions"
+          },
+          "links": {
+            "related": "https://api/regions/567ca2f5-0706-4983-bfae-30c1f59cd16f"
+          }
+        }
+      }
+    },
+    {
+      "id": "b9420638-6da7-4765-a10c-b1ee8741aa8a",
+      "type": "regions",
+      "attributes": {
+        "name": "Scottish Highlands",
+        "country_code": "GB",
+        "region_code": "SCH",
+        "currency": "GBP"
+      },
+      "links": {
+        "self": "https://api/regions/b9420638-6da7-4765-a10c-b1ee8741aa8a"
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "567ca2f5-0706-4983-bfae-30c1f59cd16f",
+            "type": "regions"
+          },
+          "links": {
+            "related": "https://api/regions/567ca2f5-0706-4983-bfae-30c1f59cd16f"
+          }
+        }
+      }
+    },
+    {
+      "id": "036b46e4-9fa4-4967-ae7a-1512401bc200",
+      "type": "regions",
+      "attributes": {
+        "name": "Scottish Islands",
+        "country_code": "GB",
+        "region_code": "SCI",
+        "currency": "GBP"
+      },
+      "links": {
+        "self": "https://api/regions/036b46e4-9fa4-4967-ae7a-1512401bc200"
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "567ca2f5-0706-4983-bfae-30c1f59cd16f",
+            "type": "regions"
+          },
+          "links": {
+            "related": "https://api/regions/567ca2f5-0706-4983-bfae-30c1f59cd16f"
+          }
+        }
+      }
+    },
+    {
+      "id": "32b12008-8117-4bbc-9820-ffb5db2949cb",
+      "type": "regions",
+      "attributes": {
+        "name": "Northern Ireland",
+        "country_code": "GB",
+        "region_code": "NIR",
+        "currency": "GBP"
+      },
+      "links": {
+        "self": "https://api/regions/32b12008-8117-4bbc-9820-ffb5db2949cb"
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "4e433f7b-96a7-4bcd-b0e2-d6ef7322bab2",
+            "type": "regions"
+          },
+          "links": {
+            "related": "https://api/regions/4e433f7b-96a7-4bcd-b0e2-d6ef7322bab2"
+          }
+        }
+      }
+    },
+    {
+      "id": "8ddec904-aaad-48db-abae-70eaa73e28bf",
+      "type": "regions",
+      "attributes": {
+        "name": "Channel Islands",
+        "country_code": "GB",
+        "region_code": "CIS",
+        "currency": "GBP"
+      },
+      "links": {
+        "self": "https://api/regions/8ddec904-aaad-48db-abae-70eaa73e28bf"
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "4e433f7b-96a7-4bcd-b0e2-d6ef7322bab2",
+            "type": "regions"
+          },
+          "links": {
+            "related": "https://api/regions/4e433f7b-96a7-4bcd-b0e2-d6ef7322bab2"
+          }
+        }
+      }
+    },
+    {
+      "id": "4e433f7b-96a7-4bcd-b0e2-d6ef7322bab2",
+      "type": "regions",
+      "attributes": {
+        "name": "United Kingdom",
+        "country_code": "GB",
+        "currency": "GBP"
+      },
+      "links": {
+        "self": "https://api/regions/4e433f7b-96a7-4bcd-b0e2-d6ef7322bab2"
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "824c7cc4-b3e4-4bd0-a811-cffc0cde4886",
+            "type": "regions"
+          },
+          "links": {
+            "related": "https://api/regions/824c7cc4-b3e4-4bd0-a811-cffc0cde4886"
+          }
+        }
+      }
+    }
+  ],
+  "meta": {
+    "total_pages": 1,
+    "total_records": 9
+  },
+  "links": {
+    "self": "https://api/regions?filter[country_code]=GB&page[size]=30&page[number]=1",
+    "first": "https://api/regions?filter[country_code]=GB&page[size]=30&page[number]=1",
+    "last": "https://api/regions?filter[country_code]=GB&page[size]=30&page[number]=1"
+  }
+}

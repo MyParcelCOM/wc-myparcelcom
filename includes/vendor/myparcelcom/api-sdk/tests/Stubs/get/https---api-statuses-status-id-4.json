@@ -1,0 +1,16 @@
+{
+  "data": {
+    "type": "statuses",
+    "id": "status-id-4",
+    "attributes": {
+      "code": "shipment-registered",
+      "resource_type": "shipments",
+      "level": "success",
+      "name": "Registered",
+      "description": "The shipment has been registered at the carrier"
+    },
+    "links": {
+      "self": "https://api/statuses/status-id-4"
+    }
+  }
+}

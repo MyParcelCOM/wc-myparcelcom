@@ -1,0 +1,12 @@
+{
+  "data": {
+    "id": "3844a94a-49bf-434f-9f67-3ff7ec071821",
+    "type": "regions",
+    "attributes": {
+      "name": "Europe"
+    }
+  },
+  "links": {
+    "self": "https://api/regions/3844a94a-49bf-434f-9f67-3ff7ec071821"
+  }
+}

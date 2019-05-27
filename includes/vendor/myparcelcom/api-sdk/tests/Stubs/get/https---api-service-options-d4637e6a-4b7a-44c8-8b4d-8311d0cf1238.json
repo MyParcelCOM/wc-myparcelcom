@@ -1,0 +1,11 @@
+{
+  "data": {
+    "type": "service-options",
+    "id": "d4637e6a-4b7a-44c8-8b4d-8311d0cf1238",
+    "attributes": {
+      "name": "Collection",
+      "category": "handover-method",
+      "code": "handover-method-collection"
+    }
+  }
+}

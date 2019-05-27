@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+${COMPOSE} run --rm ${PHP} ./vendor/bin/phpunit "$@"
