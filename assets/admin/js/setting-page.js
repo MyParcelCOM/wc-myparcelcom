@@ -89,4 +89,10 @@ jQuery(function($){
     
     });
 
+    setTimeout(function() {
+        $('#export-wrong-cred').fadeOut('fast');
+    }, 15000); // <-- time in milliseconds
+    setTimeout(function() {
+        $('#message').fadeOut('fast');
+    }, 15000); // <-- time in milliseconds    
 });

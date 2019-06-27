@@ -22,6 +22,11 @@
     color: #270;
     background-color: #DFF2BF;
 }
+.partial-status-td a.partial-anchor-top span.new-shipped-color{
+    color: #004085;
+    background-color: #cce5ff;
+    border-color: #b8daff;
+}
 
 .partial_item_head{
     min-width:40px!important;
@@ -50,3 +55,4 @@ body .myparcel-font-deco{
     font-weight: 600;
     font-size: 15px;
 }
+

@@ -141,7 +141,7 @@ jQuery(function($){
                 if(shipQty == qty){
                     
                     $('.partial-anchor-top-'+itemId).attr('title','Shipped: '+shipQty+'/'+qty);
-                    $('.partial-anchor-top-'+itemId).html('<span class="shipped-color ship-status ship-status-'+itemId+'">Shipped - '+shipQty+'</span>')
+                    $('.partial-anchor-top-'+itemId).html('<span class="new-shipped-color ship-status ship-status-'+itemId+'">Updated Shipping Qty - '+shipQty+'</span>')
                     $('.partial-anchor-remain-'+itemId).html('<span class=".remain-qty">'+remain_qty+'</span>');
                     $('.ship_qty_'+itemId).data('rqty',remain_qty);
                 }

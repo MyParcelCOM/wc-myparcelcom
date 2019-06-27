@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
 /**
- * Plugin Name: MyParcel WooCommerce Connect
+ * Plugin Name: MyParcel.com
  * Plugin URI:  https://www.myparcel.com
- * Description: This plugin enables you to choose my parcel shipping methods on WooCommerce.
+ * Description: This plugin enables you to choose MyParcel.com shipping methods on WooCommerce.
  * Version: 1.0
- * Author: Fidel
+ * Author: Larkdesk
  * Requires at least: 
  * Tested up to: 
  *

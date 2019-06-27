@@ -22,32 +22,34 @@ add_action( 'admin_init', 'registerSettings' );
  */
 function registerSettings(): void
 {
-   	add_option( 'api_url', '');   
-	add_option( 'api_auth_url', '');
+ //   	add_option( 'api_url', '');   
+	// add_option( 'api_auth_url', '');
 	add_option( 'client_key', '');
 	add_option( 'client_secret_key', '');
 	add_option( 'ship_exists', '0');
-	add_option( 'label_size', '1');
-	add_option( 'street1', '');   
-	add_option( 'street_number', '');
-	add_option( 'city', '');
-	add_option( 'postal_code', '');
-	add_option( 'country_code', '');	
-	add_option( 'phone_number', '');
-	add_option( 'company_name', '');
-   	register_setting( 'myplugin_options_group', 'api_url');
-   	register_setting( 'myplugin_options_group', 'api_auth_url');
+	// add_option( 'label_size', '1');
+	// add_option( 'street1', '');   
+	// add_option( 'street_number', '');
+	// add_option( 'city', '');
+	// add_option( 'postal_code', '');
+	// add_option( 'country_code', '');	
+	// add_option( 'phone_number', '');
+	// add_option( 'company_name', '');
+	add_option( 'act_test_mode', '0');
+   	// register_setting( 'myplugin_options_group', 'api_url');
+   	// register_setting( 'myplugin_options_group', 'api_auth_url');
    	register_setting( 'myplugin_options_group', 'client_key');
    	register_setting( 'myplugin_options_group', 'client_secret_key');
    	register_setting( 'myplugin_options_group', 'ship_exists');
-   	register_setting( 'myplugin_options_group', 'label_size');
-   	register_setting( 'myplugin_options_group', 'street1');
-   	register_setting( 'myplugin_options_group', 'street_number');
-   	register_setting( 'myplugin_options_group', 'city');
-   	register_setting( 'myplugin_options_group', 'postal_code');
-   	register_setting( 'myplugin_options_group', 'country_code');
-   	register_setting( 'myplugin_options_group', 'phone_number');
-   	register_setting( 'myplugin_options_group', 'company_name');
+   	// register_setting( 'myplugin_options_group', 'label_size');
+   	// register_setting( 'myplugin_options_group', 'street1');
+   	// register_setting( 'myplugin_options_group', 'street_number');
+   	// register_setting( 'myplugin_options_group', 'city');
+   	// register_setting( 'myplugin_options_group', 'postal_code');
+   	// register_setting( 'myplugin_options_group', 'country_code');
+   	// register_setting( 'myplugin_options_group', 'phone_number');
+   	// register_setting( 'myplugin_options_group', 'company_name');
+   	register_setting( 'myplugin_options_group', 'act_test_mode');
    	register_setting( 'myplugin_options_group', 'checkValidation','validationCallBack');
 }
 
@@ -58,24 +60,29 @@ function registerSettings(): void
 function validationCallBack(): bool
 {
 	$error = false;
-	$apiUrl 	= get_option('api_url');
-	$authUrl 	= get_option('api_auth_url');
+	// $apiUrl 	= get_option('api_url');
+	// $authUrl 	= get_option('api_auth_url');
 	$clientKey 	= get_option('client_key');
 	$secretKey 	= get_option('client_secret_key');
 	
-	$street1 	= get_option( 'street1');   
-	$streetNumber = get_option( 'street_number');
-	$city = get_option('city');
-	$postalCode = get_option('postal_code');
-	$countryCode = get_option('country_code');	
-	$phoneNumber = get_option('phone_number');
-	$companyName = get_option('company_name');
+	// $street1 	= get_option( 'street1');   
+	// $streetNumber = get_option( 'street_number');
+	// $city = get_option('city');
+	// $postalCode = get_option('postal_code');
+	// $countryCode = get_option('country_code');	
+	// $phoneNumber = get_option('phone_number');
+	// $companyName = get_option('company_name');
+	$actTestMode = get_option('act_test_mode');
 
-	if (empty($apiUrl) || empty($authUrl) || empty($clientKey) || empty($secretKey) 
-		|| empty($street1) || empty($streetNumber) || empty($city) 
-		|| empty($postalCode) || empty($countryCode) || empty($countryCode) || empty($companyName) ) {
+	if (empty($clientKey) || empty($secretKey)) {
 		$error = true;
-	}	
+	}
+	// Disable apiUrl and apiUrl
+	// if (empty($apiUrl) || empty($apiUrl) || empty($clientKey) || empty($secretKey) 
+	// 	|| empty($street1) || empty($streetNumber) || empty($city) 
+	// 	|| empty($postalCode) || empty($countryCode) || empty($countryCode) || empty($companyName) ) {
+	// 	$error = true;
+	// }	
 	if ($error) {	
 		add_settings_error('show_message',esc_attr('settings_updated'),__('Settings NOT saved. Please fill all the required fields.'),'error');
     	add_action('admin_notices', 'printErrors');	
@@ -106,17 +113,19 @@ function printErrors(): void
  */
 function updateOption(): void
 {
-	update_option('api_url','');
-	update_option('api_auth_url','');
+	// update_option('api_url','');
+	// update_option('api_auth_url','');
 	update_option('client_key','');
 	update_option('client_secret_key','');
-	update_option( 'street1', '');   
-	update_option( 'street_number', '');
-	update_option( 'city', '');
-	update_option( 'postal_code', '');
-	update_option( 'country_code', '');	
-	update_option( 'phone_number', '');
-	update_option( 'company_name', '');
+	// update_option( 'street1', '');   
+	// update_option( 'street_number', '');
+	// update_option( 'city', '');
+	// update_option( 'postal_code', '');
+	// update_option( 'country_code', '');	
+	// update_option( 'phone_number', '');
+	// update_option( 'company_name', '');
+	update_option( 'ship_exists', '0');
+	// update_option( 'act_test_mode', 0);
 }
 
 add_action('admin_menu', 'addSettingMenu');
@@ -127,7 +136,7 @@ add_action('admin_menu', 'addSettingMenu');
  */
 function addSettingMenu(): void
 {
-  add_options_page('API Setting', 'My Parcel API Setting', 'manage_options', 'api_setting', 'settingPage');
+  add_options_page('API Setting', 'MyParcel.com API setting', 'manage_options', 'api_setting', 'settingPage');
   //add_menu_page('API Setting', 'My Parcel API Setting', 'manage_options', 'api_setting', 'settingPage');
 }
 
@@ -144,7 +153,7 @@ function settingPage(): void
 ?>
   	<div>
 	  
-	  	<h2>Myparcle.com API Setting</h2>
+	  	<h2>MyParcel.com API setting</h2>
 
 	  	<form method="post" action="options.php" id="api-setting-form">
 	  		<?php 
@@ -155,7 +164,7 @@ function settingPage(): void
 		    <table class="form-table">
 				
 				<tbody>
-
+					<?php /*
 					<tr valign="top">
 					  	<th scope="row"><label for="api_url">* Api Url </label></th>
 					  	<td>
@@ -168,33 +177,42 @@ function settingPage(): void
 					  	<td>
 					  		<input type="text" id="api_auth_url" class="regular-text" name="api_auth_url" value="<?php echo get_option('api_auth_url'); ?>" />
 					  	</td>
-					</tr>
+					</tr> */ ?>
 					<tr valign="top">
-					  	<th scope="row"><label for="client_key">* Client Key </label></th>
+					  	<th scope="row"><label for="client_key">* Client ID </label></th>
 					  	<td>
 					  		<input type="text" id="client_key" class="regular-text" name="client_key" value="<?php echo get_option('client_key'); ?>" />
 					  	</td>
 					</tr>
 					<tr valign="top">
 
-					  	<th scope="row"><label for="client_secret_key">* Client Secret Key </label></th>
+					  	<th scope="row"><label for="client_secret_key">* Client secret key </label></th>
 					  	<td>
-					  		<input type="text" id="client_secret_key"  class="regular-text" name="client_secret_key" value="<?php echo get_option('client_secret_key'); ?>" />
+					  		<input type="password" id="client_secret_key"  class="regular-text" name="client_secret_key" value="<?php echo get_option('client_secret_key'); ?>" />
 					  	</td>
+					</tr>					
+					<tr>
+						<th scope="row">Activate testmode</th>
+						<td> 
+							<fieldset><legend class="screen-reader-text"><span></span></legend>
+								<label for="users_can_register">
+									<input type="checkbox" name="act_test_mode" value="1" <?php checked(1, (int)get_option('act_test_mode'));?>> 
+								</label>
+							</fieldset>
+						</td>
 					</tr>
-
 				</tbody>
 				
 
 		    </table>
 
-		    <h2>Shipment Setting</h2>
+		    <?php /* <h2>Shipment Setting</h2>
 
 		    <table class="form-table">
 				
 				<tbody>
 
-					<tr valign="top">
+					<?php /*<tr valign="top">
 					  	<th scope="row"><label for="ship_exists">* Create New Shipment if one already exists </label></th>
 					  	<td>
 					  		<select name="ship_exists" id="ship_exists" class="regular-text">
@@ -213,8 +231,8 @@ function settingPage(): void
 					  		</select>
 					  	</td>
 					</tr>
-
-					<tr><th>Shipment Sender Address</th></tr>
+					*/ ?>
+				<?php /*	<tr><th>Shipment Sender Address</th></tr>
 					<tr valign="top">
 					  	<th scope="row"><label for="street1">* Street1 </label></th>
 					  	<td>
@@ -273,23 +291,23 @@ function settingPage(): void
 					</tr>
 
 				</tbody>
-		    </table>
-			<h2>Myparcle.com</h2>
+		    </table> */?>
+			<h2>MyParcel.com</h2>
 			<table  cellpadding = "5" cellspacing = "5" class="form-table">
 		         <tr valign="top">
-		            <th scope="row"><label>Current Version</label> </th>
+		            <th scope="row"><label>Current version</label> </th>
 		            <td>1.0</td>
 		         </tr>
 		         <tr valign="top">
-		            <th scope="row"><label>Myparcle.com Support</label> </th>
-		            <td><a href="http://help.myparcel.com/support/home" target="_blank">http://help.myparcel.com/support/home</a></td>
+		            <th scope="row"><label>MyParcel.com support</label> </th>
+		            <td><a href="https://myparcelcom.freshdesk.com/a/solutions/folders/16000093107" target="_blank">https://myparcelcom.freshdesk.com/a/solutions/folders/16000093107</a></td>
 		         </tr>
-		         <tr valign="top">
-		            <th scope="row"><label>MyParcel.com backoffice</label></th>
+		         <!-- <tr valign="top">
+		            <th scope="row"><label>MyParcel.com Backoffice</label></th>
 		            <td><a href="https://sandbox-backoffice.myparcel.com/settings" target="_blank">https://sandbox-backoffice.myparcel.com/settings</a></td>
-		         </tr>
+		         </tr> -->
 		     </table>			
-	  		<?php submit_button(); ?>
+	  		<?php submit_button('Save changes'); ?>
 	  	</form>
   	</div>
 <?php
