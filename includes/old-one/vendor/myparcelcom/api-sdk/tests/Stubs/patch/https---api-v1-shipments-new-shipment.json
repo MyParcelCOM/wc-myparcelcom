@@ -1,9 +1,0 @@
-{
-  "data": {
-    "type": "shipments",
-    "id": "new-shipment",
-    "attributes": {
-      "description": "new patched description"
-    }
-  }
-}
