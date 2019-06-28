@@ -25,13 +25,13 @@ function adminLoadJsCss(): void
     if ('edit-shop_order' == $screen->id) {         
         if ( !session_id())
         session_start();
-        if(!empty($_SESSION['errormessage'])){
+        if (!empty($_SESSION['errormessage'])) {
         $errMessage = $_SESSION['errormessage'];
-            ?>
-            <div id="export-wrong-cred" class="notice-error notice is-dismissible">
-                <p><?php _e( $errMessage, 'woocommerce' ); ?></p>
-            </div>
-            <?php  
+        ?>
+        <div id="export-wrong-cred" class="notice-error notice is-dismissible">
+            <p><?php _e( $errMessage, 'woocommerce' ); ?></p>
+        </div>
+        <?php  
         }
         unset($_SESSION['errormessage']);
     }
@@ -129,7 +129,6 @@ function orderSetShipped(): object
     $shipQty    = $_POST['ship_quantity'];
     $productId    = $_POST['productId'];
     $flagStatus    = $_POST['flagStatus'];
-
     $order = new WC_Order( $orderId );
     $items = $order->get_items();     
     $product     = wc_get_product( $productId );          

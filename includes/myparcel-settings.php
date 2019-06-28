@@ -1,7 +1,6 @@
 <?php declare(strict_types=1);
 
 add_action('admin_enqueue_scripts','settingPageJsCss',999);
-
 /**
  *
  * @return void
@@ -53,11 +52,9 @@ function validationCallBack(): bool
     	updateOption();
 
     	return false;
-	}else{
-		
+	} else {		
 		add_settings_error('show_message',esc_attr('settings_updated'),__('Settings saved.'),'updated');
     	add_action('admin_notices', 'printErrors');	
-
     	return true;
 	}
     
@@ -104,42 +101,36 @@ function settingPage(): void
     $countries = $countries_obj->__get('countries');
 
 ?>
-  	<div>
-	  
+  	<div>	  
 	  	<h2>MyParcel.com API setting</h2>
-
 	  	<form method="post" action="options.php" id="api-setting-form">
 	  		<?php 
-	  		settings_fields( 'myplugin_options_group' );
-
-	  		?>
-	  		 
-		    <table class="form-table">
-				
+	  			settings_fields( 'myplugin_options_group' );
+	  		?>	  		 
+		    <table class="form-table">				
 				<tbody>					
-					<tr valign="top">
-					  	<th scope="row"><label for="client_key">* Client ID </label></th>
-					  	<td>
-					  		<input type="text" id="client_key" class="regular-text" name="client_key" value="<?php echo get_option('client_key'); ?>" />
-					  	</td>
-					</tr>
-					<tr valign="top">
-
-					  	<th scope="row"><label for="client_secret_key">* Client secret key </label></th>
-					  	<td>
-					  		<input type="password" id="client_secret_key"  class="regular-text" name="client_secret_key" value="<?php echo get_option('client_secret_key'); ?>" />
-					  	</td>
-					</tr>					
-					<tr>
-						<th scope="row">Activate testmode</th>
-						<td> 
-							<fieldset><legend class="screen-reader-text"><span></span></legend>
-								<label for="users_can_register">
-									<input type="checkbox" name="act_test_mode" value="1" <?php checked(1, (int)get_option('act_test_mode'));?>> 
-								</label>
-							</fieldset>
-						</td>
-					</tr>
+				<tr valign="top">
+				  	<th scope="row"><label for="client_key">* Client ID </label></th>
+				  	<td>
+				  		<input type="text" id="client_key" class="regular-text" name="client_key" value="<?php echo get_option('client_key'); ?>" />
+				  	</td>
+				</tr>
+				<tr valign="top">
+				  	<th scope="row"><label for="client_secret_key">* Client secret key </label></th>
+				  	<td>
+				  		<input type="password" id="client_secret_key"  class="regular-text" name="client_secret_key" value="<?php echo get_option('client_secret_key'); ?>" />
+				  	</td>
+				</tr>					
+				<tr>
+					<th scope="row">Activate testmode</th>
+					<td> 
+						<fieldset><legend class="screen-reader-text"><span></span></legend>
+							<label for="users_can_register">
+								<input type="checkbox" name="act_test_mode" value="1" <?php checked(1, (int)get_option('act_test_mode'));?>> 
+							</label>
+						</fieldset>
+					</td>
+				</tr>
 				</tbody>
 		    </table>
 			<h2>MyParcel.com</h2>
@@ -157,4 +148,4 @@ function settingPage(): void
 	  	</form>
   	</div>
 <?php
-} ?>
+}
