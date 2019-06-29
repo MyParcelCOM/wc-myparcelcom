@@ -202,26 +202,26 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
                                 $weightNew       = $shippedItem['weight'];       
                                 $flagStatus      = $shippedItem['flagStatus'];       
                                 $item_id         = $shippedItem['item_id'];                                       
-                                    if (1 == $ifShipmentTrue) {
-                                        if ($remainQtyNew == 0 ) {  //logic for weight > 0 
-                                            $totalWeight += $weightNew * $totalQtyNew ;                                     
-                                        } else {
-                                            $totalWeight += $weightNew * $totalShippedQtyNew;  // All shipped quantity                                   
-                                        }
-                                        $shippedItem["flagStatus"] = 1;                                    
+                                if (1 == $ifShipmentTrue) {
+                                    if ($remainQtyNew == 0 ) {  //logic for weight > 0 
+                                        $totalWeight += $weightNew * $totalQtyNew ;                                     
                                     } else {
-                                        if ( 0 == $flagStatus) {
-                                            $totalWeight += $weightNew * $shippedQtyNew;                                            
-                                            $shippedItem["flagStatus"] = 1;                                            
-                                            array_push($shippedItemeArray, array(
-                                                "item_id" => $item_id,
-                                                "shipped" => $shippedQtyNew,
-                                                "weight"  => $totalWeight  
-                                            ));
-                                        }else {
-                                            $shippedCount++;
-                                        }                                
-                                     } 
+                                        $totalWeight += $weightNew * $totalShippedQtyNew;  // All shipped quantity                                   
+                                    }
+                                    $shippedItem["flagStatus"] = 1;                                    
+                                } else {
+                                    if ( 0 == $flagStatus) {
+                                        $totalWeight += $weightNew * $shippedQtyNew;                                            
+                                        $shippedItem["flagStatus"] = 1;                                            
+                                        array_push($shippedItemeArray, array(
+                                            "item_id" => $item_id,
+                                            "shipped" => $shippedQtyNew,
+                                            "weight"  => $totalWeight  
+                                        ));
+                                    }else {
+                                        $shippedCount++;
+                                    }                                
+                                 } 
                                 array_push($shippedItemsNewArr, $shippedItem);
                             }                        
                     
@@ -251,9 +251,8 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
                         $redirectTo = ($orderShippedCount > 0) ? add_query_arg( array('export_shipment_action' => $orderShippedCount,'check_action' => 'export_order'), $redirectTo ) : $redirectTo;
                     }
                     else{
-                        $order          = wc_get_order( $postId );
-                        $order_data     = $order->get_data();
-                        $items          = $order->get_items();
+                        $order_data     = getOrderData($postId);
+                        $items          = getOrderItems($postId);
                         $total_weight = 0 ; 
                         foreach ( $items as $item ) { 
                             $product = wc_get_product( $item['product_id'] );     
@@ -447,11 +446,8 @@ function createPartialOrderShipment($orderId, $totalWeight){
     global  $woocommerce;
     $currency = get_woocommerce_currency(); 
     $countAllWeight = ($totalWeight) ? $totalWeight : 500; 
-
-    $order          = wc_get_order( $orderId );
-    $order_data     = $order->get_data();
-    $items          = $order->get_items();
-    
+    $order_data     =   getOrderData($orderId);
+    $items          =   getOrderItems($orderId);        
     $shipment       = new Shipment();    
      // SHIPPING INFORMATION:
     $order_shipping_first_name  = $order_data['shipping']['first_name'];
