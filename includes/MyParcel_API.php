@@ -17,15 +17,15 @@ class MyParcel_API
  	{
         $clientKey          = get_option('client_key');
         $clientSecretKey    = get_option('client_secret_key');        
-        $actTestMode = get_option('act_test_mode'); 
+        $actTestMode        = get_option('act_test_mode'); 
         if (!empty($actTestMode) && (1 == $actTestMode)) {
             $apiUrl         = self::API_SANDBOX_URL;
             $apiAuthUrl     = self::API_SANDBOX_AUTH_URL;
-        }else{            
+        } else {            
             $apiUrl         = self::API_URL; // Production api URL 
             $apiAuthUrl     = self::API_AUTH_URL; //Production api Auth URL
         }
-        if(!empty($apiUrl) && !empty($apiAuthUrl) && !empty($clientKey) && !empty($clientSecretKey)) {
+        if (!empty($apiUrl) && !empty($apiAuthUrl) && !empty($clientKey) && !empty($clientSecretKey)) {
             $api = new MyParcelComApi($apiUrl);
             $authenticator = new ClientCredentials(
                 $clientKey,

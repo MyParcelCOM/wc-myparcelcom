@@ -63,9 +63,6 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             include_once dirname( __FILE__ ) . '/includes/MyParcel_API.php';
         }
         
-        if (!class_exists('MyParcel_Shipping_Method')) {
-            include_once dirname( __FILE__ ) . '/includes/MyParcel_Shipping_Method.php';
-        }
     }
     
     include_once dirname( __FILE__ ) . '/includes/myparcel-hooks.php';

@@ -123,75 +123,50 @@ add_action('wp_ajax_order_set_shipped','orderSetShipped');
  */
 function orderSetShipped(): object
 {
-    $orderId    = isset($_POST['order_id']) ? $_POST['order_id'] : 0;
-    $itemId     = $_POST['item_id'];
-    $qty        = $_POST['qty'];
-    $shipQty    = $_POST['ship_quantity'];
-    $productId    = $_POST['productId'];
-    $flagStatus    = $_POST['flagStatus'];
-
-    $order = new WC_Order( $orderId );
-    $items = $order->get_items();     
-    $product     = wc_get_product( $productId );          
-    $weight      = $product->get_weight();   
+    $orderId            = isset($_POST['order_id']) ? $_POST['order_id'] : 0;
+    $itemId             = $_POST['item_id'];
+    $qty                = $_POST['qty'];
+    $shipQty            = $_POST['ship_quantity'];
+    $productId          = $_POST['productId'];
+    $flagStatus         = $_POST['flagStatus'];
+    $order              = new WC_Order( $orderId );
+    $items              = $order->get_items(); 
+    $weight             = getWeightByProductId($productId);
 
     $shipmentArrs = get_post_meta($orderId,'_my_parcel_order_shipment',true);
     $shipmentArrs = (!empty($shipmentArrs)) ? json_decode($shipmentArrs,true) :array();
+
     $itemIdArr = (!empty($shipmentArrs)) ? array_column($shipmentArrs,'item_id') :array();
+    
     $shipmentNewArr = array();
     $shipmentNewAr = array();
     $totalShipQty  = 0;
     if (!empty($shipmentArrs)) {
         if (!empty($itemIdArr) && !in_array($itemId,$itemIdArr)) {
             $totalShipQty = $shipQty;
-            $remainQty =  $qty - $totalShipQty; 
-            $shipmentNewAr['order_id'] = $orderId;
-            $shipmentNewAr['item_id'] = $itemId;
-            $shipmentNewAr['shipped'] = $shipQty;
-            $shipmentNewAr['total_shipped'] = $totalShipQty;
-            $shipmentNewAr['qty'] = $qty;
-            $shipmentNewAr['type'] = 'shipped';
-            $shipmentNewAr['weight'] = $weight;
-            $shipmentNewAr['remain_qty'] = $remainQty;
-            $shipmentNewAr['flagStatus'] = $flagStatus;
+            $remainQty =  $qty - $totalShipQty;
+            $shipmentNewAr = setOrderShipment($orderId, $itemId, $shipQty, $totalShipQty, $qty, "shipped", $weight, $remainQty, $flagStatus);
             $shipmentArrs[] = $shipmentNewAr;
         } else {
             foreach ($shipmentArrs as $key => $shipmentArr) {
-                if ($itemId == $shipmentArr['item_id']) {
-                    $totalShipQty =  (int)$shipQty + (int)$shipmentArr['total_shipped'];
-                    $remainQty = $qty - $totalShipQty;
-                    $shipmentNewAr['order_id'] = $orderId;
-                    $shipmentNewAr['item_id'] = $itemId;
-                    $shipmentNewAr['shipped'] = $shipQty;
-                    $shipmentNewAr['total_shipped'] = $totalShipQty;
-                    $shipmentNewAr['qty'] = $qty;
-                    $shipmentNewAr['type'] = 'shipped';
-                    $shipmentNewAr['weight'] = $weight;
-                    $shipmentNewAr['remain_qty'] = $remainQty;
-                    $shipmentNewAr['flagStatus'] = $flagStatus;
-                    $shipmentArrs[$key] = $shipmentNewAr;
-                }
+            if ($itemId == $shipmentArr['item_id']) {
+                $totalShipQty =  (int)$shipQty + (int)$shipmentArr['total_shipped'];
+                $remainQty = $qty - $totalShipQty;
+                $shipmentNewAr = setOrderShipment($orderId, $itemId, $shipQty, $totalShipQty, $qty, "shipped", $weight, $remainQty, $flagStatus);
+                $shipmentArrs[$key] = $shipmentNewAr;
             }
-        }
-        update_post_meta( $orderId, '_my_parcel_order_shipment', json_encode($shipmentArrs));
+            }
+        }        
     } else {
         $totalShipQty = $shipQty;
         $remainQty =  $qty - $totalShipQty; 
-        $shipmentNewAr['order_id'] = $orderId;
-        $shipmentNewAr['item_id'] = $itemId;
-        $shipmentNewAr['shipped'] = $shipQty;
-        $shipmentNewAr['total_shipped'] = $totalShipQty;
-        $shipmentNewAr['qty'] = $qty;
-        $shipmentNewAr['type'] = 'shipped';
-        $shipmentNewAr['weight'] = $weight;
-        $shipmentNewAr['remain_qty'] = $remainQty;
-        $shipmentNewAr['flagStatus'] = $flagStatus;
+        $shipmentNewAr = setOrderShipment($orderId, $itemId, $shipQty, $totalShipQty, $qty, "shipped", $weight, $remainQty, $flagStatus);
         $shipmentNewArr[] = $shipmentNewAr;
-        update_post_meta( $orderId, '_my_parcel_order_shipment', json_encode($shipmentNewArr));
+        
     }
-
+    update_post_meta( $orderId, '_my_parcel_order_shipment', json_encode($shipmentNewArr));
     echo json_encode(array('order_id'=>$orderId,'item_id'=>$itemId, 'shipped'=>$totalShipQty, 'qty'=>$qty, 'weight'=>$weight , 'remain_qty'=> $remainQty, 'flagStatus' => $flagStatus));
-    die;
+    exit;
 }
 
 add_action('woocommerce_order_item_meta_end', 'orderItemShowPartialShipmentLabel' , 999, 4);
