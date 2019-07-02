@@ -156,13 +156,14 @@ function orderSetShipped(): object
                 $shipmentArrs[$key] = $shipmentNewAr;
             }
             }
-        }        
+        }
+        update_post_meta( $orderId, '_my_parcel_order_shipment', json_encode($shipmentArrs));               
     } else {
         $totalShipQty = $shipQty;
         $remainQty =  $qty - $totalShipQty; 
         $shipmentNewAr = setOrderShipment($orderId, $itemId, $shipQty, $totalShipQty, $qty, "shipped", $weight, $remainQty, $flagStatus);
         $shipmentNewArr[] = $shipmentNewAr;
-        
+        update_post_meta( $orderId, '_my_parcel_order_shipment', json_encode($shipmentNewArr));
     }
     update_post_meta( $orderId, '_my_parcel_order_shipment', json_encode($shipmentNewArr));
     echo json_encode(array('order_id'=>$orderId,'item_id'=>$itemId, 'shipped'=>$totalShipQty, 'qty'=>$qty, 'weight'=>$weight , 'remain_qty'=> $remainQty, 'flagStatus' => $flagStatus));
