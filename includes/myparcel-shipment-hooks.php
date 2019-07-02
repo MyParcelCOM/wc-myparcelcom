@@ -80,28 +80,7 @@ function orderItemValues($product, $item, $itemId): void
             if ($orderId) {
                 if (!empty($shipped)) {
                     $key = array_search($itemId,array_column($shipped,'item_id'));
-                    if (is_int($key)) {
-                        if (isset($shipped[$key]['type']) && 'shipped' == $shipped[$key]['type']) {
-                            if (isset($shipped[$key]['total_shipped']) && $shipped[$key]['total_shipped'] == $itemQuantity) {
-                                $addRemainQty = (isset($shipped[$key]['remain_qty'])) ? $shipped[$key]['remain_qty'] : $shipped[$key]['qty']; 
-
-                                $qtyHtml = '<input type="text" name="ship_qty" class="ship_qty ship_qty_'.$itemId.'" value="'.$shipped[$key]['total_shipped'].'" data-flag-id="0" data-rqty="'.$addRemainQty.'" data-qty="'.$itemQuantity.'" data-old-qty="'.$shipped[$key]['total_shipped'].'" data-item-id="'.$itemId.'" data-order-id="'.$orderId.'" style="width: 43px;"/>';
-                                
-                                $tdHtml  = '<a href="javascript:void(0);" class="partial-anchor-top partial-anchor-top-'.$itemId.'" title="Shipped: '.$shipped[$key]['total_shipped'].'/'.$itemQuantity.'"><span class="new-shipped-color ship-status ship-status-'.$itemId.'">Updated Shipping Qty - '.$shipped[$key]['total_shipped'].'</span></a>';
-                                
-                                $remainHtml    = '<a href="javascript:void(0);" class="partial-anchor-remain-'.$itemId.'"><span class="remain-qty">'.$shipped[$key]['remain_qty'].'</span></a>';
-
-                            } elseif(isset($shipped[$key]['total_shipped']) && $shipped[$key]['total_shipped']>0 && isset($shipped[$key]['total_shipped']) && $shipped[$key]['total_shipped']<$itemQuantity) {
-                                $addRemainQty = (!empty($shipped[$key]['remain_qty'])) ? $shipped[$key]['remain_qty'] : $shipped[$key]['qty'];$qtyHtml = '<input type="text" name="ship_qty" class="ship_qty ship_qty_'.$itemId.'" value="'.$shipped[$key]['total_shipped'].'" data-flag-id="0" data-rqty="'.$addRemainQty.'" data-qty="'.$itemQuantity.'" data-old-qty="'.$shipped[$key]['total_shipped'].'" data-item-id="'.$itemId.'" data-order-id="'.$orderId.'" style="width: 43px;"/>';
-                                $tdHtml = '<a href="javascript:void(0);" class="partial-anchor-top partial-anchor-top-'.$itemId.'" title="Partially Shipped: '.$shipped[$key]['total_shipped'].'/'.$itemQuantity.'"><span class="partial-shipped-color ship-status ship-status-'.$itemId.'">Partially Shipped - '.$shipped[$key]['total_shipped'].'</span></a>';                                
-                                $remainHtml    = '<a href="javascript:void(0);" class="partial-anchor-remain-'.$itemId.'"><span class="remain-qty">'.$shipped[$key]['remain_qty'].'</span></a>';
-                            }
-                        }
-                    } else {
-                        $qtyHtml    = '<input type="text" name="ship_qty" class="ship_qty ship_qty_'.$itemId.'" value="'.$itemQuantity.'" data-flag-id="0" data-rqty="'.$itemQuantity.'" data-qty="'.$itemQuantity.'" data-old-qty="0" data-item-id="'.$itemId.'" data-order-id="'.$orderId.'" style="width: 43px;"/>';
-                        $tdHtml     = '<a href="javascript:void(0);" class="partial-anchor-top partial-anchor-top-'.$itemId.'" title="Not Shipped"><span class="not-shipped-color ship-status ship-status-'.$itemId.'">Not Shipped - '.$itemQuantity.'</span></a>';
-                        $remainHtml    = '<a href="javascript:void(0);" class="partial-anchor-remain-'.$itemId.'"><span class="remain-qty">'.$itemQuantity.'</span></a>';
-                    }
+                    prepareHtmlForUpdateQuantity($shipped, $key, $itemQuantity, $orderId, $itemId , $qtyHtml, $tdHtml, $remainHtml);
                 }
                 echo '<td class="partital-td-item"><span class="text-span">'.$qtyHtml.' <i class="fa fa-truck fa-sm" aria-hidden="true"></i></span> <input type="button" class="btn btn-success btn-quanity-update" id="update-quantity-'.$itemId.'" value="Update Quantity"></td>';
                 echo '<td class="partial-status-td" width="1%">'.$tdHtml.'</td>';
@@ -156,8 +135,8 @@ function orderSetShipped(): object
                 $shipmentArrs[$key] = $shipmentNewAr;
             }
             }
-        }
-        update_post_meta( $orderId, '_my_parcel_order_shipment', json_encode($shipmentArrs));               
+        } 
+        update_post_meta( $orderId, '_my_parcel_order_shipment', json_encode($shipmentArrs));       
     } else {
         $totalShipQty = $shipQty;
         $remainQty =  $qty - $totalShipQty; 
@@ -165,7 +144,6 @@ function orderSetShipped(): object
         $shipmentNewArr[] = $shipmentNewAr;
         update_post_meta( $orderId, '_my_parcel_order_shipment', json_encode($shipmentNewArr));
     }
-    update_post_meta( $orderId, '_my_parcel_order_shipment', json_encode($shipmentNewArr));
     echo json_encode(array('order_id'=>$orderId,'item_id'=>$itemId, 'shipped'=>$totalShipQty, 'qty'=>$qty, 'weight'=>$weight , 'remain_qty'=> $remainQty, 'flagStatus' => $flagStatus));
     exit;
 }

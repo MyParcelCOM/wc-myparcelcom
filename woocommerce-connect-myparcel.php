@@ -65,8 +65,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
         
     }
     
+    include_once dirname( __FILE__ ) . '/includes/common/common-functions.php';
     include_once dirname( __FILE__ ) . '/includes/myparcel-hooks.php';
     include_once dirname( __FILE__ ) . '/includes/myparcel-shipment-hooks.php';
     include_once dirname( __FILE__ ) . '/includes/myparcel-settings.php';
-    include_once dirname( __FILE__ ) . '/includes/common/common-functions.php';
 }

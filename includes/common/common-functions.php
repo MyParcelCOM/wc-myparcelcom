@@ -42,53 +42,96 @@ function getTotalWeightByPostID($postId)
 }
 
 //set Ship item for non EU country by post id
-function setItemForNonEuCountries($orderId, $currency) 
+function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr) 
 {
 	global  $woocommerce;
 	$items = getOrderItems($orderId);	
 	$shipAddItems = array();
-	foreach ($items as $item) {
-	    $shipItems = new ShipmentItem();
-	    $product = wc_get_product($item['product_id']);
-	    // Now you have access to (see above)...
-	    $quantity = $item->get_quantity(); // get quantity
-	    $product = $item->get_product(); // get the WC_Product object
-	    $product_weight = $product->get_weight(); // get the product weight
-	    $order_shipping_weight = $product->get_weight();
-	    $productName = $product->get_name();
-	    $sku = ($product->get_sku()) ? $product->get_sku() : 'NA';    // Get the product SKU
-	    $price = $product->get_price(); // Get the product price
-	    $itemValue = ($price * 1) * 100;
-	    $shipItems
-	        ->setSku($sku)
-	        ->setDescription($productName)
-	        ->setQuantity($quantity)
-	        ->setItemValue($itemValue)
-	        ->setCurrency($currency);
+	
+	$getShippedItems = json_decode($shippedItemsNewArr, true);
+	if ($getShippedItems) {
+		foreach ($getShippedItems as $getShippedItem) {
+			$item_id 		= $getShippedItem["item_id"];			
+			$shipItems = new ShipmentItem();
+			$product = wc_get_product($items[$item_id]['product_id']);
+		    // Now you have access to (see above)...
+		    $quantity = $item->get_quantity(); // get quantity
+		    $product = $item->get_product(); // get the WC_Product object
+		    $product_weight = $product->get_weight(); // get the product weight
+		    $order_shipping_weight = $product->get_weight();
+		    $productName = $product->get_name();
+		    $sku = ($product->get_sku()) ? $product->get_sku() : 'NA';    // Get the product SKU
+		    $price = $product->get_price(); // Get the product price
+		    $itemValue = ($price * 1) * 100;
+		    $shipItems
+		        ->setSku($sku)
+		        ->setDescription($productName)
+		        ->setQuantity($quantity)
+		        ->setItemValue($itemValue)
+		        ->setCurrency($currency);
 
-	    $shipAddItems[] = $shipItems;
+		    $shipAddItems[] = $shipItems;		
+		}	
+	} else {		
+		foreach ($items as $item) {
+		    $shipItems = new ShipmentItem();
+		    $product = wc_get_product($item['product_id']);
+		    // Now you have access to (see above)...
+		    $quantity = $item->get_quantity(); // get quantity
+		    $product = $item->get_product(); // get the WC_Product object
+		    $product_weight = $product->get_weight(); // get the product weight
+		    $order_shipping_weight = $product->get_weight();
+		    $productName = $product->get_name();
+		    $sku = ($product->get_sku()) ? $product->get_sku() : 'NA';    // Get the product SKU
+		    $price = $product->get_price(); // Get the product price
+		    $itemValue = ($price * 1) * 100;
+		    $shipItems
+		        ->setSku($sku)
+		        ->setDescription($productName)
+		        ->setQuantity($quantity)
+		        ->setItemValue($itemValue)
+		        ->setCurrency($currency);
+
+		    $shipAddItems[] = $shipItems;
+		}
 	}
 	return $shipAddItems; 
 }
 
 //set Ship item for EU country by post id
-//set Ship item for EU country by post id
-function setItemForEuCountries($orderId) 
+function setItemForEuCountries($orderId, $shippedItemsNewArr) 
 {
 	global  $woocommerce;
 	$items = getOrderItems($orderId);
 	$shipAddItems = array();
-	foreach ($items as $item) {
-        $shipItems = new ShipmentItem();
-        $product = wc_get_product($item['product_id']);
-        $price = $product->get_price(); // Get the product price
-        $quantity = $item->get_quantity(); // get quantity
-        $productName = $product->get_name();
-        $shipItems
-            ->setDescription($productName)
-            ->setQuantity($quantity);
-        $shipAddItems[] = $shipItems;
-    }
+
+	$getShippedItems = json_decode($shippedItemsNewArr, true);
+	if ($getShippedItems) {
+		foreach ($getShippedItems as $getShippedItem) {
+			$item_id 		= $getShippedItem["item_id"];
+			$shipItems 		= new ShipmentItem();
+	        $product 		= wc_get_product($items[$item_id]['product_id']);
+	        $price 			= $product->get_price(); // Get the product price
+	        $quantity 		= $getShippedItem["shipped"]; // get quantity
+	        $productName 	= $product->get_name();
+	        $shipItems
+	            ->setDescription($productName)
+	            ->setQuantity($quantity);
+	        $shipAddItems[] = $shipItems;
+		}
+	}else{
+		foreach ($items as $item) {
+	        $shipItems 		= new ShipmentItem();
+	        $product 		= wc_get_product($item['product_id']);
+	        $price 			= $product->get_price(); // Get the product price
+	        $quantity 		= $item->get_quantity(); // get quantity
+	        $productName 	= $product->get_name();
+	        $shipItems
+	            ->setDescription($productName)
+	            ->setQuantity($quantity);
+	        $shipAddItems[] = $shipItems;
+	    }
+	}	
     return $shipAddItems; 
 }
 
@@ -149,3 +192,49 @@ function extractShipmentItemArr($shippedItems, $ifShipmentTrue, &$totalWeight) {
 	);
 	return $response;
 }
+
+function setShipmentTrackingMeta($shippedTrackingArray, $shipmentTrackKey, $shippedItemeArray, $postId) 
+{
+	$shipTrackingArray = array(
+        "trackingKey" =>  $shipmentTrackKey,
+        "items"       =>  $shippedItemeArray     
+    );
+    array_push($shippedTrackingArray,$shipTrackingArray);
+    $shippedTrackingArray = json_encode($shippedTrackingArray);
+    update_post_meta($postId,'shipment_track_key',$shippedTrackingArray);
+}
+
+function updateShipmentKey($shipKey, $postId)
+{
+	if (!empty($shipKey)) {
+        update_post_meta($postId, 'myparcel_shipment_key', $shipKey); //Update the shipment key on database
+    } else {
+        add_post_meta($postId, 'myparcel_shipment_key', uniqid()); //Update the shipment key on database
+    }
+}
+
+function prepareHtmlForUpdateQuantity($shipped, $key, $itemQuantity, $orderId, $itemId, &$qtyHtml, &$tdHtml, &$remainHtml) {
+	if (is_int($key)) {
+        if (isset($shipped[$key]['type']) && 'shipped' == $shipped[$key]['type']) {
+            if (isset($shipped[$key]['total_shipped']) && $shipped[$key]['total_shipped'] == $itemQuantity) {
+                $addRemainQty = (isset($shipped[$key]['remain_qty'])) ? $shipped[$key]['remain_qty'] : $shipped[$key]['qty']; 
+
+                $qtyHtml = '<input type="text" name="ship_qty" class="ship_qty ship_qty_'.$itemId.'" value="'.$shipped[$key]['total_shipped'].'" data-flag-id="0" data-rqty="'.$addRemainQty.'" data-qty="'.$itemQuantity.'" data-old-qty="'.$shipped[$key]['total_shipped'].'" data-item-id="'.$itemId.'" data-order-id="'.$orderId.'" style="width: 43px;"/>';
+                
+                $tdHtml  = '<a href="javascript:void(0);" class="partial-anchor-top partial-anchor-top-'.$itemId.'" title="Shipped: '.$shipped[$key]['total_shipped'].'/'.$itemQuantity.'"><span class="new-shipped-color ship-status ship-status-'.$itemId.'">Updated Shipping Qty - '.$shipped[$key]['total_shipped'].'</span></a>';
+                
+                $remainHtml    = '<a href="javascript:void(0);" class="partial-anchor-remain-'.$itemId.'"><span class="remain-qty">'.$shipped[$key]['remain_qty'].'</span></a>';
+
+            } elseif(isset($shipped[$key]['total_shipped']) && $shipped[$key]['total_shipped']>0 && isset($shipped[$key]['total_shipped']) && $shipped[$key]['total_shipped']<$itemQuantity) {
+                $addRemainQty = (!empty($shipped[$key]['remain_qty'])) ? $shipped[$key]['remain_qty'] : $shipped[$key]['qty'];$qtyHtml = '<input type="text" name="ship_qty" class="ship_qty ship_qty_'.$itemId.'" value="'.$shipped[$key]['total_shipped'].'" data-flag-id="0" data-rqty="'.$addRemainQty.'" data-qty="'.$itemQuantity.'" data-old-qty="'.$shipped[$key]['total_shipped'].'" data-item-id="'.$itemId.'" data-order-id="'.$orderId.'" style="width: 43px;"/>';
+                $tdHtml = '<a href="javascript:void(0);" class="partial-anchor-top partial-anchor-top-'.$itemId.'" title="Partially Shipped: '.$shipped[$key]['total_shipped'].'/'.$itemQuantity.'"><span class="partial-shipped-color ship-status ship-status-'.$itemId.'">Partially Shipped - '.$shipped[$key]['total_shipped'].'</span></a>';                                
+                $remainHtml    = '<a href="javascript:void(0);" class="partial-anchor-remain-'.$itemId.'"><span class="remain-qty">'.$shipped[$key]['remain_qty'].'</span></a>';
+            }
+        }
+    } else {
+        $qtyHtml    = '<input type="text" name="ship_qty" class="ship_qty ship_qty_'.$itemId.'" value="'.$itemQuantity.'" data-flag-id="0" data-rqty="'.$itemQuantity.'" data-qty="'.$itemQuantity.'" data-old-qty="0" data-item-id="'.$itemId.'" data-order-id="'.$orderId.'" style="width: 43px;"/>';
+        $tdHtml     = '<a href="javascript:void(0);" class="partial-anchor-top partial-anchor-top-'.$itemId.'" title="Not Shipped"><span class="not-shipped-color ship-status ship-status-'.$itemId.'">Not Shipped - '.$itemQuantity.'</span></a>';
+        $remainHtml    = '<a href="javascript:void(0);" class="partial-anchor-remain-'.$itemId.'"><span class="remain-qty">'.$itemQuantity.'</span></a>';
+    }
+}
+
