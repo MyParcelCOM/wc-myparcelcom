@@ -383,14 +383,15 @@ function express_shipping_update_order_status($order_id)
  * @param Orderid $order_id
  * @return bool
  **/
-add_action('woocommerce_new_order', 'myparcelExtend_storeOrderMeta', 11, 1);
-
-function myparcelExtend_storeOrderMeta($order_id)
-{
+add_action( 'save_post', 'notify_shop_owner_new_order', 1, 2 );
+function notify_shop_owner_new_order( $order_id ){
     if (!$order_id) return;
-    update_post_meta($order_id, 'myparcel_order_meta', 'myparcel');
+    // Get the post object
+    $post = get_post( $order_id );
+    if($post->post_type == 'shop_order') {
+        update_post_meta($order_id, 'myparcel_order_meta', 'myparcel');        
+    }
 }
-
 
 /**
  * @param CountryCode $countrycode
@@ -409,19 +410,22 @@ function isEUCountry($countrycode)
 function shutDownFunction()
 {
     $error = error_get_last();
-    // Given URL
-    $url = $error['file'];
-    // Search substring
-    $key = 'api-sdk';
-    $message = '';
-    if (strpos($url, $key) == false) {
-        $message = 'Not found';
-    } else {
-        $message = 'Exists';
-    }
-    // fatal error, E_ERROR === 1
-    if ($error['type'] === E_ERROR && $message == "Exists") {
-        myparcelExceptionRedirection();
+    if ($error != null || $error != '') {
+        // Given URL
+        $url = $error['file'];
+        // Search substring
+        $key = 'api-sdk';
+        $message = '';
+        if (strpos($url, $key) == false) {
+            $message = 'Not found';
+        } else {
+            $message = 'Exists';
+        }
+        // fatal error, E_ERROR === 1
+        if ($error['type'] === E_ERROR && $message == "Exists") {
+            myparcelExceptionRedirection();
+        }
+
     }
 }
 

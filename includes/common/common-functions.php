@@ -242,3 +242,60 @@ function prepareHtmlForUpdateQuantity($shipped, $key, $itemQuantity, $orderId, $
     }
 }
 
+function prepareHtmlForSettingPage() 
+{
+?>
+    <div>
+        <h2>MyParcel.com API setting</h2>
+        <form method="post" action="options.php" id="api-setting-form">
+            <?php
+            settings_fields('myplugin_options_group');
+            ?>
+            <table class="form-table">
+                <tbody>
+                <tr valign="top">
+                    <th scope="row"><label for="client_key">* Client ID </label></th>
+                    <td>
+                        <input type="text" id="client_key" class="regular-text" name="client_key"
+                               value="<?php echo get_option('client_key'); ?>"/>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><label for="client_secret_key">* Client secret key </label></th>
+                    <td>
+                        <input type="password" id="client_secret_key" class="regular-text" name="client_secret_key"
+                               value="<?php echo get_option('client_secret_key'); ?>"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Activate testmode</th>
+                    <td>
+                        <fieldset>
+                            <legend class="screen-reader-text"><span></span></legend>
+                            <label for="users_can_register">
+                                <input type="checkbox" name="act_test_mode"
+                                       value="1" <?php checked(1, (int)get_option('act_test_mode')); ?>>
+                            </label>
+                        </fieldset>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <h2>MyParcel.com</h2>
+            <table cellpadding="5" cellspacing="5" class="form-table">
+                <tr valign="top">
+                    <th scope="row"><label>Current version</label></th>
+                    <td>1.0</td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><label>MyParcel.com support</label></th>
+                    <td><a href="https://myparcelcom.freshdesk.com/a/solutions/folders/16000093107" target="_blank">https://myparcelcom.freshdesk.com/a/solutions/folders/16000093107</a>
+                    </td>
+                </tr>
+            </table>
+            <?php submit_button('Save changes'); ?>
+        </form>
+    </div>
+<?php 
+}
+?>
