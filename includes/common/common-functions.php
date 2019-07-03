@@ -206,7 +206,7 @@ function setShipmentTrackingMeta($shippedTrackingArray, $shipmentTrackKey, $ship
     update_post_meta($postId, 'shipment_track_key', $shippedTrackingArray);
 }
 
-function updateShipmentKey($shipKey, $postId)
+function updateShipmentKey($shipKey=null, $postId)
 {
     if (!empty($shipKey)) {
         update_post_meta($postId, 'myparcel_shipment_key', $shipKey); //Update the shipment key on database

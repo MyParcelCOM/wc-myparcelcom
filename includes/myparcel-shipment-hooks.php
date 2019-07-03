@@ -67,11 +67,11 @@ function orderItemValues($product, $item, $itemId): void
 {
     if (isMyParcelOrder($item->get_order_id())) {
         if ($product) {
-            $itemQuantity = $item->get_quantity();
-            $orderId = $item->get_order_id();
-            $itemId = $item->get_id();
-            $shipped = get_post_meta($orderId, '_my_parcel_order_shipment', true);
-            $shipped = (!empty($shipped)) ? json_decode($shipped, true) : '';
+            $itemQuantity   = $item->get_quantity();
+            $orderId        = $item->get_order_id();
+            $itemId         = $item->get_id();
+            $shipped        = get_post_meta($orderId, '_my_parcel_order_shipment', true);
+            $shipped        = (!empty($shipped)) ? json_decode($shipped, true) : '';
 
             $myParcelShipmentNormalOrder = get_post_meta($orderId, '_my_parcel_shipment_for_normal_order', true);
 

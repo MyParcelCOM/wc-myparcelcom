@@ -81,6 +81,14 @@ function customOrdersListColumnContent($column): void
     $orderId = $the_order->id;
     switch ($column) {
         case 'order_type' :
+            $post = get_post( $orderId );
+            if ($post->post_type == 'shop_order') {
+                $getOrderMeta = get_post_meta($orderId, 'myparcel_shipment_key', true);        
+                if (isset($getOrderMeta) && !empty($getOrderMeta)) {
+                    echo "<span style='color:green;'>MyParcel.com<input type='hidden' class='myparcel' value='" . $orderId . "'/></span>";
+                    break; 
+                }
+            }
             foreach ($the_order->get_items('shipping') as $itemId => $shippingItemObj) {
                 $orderItemName = $shippingItemObj->get_method_id();
                 $myparcelShipKey = get_post_meta($orderId, 'myparcel_shipment_key', true);
@@ -193,10 +201,10 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
                     }
                     $redirectTo = ($orderShippedCount > 0) ? add_query_arg(array('export_shipment_action' => $orderShippedCount, 'check_action' => 'export_order'), $redirectTo) : $redirectTo;
                 } else {
-                    $order_data = getOrderData($postId);
-                    $totalWeight = getTotalWeightByPostID($postId);
-                    $packages = WC()->shipping->get_packages();
-                    $shipmentTrackKey = createPartialOrderShipment($postId, $totalWeight);
+                    $order_data         = getOrderData($postId);
+                    $totalWeight        = getTotalWeightByPostID($postId);
+                    $packages           = WC()->shipping->get_packages();
+                    $shipmentTrackKey   = createPartialOrderShipment($postId, $totalWeight);
                     $orderShippedCount++;
                     /* Update the shipment key*/
                     updateShipmentKey($shipKey, $postId);
