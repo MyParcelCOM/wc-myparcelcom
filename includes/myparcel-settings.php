@@ -101,5 +101,6 @@ function settingPage(): void
     $countries_obj = new WC_Countries();
     $countries = $countries_obj->__get('countries');
     prepareHtmlForSettingPage();
-} 
+}
+
 ?>

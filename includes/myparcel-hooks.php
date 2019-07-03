@@ -79,55 +79,7 @@ function customOrdersListColumnContent($column): void
 {
     global $post, $woocommerce, $the_order;
     $orderId = $the_order->id;
-    switch ($column) {
-        case 'order_type' :
-            $post = get_post( $orderId );
-            if ($post->post_type == 'shop_order') {
-                $getOrderMeta = get_post_meta($orderId, 'myparcel_shipment_key', true);        
-                if (isset($getOrderMeta) && !empty($getOrderMeta)) {
-                    echo "<span style='color:green;'>MyParcel.com<input type='hidden' class='myparcel' value='" . $orderId . "'/></span>";
-                    break; 
-                }
-            }
-            foreach ($the_order->get_items('shipping') as $itemId => $shippingItemObj) {
-                $orderItemName = $shippingItemObj->get_method_id();
-                $myparcelShipKey = get_post_meta($orderId, 'myparcel_shipment_key', true);
-                if (isset($myparcelShipKey) && !empty($myparcelShipKey)) {
-                    echo "<span style='color:green;'>MyParcel.com<input type='hidden' class='myparcel' value='" . $orderId . "'/></span>";
-                    break;
-                }
-            }
-            break;
-
-        case 'shipped_status' :
-            $order = wc_get_order($orderId);
-            $items = $order->get_items();
-            $orderShipmentDetails = json_decode(get_post_meta($orderId, '_my_parcel_order_shipment', true), true);
-            $orderShipmentStatus = "";
-            if (!empty($orderShipmentDetails)) {
-                $totalCount = count($items);
-                $shipOrderCount = 0;
-                foreach ($orderShipmentDetails as $orderShipmentDetail) {
-                    $remainQty = $orderShipmentDetail['remain_qty'];
-                    if ($remainQty == 0 && $orderShipmentDetail['flagStatus'] == 1) {
-                        $shipOrderCount++;
-                    } else if ($remainQty != 0 && $orderShipmentDetail['flagStatus'] == 1) {
-                        $orderShipmentStatus = "<mark class='order-status partial-shipped-color'><span>Partially Shipped.</span></mark>";
-                        break;
-                    } else if ($remainQty == 0 && $orderShipmentDetail['flagStatus'] == 0) {
-                        $orderShipmentStatus = "<mark class='order-status partial-shipped-color'><span>Partially Shipped.</span></mark>";
-                        break;
-                    }
-                }
-
-                $orderShipmentStatus = ($totalCount == $shipOrderCount) ? "<mark class='order-status status-completed'><span>Fully Shipped.</span></mark>" : (($orderShipmentStatus == "" && $shipOrderCount == 0) ? "" : "<mark class='order-status partial-shipped-color'><span>Partially Shipped.</span></mark>");
-            } else if (!empty(get_post_meta($orderId, 'myparcel_shipment_key', true))) {
-                $orderShipmentStatus = "<mark class='order-status status-completed'><span>Fully Shipped.</span></mark>";
-            }
-            echo $orderShipmentStatus;
-            break;
-
-    }
+    renderOrderColumnContent($column, $orderId, $the_order);
 }
 
 add_filter('bulk_actions-edit-shop_order', 'bulkActionsEditProduct', 20, 1);
@@ -201,10 +153,10 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
                     }
                     $redirectTo = ($orderShippedCount > 0) ? add_query_arg(array('export_shipment_action' => $orderShippedCount, 'check_action' => 'export_order'), $redirectTo) : $redirectTo;
                 } else {
-                    $order_data         = getOrderData($postId);
-                    $totalWeight        = getTotalWeightByPostID($postId);
-                    $packages           = WC()->shipping->get_packages();
-                    $shipmentTrackKey   = createPartialOrderShipment($postId, $totalWeight);
+                    $order_data = getOrderData($postId);
+                    $totalWeight = getTotalWeightByPostID($postId);
+                    $packages = WC()->shipping->get_packages();
+                    $shipmentTrackKey = createPartialOrderShipment($postId, $totalWeight);
                     $orderShippedCount++;
                     /* Update the shipment key*/
                     updateShipmentKey($shipKey, $postId);
@@ -391,13 +343,14 @@ function express_shipping_update_order_status($order_id)
  * @param Orderid $order_id
  * @return bool
  **/
-add_action( 'save_post', 'notify_shop_owner_new_order', 1, 2 );
-function notify_shop_owner_new_order( $order_id ){
+add_action('save_post', 'notify_shop_owner_new_order', 1, 2);
+function notify_shop_owner_new_order($order_id)
+{
     if (!$order_id) return;
     // Get the post object
-    $post = get_post( $order_id );
-    if($post->post_type == 'shop_order') {
-        update_post_meta($order_id, 'myparcel_order_meta', 'myparcel');        
+    $post = get_post($order_id);
+    if ($post->post_type == 'shop_order') {
+        update_post_meta($order_id, 'myparcel_order_meta', 'myparcel');
     }
 }
 

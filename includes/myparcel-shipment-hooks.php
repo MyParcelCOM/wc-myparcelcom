@@ -15,12 +15,7 @@ function adminLoadJsCss(): void
     <?php
     $screen = get_current_screen();
     if ('shop_order' == $screen->id) {
-        wp_enqueue_style('font-awesome-icon', plugins_url('', __FILE__) . '/../assets/admin/css/font-awesome.css');
-        wp_enqueue_style('fancybox', plugins_url('', __FILE__) . '/../assets/admin/css/jquery.fancybox.min.css');
-        wp_enqueue_style('wcp_style', plugins_url('', __FILE__) . '/../assets/admin/css/admin-myparcel.css');
-        wp_enqueue_script('fancybox', plugins_url('', __FILE__) . '/../assets/admin/js/jquery.fancybox.min.js', array('jquery'), '', false);
-        wp_register_script('wcp_partial_ship_script', plugins_url('', __FILE__) . '/../assets/admin/js/admin-myparcel.js', array('fancybox'), '', true);
-        wp_enqueue_script('wcp_partial_ship_script');
+        enqueueJsAndCssFile();
     }
     if ('edit-shop_order' == $screen->id) {
         if (!session_id())
@@ -67,11 +62,11 @@ function orderItemValues($product, $item, $itemId): void
 {
     if (isMyParcelOrder($item->get_order_id())) {
         if ($product) {
-            $itemQuantity   = $item->get_quantity();
-            $orderId        = $item->get_order_id();
-            $itemId         = $item->get_id();
-            $shipped        = get_post_meta($orderId, '_my_parcel_order_shipment', true);
-            $shipped        = (!empty($shipped)) ? json_decode($shipped, true) : '';
+            $itemQuantity = $item->get_quantity();
+            $orderId = $item->get_order_id();
+            $itemId = $item->get_id();
+            $shipped = get_post_meta($orderId, '_my_parcel_order_shipment', true);
+            $shipped = (!empty($shipped)) ? json_decode($shipped, true) : '';
 
             $myParcelShipmentNormalOrder = get_post_meta($orderId, '_my_parcel_shipment_for_normal_order', true);
 
@@ -101,8 +96,6 @@ function orderItemValues($product, $item, $itemId): void
                     echo '<td class="remain-status-td" width="1%">' . $remainHtml . '</td>';
                 }
             }
-            // if ($orderId) {
-            // }
         } else {
             echo '<td></td>';
             echo '<td></td>';

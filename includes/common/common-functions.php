@@ -206,7 +206,7 @@ function setShipmentTrackingMeta($shippedTrackingArray, $shipmentTrackKey, $ship
     update_post_meta($postId, 'shipment_track_key', $shippedTrackingArray);
 }
 
-function updateShipmentKey($shipKey=null, $postId)
+function updateShipmentKey($shipKey = null, $postId)
 {
     if (!empty($shipKey)) {
         update_post_meta($postId, 'myparcel_shipment_key', $shipKey); //Update the shipment key on database
@@ -242,9 +242,9 @@ function prepareHtmlForUpdateQuantity($shipped, $key, $itemQuantity, $orderId, $
     }
 }
 
-function prepareHtmlForSettingPage() 
+function prepareHtmlForSettingPage()
 {
-?>
+    ?>
     <div>
         <h2>MyParcel.com API setting</h2>
         <form method="post" action="options.php" id="api-setting-form">
@@ -296,6 +296,68 @@ function prepareHtmlForSettingPage()
             <?php submit_button('Save changes'); ?>
         </form>
     </div>
-<?php 
+    <?php
 }
-?>
+
+function enqueueJsAndCssFile()
+{
+    wp_enqueue_style('font-awesome-icon', plugins_url('', __FILE__) . '/../../assets/admin/css/font-awesome.css');
+    wp_enqueue_style('fancybox', plugins_url('', __FILE__) . '/../../assets/admin/css/jquery.fancybox.min.css');
+    wp_enqueue_style('wcp_style', plugins_url('', __FILE__) . '/../../assets/admin/css/admin-myparcel.css');
+    wp_enqueue_script('fancybox', plugins_url('', __FILE__) . '/../../assets/admin/js/jquery.fancybox.min.js', array('jquery'), '', false);
+    wp_register_script('wcp_partial_ship_script', plugins_url('', __FILE__) . '/../../assets/admin/js/admin-myparcel.js', array('fancybox'), '', true);
+    wp_enqueue_script('wcp_partial_ship_script');
+}
+
+function renderOrderColumnContent($column, $orderId, $the_order)
+{
+    switch ($column) {
+        case 'order_type' :
+            $post = get_post($orderId);
+            if ($post->post_type == 'shop_order') {
+                $getOrderMeta = get_post_meta($orderId, 'myparcel_shipment_key', true);
+                if (isset($getOrderMeta) && !empty($getOrderMeta)) {
+                    echo "<span style='color:green;'>MyParcel.com<input type='hidden' class='myparcel' value='" . $orderId . "'/></span>";
+                    break;
+                }
+            }
+            foreach ($the_order->get_items('shipping') as $itemId => $shippingItemObj) {
+                $orderItemName = $shippingItemObj->get_method_id();
+                $myparcelShipKey = get_post_meta($orderId, 'myparcel_shipment_key', true);
+                if (isset($myparcelShipKey) && !empty($myparcelShipKey)) {
+                    echo "<span style='color:green;'>MyParcel.com<input type='hidden' class='myparcel' value='" . $orderId . "'/></span>";
+                    break;
+                }
+            }
+            break;
+
+        case 'shipped_status' :
+            $order = wc_get_order($orderId);
+            $items = $order->get_items();
+            $orderShipmentDetails = json_decode(get_post_meta($orderId, '_my_parcel_order_shipment', true), true);
+            $orderShipmentStatus = "";
+            if (!empty($orderShipmentDetails)) {
+                $totalCount = count($items);
+                $shipOrderCount = 0;
+                foreach ($orderShipmentDetails as $orderShipmentDetail) {
+                    $remainQty = $orderShipmentDetail['remain_qty'];
+                    if ($remainQty == 0 && $orderShipmentDetail['flagStatus'] == 1) {
+                        $shipOrderCount++;
+                    } else if ($remainQty != 0 && $orderShipmentDetail['flagStatus'] == 1) {
+                        $orderShipmentStatus = "<mark class='order-status partial-shipped-color'><span>Partially Shipped.</span></mark>";
+                        break;
+                    } else if ($remainQty == 0 && $orderShipmentDetail['flagStatus'] == 0) {
+                        $orderShipmentStatus = "<mark class='order-status partial-shipped-color'><span>Partially Shipped.</span></mark>";
+                        break;
+                    }
+                }
+                $orderShipmentStatus = ($totalCount == $shipOrderCount) ? "<mark class='order-status status-completed'><span>Fully Shipped.</span></mark>" : (($orderShipmentStatus == "" && $shipOrderCount == 0) ? "" : "<mark class='order-status partial-shipped-color'><span>Partially Shipped.</span></mark>");
+            } else if (!empty(get_post_meta($orderId, 'myparcel_shipment_key', true))) {
+                $orderShipmentStatus = "<mark class='order-status status-completed'><span>Fully Shipped.</span></mark>";
+            }
+            echo $orderShipmentStatus;
+            break;
+
+    }
+}
+
