@@ -280,7 +280,7 @@ function prepareHtmlForSettingPage()
                 </tr>
                 <tr valign="top">
                     <th scope="row"><label>MyParcel.com support</label></th>
-                    <td><a href="https://myparcelcom.freshdesk.com/a/solutions/folders/16000093107" target="_blank">https://myparcelcom.freshdesk.com/a/solutions/folders/16000093107</a>
+                    <td><a href="https://myparcelcom.freshdesk.com/support/solutions/folders/16000093106" target="_blank">https://myparcelcom.freshdesk.com/support/solutions/folders/16000093106</a>
                     </td>
                 </tr>
             </table>
