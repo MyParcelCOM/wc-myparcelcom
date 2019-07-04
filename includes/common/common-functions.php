@@ -48,10 +48,8 @@ function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr)
     global $woocommerce;
     $items = getOrderItems($orderId);
     $shipAddItems = array();
-
-    $getShippedItems = json_decode($shippedItemsNewArr, true);
-    if ($getShippedItems) {
-        foreach ($getShippedItems as $getShippedItem) {
+    if ($shippedItemsNewArr) {
+        foreach ($shippedItemsNewArr as $getShippedItem) {
             $item_id = $getShippedItem["item_id"];
             $shipItems = new ShipmentItem();
             $product = wc_get_product($items[$item_id]['product_id']);
@@ -105,10 +103,8 @@ function setItemForEuCountries($orderId, $shippedItemsNewArr)
     global $woocommerce;
     $items = getOrderItems($orderId);
     $shipAddItems = array();
-
-    $getShippedItems = json_decode($shippedItemsNewArr, true);
-    if ($getShippedItems) {
-        foreach ($getShippedItems as $getShippedItem) {
+    if ($shippedItemsNewArr) {
+        foreach ($shippedItemsNewArr as $getShippedItem) {
             $item_id = $getShippedItem["item_id"];
             $shipItems = new ShipmentItem();
             $product = wc_get_product($items[$item_id]['product_id']);

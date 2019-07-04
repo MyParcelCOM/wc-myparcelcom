@@ -138,7 +138,7 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
                         $shippedItemsNewArr = json_encode($shippedItemsNewArr);
                         update_post_meta($postId, '_my_parcel_order_shipment', $shippedItemsNewArr);
                         $packages = WC()->shipping->get_packages();
-                        $shipmentTrackKey = createPartialOrderShipment($postId, $totalWeight, $shippedItemsNewArr);
+                        $shipmentTrackKey = createPartialOrderShipment($postId, $totalWeight, $shippedItemeArray);
                         setShipmentTrackingMeta($shippedTrackingArray, $shipmentTrackKey, $shippedItemeArray, $postId);
                     } else {
                         return $redirectTo = add_query_arg(array('check_action' => 'shipped_already_created'), $redirectTo);
@@ -259,7 +259,7 @@ function getPartialShippingQuantity($orderId): array
  *
  * @return $shipmentId
  **/
-function createPartialOrderShipment($orderId, $totalWeight, $shippedItemsNewArr = false)
+function createPartialOrderShipment($orderId, $totalWeight, $shippedItemsNewArr=array())
 {
     global $woocommerce;
     $currency = get_woocommerce_currency();
