@@ -153,18 +153,22 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
                     }
                     $redirectTo = ($orderShippedCount > 0) ? add_query_arg(array('export_shipment_action' => $orderShippedCount, 'check_action' => 'export_order'), $redirectTo) : $redirectTo;
                 } else {
-                    $order_data = getOrderData($postId);
-                    $totalWeight = getTotalWeightByPostID($postId);
-                    $packages = WC()->shipping->get_packages();
-                    $shipmentTrackKey = createPartialOrderShipment($postId, $totalWeight);
-                    $orderShippedCount++;
-                    /* Update the shipment key*/
-                    updateShipmentKey($shipKey, $postId);
-                    $getMyParcelKey = get_post_meta($postId, 'myparcel_shipment_key', true);
-                    if ($getMyParcelKey) {
-                        update_post_meta($postId, '_my_parcel_shipment_for_normal_order', 'exported');
+                    if (empty($shipKey) || $shipKey === '') {                        
+                        $order_data = getOrderData($postId);
+                        $totalWeight = getTotalWeightByPostID($postId);
+                        $packages = WC()->shipping->get_packages();
+                        $shipmentTrackKey = createPartialOrderShipment($postId, $totalWeight);
+                        $orderShippedCount++;
+                        /* Update the shipment key*/
+                        updateShipmentKey($shipKey, $postId);
+                        $getMyParcelKey = get_post_meta($postId, 'myparcel_shipment_key', true);
+                        if ($getMyParcelKey) {
+                            update_post_meta($postId, '_my_parcel_shipment_for_normal_order', 'exported');
+                        }
+                        $redirectTo = ($orderShippedCount > 0) ? add_query_arg(array('export_shipment_action' => $orderShippedCount, 'check_action' => 'export_order'), $redirectTo) : $redirectTo;
+                    } else {
+                        return $redirectTo = add_query_arg(array('check_action' => 'shipped_already_created'), $redirectTo);   
                     }
-                    $redirectTo = ($orderShippedCount > 0) ? add_query_arg(array('export_shipment_action' => $orderShippedCount, 'check_action' => 'export_order'), $redirectTo) : $redirectTo;
                 }
             }
         } else {
@@ -200,10 +204,7 @@ function exportPrintBulkActionAdminNotice(): void
         } elseif ('shipped_already_created' == $_REQUEST['check_action']) {
             $msgDiv = '<div id="message" class="updated notice notice-success is-dismissible" style="color:red;">ERROR: Order already exported to MyParcel.com.</div>';
             printf($msgDiv);
-        } elseif ('phpsdk_exception_handle' == $_REQUEST['check_action']) {
-            $msgDiv = '<div id="message" class="updated notice notice-success is-dismissible" style="color:red;">ERROR: Something went wrong!</div>';
-            printf($msgDiv);
-        }
+        }        
         delete_transient("shipment-plugin-notice");
     }
 

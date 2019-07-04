@@ -54,10 +54,7 @@ function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr)
             $shipItems = new ShipmentItem();
             $product = wc_get_product($items[$item_id]['product_id']);
             // Now you have access to (see above)...
-            $quantity = $item->get_quantity(); // get quantity
-            $product = $item->get_product(); // get the WC_Product object
-            $product_weight = $product->get_weight(); // get the product weight
-            $order_shipping_weight = $product->get_weight();
+            $quantity = $getShippedItem["shipped"]; // get quantity            
             $productName = $product->get_name();
             $sku = ($product->get_sku()) ? $product->get_sku() : 'NA';    // Get the product SKU
             $price = $product->get_price(); // Get the product price
@@ -74,12 +71,10 @@ function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr)
     } else {
         foreach ($items as $item) {
             $shipItems = new ShipmentItem();
-            $product = wc_get_product($item['product_id']);
+            $product = wc_get_product($items[$item_id]['product_id']);
             // Now you have access to (see above)...
             $quantity = $item->get_quantity(); // get quantity
             $product = $item->get_product(); // get the WC_Product object
-            $product_weight = $product->get_weight(); // get the product weight
-            $order_shipping_weight = $product->get_weight();
             $productName = $product->get_name();
             $sku = ($product->get_sku()) ? $product->get_sku() : 'NA';    // Get the product SKU
             $price = $product->get_price(); // Get the product price
