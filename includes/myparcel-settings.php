@@ -8,8 +8,8 @@ add_action('admin_enqueue_scripts', 'settingPageJsCss', 999);
  */
 function settingPageJsCss(): void
 {
-    wp_enqueue_script('validation', plugins_url('', __FILE__) . '/../assets/admin/js/jquery.validate.js', '', '', false);
-    wp_register_script('setting_page_js', plugins_url('', __FILE__) . '/../assets/admin/js/setting-page.js', '', '', true);
+    wp_enqueue_script('validation', plugins_url('', __FILE__).'/../assets/admin/js/jquery.validate.js', '', '', false);
+    wp_register_script('setting_page_js', plugins_url('', __FILE__).'/../assets/admin/js/setting-page.js', '', '', true);
     wp_enqueue_script('setting_page_js');
 }
 
@@ -47,14 +47,21 @@ function validationCallBack(): bool
         $error = true;
     }
     if ($error) {
-        add_settings_error('show_message', esc_attr('settings_updated'), __('Settings NOT saved. Please fill all the required fields.'), 'error');
+        add_settings_error(
+            'show_message',
+            esc_attr('settings_updated'),
+            __('Settings NOT saved. Please fill all the required fields.'),
+            'error'
+        );
         add_action('admin_notices', 'printErrors');
         updateOption();
+
         return false;
     } else {
 
-        add_settings_error('show_message', esc_attr('settings_updated'), __('Settings saved.'), 'updated');
+        add_settings_error('show_message', esc_attr('settings_updated'), __(MYPARCEL_SETTING_SAVE_TEXT), 'updated');
         add_action('admin_notices', 'printErrors');
+
         return true;
     }
 
@@ -88,7 +95,7 @@ add_action('admin_menu', 'addSettingMenu');
  */
 function addSettingMenu(): void
 {
-    add_options_page('API Setting', 'MyParcel.com API setting', 'manage_options', 'api_setting', 'settingPage');
+    add_options_page('API Setting', MYPARCEL_API_SETTING_TEXT, 'manage_options', 'api_setting', 'settingPage');
 }
 
 /**
@@ -98,8 +105,6 @@ function addSettingMenu(): void
 function settingPage(): void
 {
     global $woocommerce;
-    $countries_obj = new WC_Countries();
-    $countries = $countries_obj->__get('countries');
     prepareHtmlForSettingPage();
 }
 
