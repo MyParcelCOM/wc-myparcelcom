@@ -19,11 +19,12 @@ function myparcelExceptionRedirection()
  */
 function addFrontEndJs(): void
 {
-    wp_enqueue_style(VIEW_STYLE_TYPE, plugins_url('', __FILE__).'/../assets/front-end/css/frontend-myparcel.css');
+    $absPath = __FILE__; 
+    wp_enqueue_style(VIEW_STYLE_TYPE, plugins_url('', $absPath).'/../assets/front-end/css/frontend-myparcel.css');
     if (is_page('checkout')) {
         wp_register_script(
             CHECKOUT_PAGE_SCRIPT,
-            plugins_url('woocommerce-connect-myparcel/assets/front-end/js/address-checkout-page.js', _FILE_),
+            plugins_url('woocommerce-connect-myparcel/assets/front-end/js/address-checkout-page.js', $absPath),
             '',
             '1.0',
             true
@@ -66,10 +67,8 @@ add_filter('manage_edit-shop_order_columns', 'customShopOrderColumn', 11);
 function customOrdersListColumnContent($column): void
 {
     global $post, $woocommerce, $the_order;
-    if (!is_object($the_order)) {
-        return;
-    }
-    $orderId = $the_order->id;
+    $order = new WC_Order($post->ID);
+    $orderId = trim(str_replace('#', '', $order->get_order_number()));
     renderOrderColumnContent($column, $orderId, $the_order);
 }
 
