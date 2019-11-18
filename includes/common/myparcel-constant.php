@@ -29,4 +29,12 @@ define('MYPARCEL_PARTIALLY_SHIPPED_TEXT', 'Partially Shipped.');
 define('MYPARCEL_FULLY_SHIPPED_TEXT', 'Fully Shipped.');
 define('MYPARCEL_NA_TEXT', 'NA');
 define('MYPARCEL_SETTING_SAVE_TEXT', 'Settings saved.');
+define('MYPARCEL_WEBHOOK_URL', 'https://sandbox-api.myparcel.com/hooks');
+define('MYPARCEL_WEBHOOK_ACCESS_TOKEN', 'https://sandbox-auth.myparcel.com/access-token');
+define('MYPARCEL_SHIPMENT_REGISTERED', 'shipment-registered');
+define('MYPARCEL_SHIPMENT_LABEL_NOT_AVAILABLE', 'Label is not available yet.');
+define('MYPARCEL_WEBHOOK_OPTION_ID', 'myparcel_web_hook_id');
+define('MYPARCEL_WEBHOOK_AUTH_TOKEN_META', 'myparcel_auth_token');
+define('MYPARCEL_DEFAULT_SHOP_ID', 'd90c6e53-8d05-49bf-b9cc-42400ed3f09f');
+
 
