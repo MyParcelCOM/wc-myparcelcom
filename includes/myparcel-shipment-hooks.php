@@ -91,7 +91,16 @@ function orderItemValues($product, $item, $itemId): void
                 if ($orderId) {
                     if (!empty($shipped)) {
                         $key = array_search($itemId, array_column($shipped, 'item_id'));
-                        prepareHtmlForUpdateQuantity($shipped, $key, $itemQuantity, $orderId, $itemId, $qtyHtml, $tdHtml, $remainHtml);
+                        prepareHtmlForUpdateQuantity(
+                            $shipped,
+                            $key,
+                            $itemQuantity,
+                            $orderId,
+                            $itemId,
+                            $qtyHtml,
+                            $tdHtml,
+                            $remainHtml
+                        );
                     }
                     echo '<td class="partital-td-item"><span class="text-span">'.$qtyHtml.' <i class="fa fa-truck fa-sm" aria-hidden="true"></i></span> <input type="button" class="btn btn-success btn-quanity-update" id="update-quantity-'.$itemId.'" value="Update Quantity"></td>';
                     echo '<td class="partial-status-td" width="1%">'.$tdHtml.'</td>';
@@ -167,7 +176,17 @@ function orderSetShipped(): object
     } else {
         $totalShipQty     = $shipQty;
         $remainQty        = $qty - $totalShipQty;
-        $shipmentNewAr    = setOrderShipment($orderId, $itemId, $shipQty, $totalShipQty, $qty, $weight, $remainQty, $flagStatus, "shipped");
+        $shipmentNewAr    = setOrderShipment(
+            $orderId,
+            $itemId,
+            $shipQty,
+            $totalShipQty,
+            $qty,
+            $weight,
+            $remainQty,
+            $flagStatus,
+            "shipped"
+        );
         $shipmentNewArr[] = $shipmentNewAr;
         update_post_meta($orderId, GET_META_MYPARCEL_ORDER_SHIPMENT_TEXT, json_encode($shipmentNewArr));
     }

@@ -6,8 +6,8 @@
  * Description: This plugin enables you to choose MyParcel.com shipping methods on WooCommerce.
  * Version: 1.0
  * Author: Larkdesk
- * Requires at least: 
- * Tested up to: 
+ * Requires at least:
+ * Tested up to:
  *
  * @package WooCommerceConnectMyParcel
  */
@@ -35,14 +35,14 @@ $errorMessage = '';
 if (!(in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins'))))) {
 
     global $pagenow;
-    $errorMessage.='<div class="notice notice-error is-dismissible">
-            <p>Please install <a href="http://wordpress.org/extend/plugins/woocommerce/">WooCommerce</a> plugin for '. MY_PARCEL_PLUGIN_NAME .'.</p>
+    $errorMessage .= '<div class="notice notice-error is-dismissible">
+            <p>Please install <a href="http://wordpress.org/extend/plugins/woocommerce/">WooCommerce</a> plugin for '.MY_PARCEL_PLUGIN_NAME.'.</p>
         </div>';
 
     if ('plugins.php' === $pagenow) {
         add_action(
             'admin_notices',
-            function() use ($errorMessage) {
+            function () use ($errorMessage) {
                 $return = $errorMessage;
                 echo $return;
             }
@@ -61,24 +61,25 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
         //     include_once dirname( __FILE__ ) . '/includes/vendor/autoload.php';
         //     include_once dirname( __FILE__ ) . '/includes/MyParcel_API.php';
         // }
-        
+
     }
+
     if (!class_exists('MyParcel_API')) {
-        include_once dirname( __FILE__ ) . '/includes/vendor/autoload.php';
-        include_once dirname( __FILE__ ) . '/includes/MyParcel_API.php';
+        include_once dirname(__FILE__).'/includes/vendor/autoload.php';
+        include_once dirname(__FILE__).'/includes/MyParcel_API.php';
     }
-    include_once dirname( __FILE__ ) . '/includes/common/myparcel-constant.php';
-    include_once dirname( __FILE__ ) . '/includes/common/common-functions.php';
-    include_once dirname( __FILE__ ) . '/includes/myparcel-hooks.php';
-    include_once dirname( __FILE__ ) . '/includes/myparcel-shipment-hooks.php';
-    include_once dirname( __FILE__ ) . '/includes/myparcel-settings.php';
-    $webHookFile  = dirname( __FILE__ ).'/includes/webhook.php';  
-    $logFile      = dirname( __FILE__ ).'/includes/request.log';       
+    include_once dirname(__FILE__).'/includes/common/myparcel-constant.php';
+    include_once dirname(__FILE__).'/includes/common/common-functions.php';
+    include_once dirname(__FILE__).'/includes/myparcel-hooks.php';
+    include_once dirname(__FILE__).'/includes/myparcel-shipment-hooks.php';
+    include_once dirname(__FILE__).'/includes/myparcel-settings.php';
+    $webHookFile = dirname(__FILE__).'/includes/webhook.php';
+    $logFile     = dirname(__FILE__).'/includes/request.log';
     getAuthToken();
     if (file_exists($webHookFile)) {
-        $myparcelWebhookId = get_option(MYPARCEL_WEBHOOK_OPTION_ID);        
-        if (empty($myparcelWebhookId)) {                        
-            registerMyParcelWebhook();            
+        $myparcelWebhookId = get_option(MYPARCEL_WEBHOOK_OPTION_ID);
+        if (empty($myparcelWebhookId)) {
+            registerMyParcelWebhook();
         }
     }
 }
