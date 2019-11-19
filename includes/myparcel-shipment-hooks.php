@@ -18,6 +18,7 @@ function adminLoadJsCss(): void
         enqueueJsAndCssFile();
     }
     if ('edit-shop_order' === $screen->id) {
+        enqueueJsAndCssFile();
         if (!session_id()) {
             session_start();
         }
