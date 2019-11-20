@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 /**
  * Plugin Name: MyParcel.com
  * Plugin URI:  https://www.myparcel.com
@@ -11,34 +10,27 @@
  *
  * @package WooCommerceConnectMyParcel
  */
-
 /**
  *  checking if direct access of the file.
  */
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
-
 if (!defined('MY_PARCEL_PLUGIN')) {
     define('MY_PARCEL_PLUGIN', __FILE__);
 }
-
 if (!defined('MY_PARCEL_PLUGIN_NAME')) {
     define('MY_PARCEL_PLUGIN_NAME', 'MyParcel WooCommerce Connect');
 }
-
 /**
  * Check if WooCommerce is active
  */
 $errorMessage = '';
-
 if (!(in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins'))))) {
-
     global $pagenow;
     $errorMessage .= '<div class="notice notice-error is-dismissible">
             <p>Please install <a href="http://wordpress.org/extend/plugins/woocommerce/">WooCommerce</a> plugin for '.MY_PARCEL_PLUGIN_NAME.'.</p>
         </div>';
-
     if ('plugins.php' === $pagenow) {
         add_action(
             'admin_notices',
@@ -49,21 +41,10 @@ if (!(in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', ge
         );
     }
 }
-
 /**
  * Check if WooCommerce is active
  */
 if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
-    add_action('woocommerce_shipping_init', 'myparcel_shipping_method');
-    function myparcel_shipping_method()
-    {
-        // if (!class_exists('MyParcel_API')) {
-        //     include_once dirname( __FILE__ ) . '/includes/vendor/autoload.php';
-        //     include_once dirname( __FILE__ ) . '/includes/MyParcel_API.php';
-        // }
-
-    }
-
     if (!class_exists('MyParcel_API')) {
         include_once dirname(__FILE__).'/includes/vendor/autoload.php';
         include_once dirname(__FILE__).'/includes/MyParcel_API.php';
@@ -72,14 +53,6 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
     include_once dirname(__FILE__).'/includes/common/common-functions.php';
     include_once dirname(__FILE__).'/includes/myparcel-hooks.php';
     include_once dirname(__FILE__).'/includes/myparcel-shipment-hooks.php';
-    include_once dirname(__FILE__).'/includes/myparcel-settings.php';
-    $webHookFile = dirname(__FILE__).'/includes/webhook.php';
-    $logFile     = dirname(__FILE__).'/includes/request.log';
-    getAuthToken();
-    if (file_exists($webHookFile)) {
-        $myparcelWebhookId = get_option(MYPARCEL_WEBHOOK_OPTION_ID);
-        if (empty($myparcelWebhookId)) {
-            registerMyParcelWebhook();
-        }
-    }
+    include_once dirname(__FILE__).'/includes/myparcel-settings.php';    
+    getAuthToken();    
 }
