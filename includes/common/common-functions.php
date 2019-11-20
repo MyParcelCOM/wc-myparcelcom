@@ -711,4 +711,4 @@ function getShipmentCurrentStatus($post_id)
 
         return $shipmentData;
     }
-}   
+}
