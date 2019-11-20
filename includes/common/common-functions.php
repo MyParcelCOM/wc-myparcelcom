@@ -164,8 +164,17 @@ function setItemForEuCountries($orderId, $shippedItemsNewArr)
  *
  * @return array
  */
-function setOrderShipment($orderId, $itemId, $shipQty, $totalShipQty, $qty, $weight, $remainQty, $flagStatus, $type = SHIPPED_TEXT): array
-{
+function setOrderShipment(
+    $orderId,
+    $itemId,
+    $shipQty,
+    $totalShipQty,
+    $qty,
+    $weight,
+    $remainQty,
+    $flagStatus,
+    $type = SHIPPED_TEXT
+): array {
     $shipmentNewAr                  = [];
     $shipmentNewAr['order_id']      = $orderId;
     $shipmentNewAr['item_id']       = $itemId;
@@ -275,8 +284,16 @@ function updateShipmentKey($shipKey = null, $postId)
  * @param $tdHtml
  * @param $remainHtml
  */
-function prepareHtmlForUpdateQuantity($shipped, $key, $itemQuantity, $orderId, $itemId, &$qtyHtml, &$tdHtml, &$remainHtml)
-{
+function prepareHtmlForUpdateQuantity(
+    $shipped,
+    $key,
+    $itemQuantity,
+    $orderId,
+    $itemId,
+    &$qtyHtml,
+    &$tdHtml,
+    &$remainHtml
+) {
     if (is_int($key)) {
         if (isset($shipped[$key]['type']) && 'shipped' == $shipped[$key]['type']) {
             if (isset($shipped[$key]['total_shipped']) && $shipped[$key]['total_shipped'] == $itemQuantity) {
@@ -323,7 +340,8 @@ function prepareHtmlForSettingPage()
           </td>
         </tr>
         <tr valign="top">
-          <th scope="row"><label for="client_secret_key"><?php echo MYPARCEL_API_CLIENTSECRET_LABEL_TEXT; ?> </label></th>
+          <th scope="row"><label for="client_secret_key"><?php echo MYPARCEL_API_CLIENTSECRET_LABEL_TEXT; ?> </label>
+          </th>
           <td>
             <input type="password" id="client_secret_key" class="regular-text" name="client_secret_key"
                    value="<?php echo get_option('client_secret_key'); ?>"/>
@@ -370,7 +388,13 @@ function enqueueJsAndCssFile()
     wp_enqueue_style('font-awesome-icon', plugins_url('', __FILE__).'/../../assets/admin/css/font-awesome.css');
     wp_enqueue_style('fancybox', plugins_url('', __FILE__).'/../../assets/admin/css/jquery.fancybox.min.css');
     wp_enqueue_style('wcp_style', plugins_url('', __FILE__).'/../../assets/admin/css/admin-myparcel.css');
-    wp_enqueue_script('fancybox', plugins_url('', __FILE__).'/../../assets/admin/js/jquery.fancybox.min.js', ['jquery'], '', false);
+    wp_enqueue_script(
+        'fancybox',
+        plugins_url('', __FILE__).'/../../assets/admin/js/jquery.fancybox.min.js',
+        ['jquery'],
+        '',
+        false
+    );
     wp_register_script(
         'wcp_partial_ship_script',
         plugins_url('', __FILE__).'/../../assets/admin/js/admin-myparcel.js',
@@ -411,7 +435,10 @@ function renderOrderColumnContent($column, $orderId, $the_order)
         case 'shipped_status' :
             $order                = wc_get_order($orderId);
             $items                = $order->get_items();
-            $orderShipmentDetails = json_decode(get_post_meta($orderId, GET_META_MYPARCEL_ORDER_SHIPMENT_TEXT, true), true);
+            $orderShipmentDetails = json_decode(
+                get_post_meta($orderId, GET_META_MYPARCEL_ORDER_SHIPMENT_TEXT, true),
+                true
+            );
             $orderShipmentStatus  = "";
             if (!empty($orderShipmentDetails)) {
                 $totalCount     = count($items);
@@ -442,208 +469,246 @@ function renderOrderColumnContent($column, $orderId, $the_order)
             break;
 
         case 'shipped_label' :
-            if(! $orderId ) return; // Exit
-            getShipmentFiles($orderId);                            
+            if (!$orderId) {
+                return;
+            } // Exit
+            getShipmentFiles($orderId);
             break;
 
         case 'get_shipment_status' :
-            if(! $orderId ) return; // Exit
-            $shipmentData =  getShipmentCurrentStatus($orderId);
-            if(!empty($shipmentData)) {
-                $shipmentValues = json_decode($shipmentData);            
+            if (!$orderId) {
+                return;
+            } // Exit
+            $shipmentData = getShipmentCurrentStatus($orderId);
+            if (!empty($shipmentData)) {
+                $shipmentValues = json_decode($shipmentData);
                 ?>
-                <div class="order-status status-completed" id="welcomeShipment" title="<?php echo $shipmentValues->description; ?>">
-                    <span><?php echo ucfirst($shipmentValues->name); ?></span>
-                </div>
-                <?php 
-            }            
-            break;    
+              <div class="order-status status-completed" id="welcomeShipment" title="<?php echo $shipmentValues->description; ?>">
+                <span><?php echo ucfirst($shipmentValues->name); ?></span>
+              </div>
+                <?php
+            }
+            break;
     }
 }
 
-function getAuthToken() 
-{    
+function getAuthToken()
+{
     $clientKey       = get_option('client_key');
     $clientSecretKey = get_option('client_secret_key');
-    if (!empty($clientKey) && !empty($clientSecretKey)) {        
-        $data = array("grant_type" => "client_credentials", "client_id" => $clientKey,
-              "client_secret" => $clientSecretKey, "scope" => "*");
-        $data_string = json_encode($data);  
-        $url    = MYPARCEL_WEBHOOK_ACCESS_TOKEN;
-        $authorization = '';
-        $result = createWebhookCurlRequest($url, $data_string, $authorization);         
-        $getToken       = json_decode($result);         
-        $myparcelWebhookId = get_option(MYPARCEL_WEBHOOK_OPTION_ID);        
+    if (!empty($clientKey) && !empty($clientSecretKey)) {
+        $data              = [
+            "grant_type"    => "client_credentials",
+            "client_id"     => $clientKey,
+            "client_secret" => $clientSecretKey,
+            "scope"         => "*",
+        ];
+        $data_string       = json_encode($data);
+        $url               = MYPARCEL_WEBHOOK_ACCESS_TOKEN;
+        $authorization     = '';
+        $result            = createWebhookCurlRequest($url, $data_string, $authorization);
+        $getToken          = json_decode($result);
+        $myparcelWebhookId = get_option(MYPARCEL_WEBHOOK_OPTION_ID);
         if (empty($myparcelWebhookId)) {
             registerMyParcelWebhook($getToken->access_token);
-        }               
+        }
     }
 
 }
 
+/**
+ * @param $accessToken
+ */
 function registerMyParcelWebhook($accessToken)
 {
-    $webhookUrl     =  plugins_url('', dirname(__FILE__)).'/webhook.php';       
-    $webhookname    =  getDefaultShopId().'-myparcelcom';    
-    $data = array("data" => 
-                [
-                    "type" => "hooks",
-                    "attributes" => 
+    $webhookUrl      = plugins_url('', dirname(__FILE__)).'/webhook.php';
+    $webhookname     = getDefaultShopId().'-myparcelcom';
+    $data            = [
+        "data" =>
+            [
+                "type"          => "hooks",
+                "attributes"    =>
                     [
-                        "name" => $webhookname,
-                        "order" => 100,
-                        "active" => true,
+                        "name"    => $webhookname,
+                        "order"   => 100,
+                        "active"  => true,
                         "trigger" => [
-                            "resource_type" => "shipment-statuses",
-                            "resource_action" => "create"
+                            "resource_type"   => "shipment-statuses",
+                            "resource_action" => "create",
                         ],
-                        "action" => [
-                            "action_type" => "send-resource",  
-                            "values" => [
+                        "action"  => [
+                            "action_type" => "send-resource",
+                            "values"      => [
                                 [
-                                "url" => $webhookUrl,
-                                "includes" => [
+                                    "url"      => $webhookUrl,
+                                    "includes" => [
                                         "status",
-                                        "shipment"
-                                    ]
-                                ]   
-                            ]
-                        ]
-                    ],    
-                    "relationships" => [
-                        "owner" => [
-                            "data" => [
-                                "type" => "shops",
-                                "id" => getDefaultShopId()
-                            ]
-                        ]
-                    ]
-                    
-                ]
-        );    
-    $data_string    = json_encode($data);                 
-    $authorization  = "Authorization: Bearer $accessToken"; 
-    $url = MYPARCEL_WEBHOOK_URL;
-    $result = createWebhookCurlRequest($url, $data_string, $authorization); 
-    $webhookResponse       = json_decode($result);            
-    if ( get_option( MYPARCEL_WEBHOOK_OPTION_ID ) !== false ) {                     
-        update_option( MYPARCEL_WEBHOOK_OPTION_ID, $webhookResponse->data->id );         
+                                        "shipment",
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                "relationships" => [
+                    "owner" => [
+                        "data" => [
+                            "type" => "shops",
+                            "id"   => getDefaultShopId(),
+                        ],
+                    ],
+                ],
+
+            ],
+    ];
+    $data_string     = json_encode($data);
+    $authorization   = "Authorization: Bearer $accessToken";
+    $url             = MYPARCEL_WEBHOOK_URL;
+    $result          = createWebhookCurlRequest($url, $data_string, $authorization);
+    $webhookResponse = json_decode($result);
+    if (get_option(MYPARCEL_WEBHOOK_OPTION_ID) !== false) {
+        update_option(MYPARCEL_WEBHOOK_OPTION_ID, $webhookResponse->data->id);
     } else {
         $deprecated = null;
         $autoload   = 'no';
-        add_option( MYPARCEL_WEBHOOK_OPTION_ID, $webhookResponse->data->id, $deprecated, $autoload );
-    }    
+        add_option(MYPARCEL_WEBHOOK_OPTION_ID, $webhookResponse->data->id, $deprecated, $autoload);
+    }
 }
 
+/**
+ * @return string
+ */
 function getDefaultShopId()
 {
-    $getAuth = new MyParcel_API();
-    $api     = $getAuth->apiAuthentication();    
-    $shop    = $api->getDefaultShop();
+    $getAuth       = new MyParcel_API();
+    $api           = $getAuth->apiAuthentication();
+    $shop          = $api->getDefaultShop();
     $defaultShopId = $shop->getId();
+
     return !empty($defaultShopId) ? $defaultShopId : MYPARCEL_DEFAULT_SHOP_ID;
 }
 
+/**
+ * @param $post_id
+ *
+ * @throws Exception
+ */
 function getShipmentFiles($post_id)
 {
-    $getOrderMetaData = get_post_meta($post_id, GET_META_SHIPMENT_TRACKING_KEY, true);    
-    $getOrderMeta = json_decode($getOrderMetaData);                
-    if(! $getOrderMeta ) return; // Exit
-    $sslOptions=array(
-        "ssl"=>array(
-            "verify_peer"=>false,
-            "verify_peer_name"=>false,
-        ),
-    );
-    $logFileContent    = plugins_url('', dirname(__FILE__)).'/request.log';       
-    $getShipmentContent        = file_get_contents($logFileContent, false, stream_context_create($sslOptions));                    
+    $getOrderMetaData = get_post_meta($post_id, GET_META_SHIPMENT_TRACKING_KEY, true);
+    $getOrderMeta     = json_decode($getOrderMetaData);
+    if (!$getOrderMeta) {
+        return;
+    } // Exit
+    $sslOptions         = [
+        "ssl" => [
+            "verify_peer"      => false,
+            "verify_peer_name" => false,
+        ],
+    ];
+    $logFileContent     = plugins_url('', dirname(__FILE__)).'/request.log';
+    $getShipmentContent = file_get_contents($logFileContent, false, stream_context_create($sslOptions));
     if (!isset($getOrderMeta->trackingKey)) {
-        return ;
+        return;
     }
-    $isInRegex  = "/$getOrderMeta->trackingKey/";            
+    $isInRegex = "/$getOrderMeta->trackingKey/";
     // preg_match returns true or false.
-    if(preg_match($isInRegex, $getShipmentContent) && !empty($getOrderMeta->trackingKey) ) {                
-        $getAuth    = new MyParcel_API();
-        $shipment   = new Shipment();                
-        $api        = $getAuth->apiAuthentication();            
-        $shipment   = $api->getShipment($getOrderMeta->trackingKey);
-        $getRegisterAt = $shipment->getRegisterAt();
-       $shipmentStatus = $shipment->getShipmentStatus();
-       $status         = $shipmentStatus->getStatus();                      
-       if (!empty($getRegisterAt) && ($status->getCode() === MYPARCEL_SHIPMENT_REGISTERED)) {                                                
-           $getAuth    = new MyParcel_API(); 
-           $file       = new File();
-           $api        = $getAuth->apiAuthentication();
-           $shipment   = $api->getShipment($getOrderMeta->trackingKey);              
-           $labels = $shipment->getFiles(File::DOCUMENT_TYPE_LABEL);                           
-           if (!empty($labels)) {
-               foreach ($labels as $label) {
-                   $label = $label->getBase64Data('application/pdf');                                              
-                    echo '<p><a class="button download-label" download="label.pdf" href="data:application/octet-stream;base64,'.$label.'"><i class="fa fa-file-pdf-o" style="font-size:20px;color:red"></i></a></p>'; 
-                   ?>
-                   <?php                    
-               }            
-               ?>
-                   <script type="text/javascript"> 
-                   jQuery(document).ready(function($) {                                              
-                        let a = $(".download-label");                                                                          
-                         a.click();
-                    });     
-                   </script>
-           <?php } 
-        }  else {
-                $shipment->setRegisterAt(new \DateTime());        
-                $updateShipmentResp = $api->updateShipment($shipment);                    
-        }       
-    }        
+    if (preg_match($isInRegex, $getShipmentContent) && !empty($getOrderMeta->trackingKey)) {
+        $getAuth        = new MyParcel_API();
+        $shipment       = new Shipment();
+        $api            = $getAuth->apiAuthentication();
+        $shipment       = $api->getShipment($getOrderMeta->trackingKey);
+        $getRegisterAt  = $shipment->getRegisterAt();
+        $shipmentStatus = $shipment->getShipmentStatus();
+        $status         = $shipmentStatus->getStatus();
+        if (!empty($getRegisterAt) && ($status->getCode() === MYPARCEL_SHIPMENT_REGISTERED)) {
+            $getAuth  = new MyParcel_API();
+            $file     = new File();
+            $api      = $getAuth->apiAuthentication();
+            $shipment = $api->getShipment($getOrderMeta->trackingKey);
+            $labels   = $shipment->getFiles(File::DOCUMENT_TYPE_LABEL);
+            if (!empty($labels)) {
+                foreach ($labels as $label) {
+                    $label = $label->getBase64Data('application/pdf');
+                    echo '<p><a class="button download-label" download="label.pdf" href="data:application/octet-stream;base64,'.$label.'"><i class="fa fa-file-pdf-o" style="font-size:20px;color:red"></i></a></p>';
+                    ?>
+                    <?php
+                }
+                ?>
+              <script type="text/javascript">
+                jQuery(document).ready(function ($) {
+                  let a = $('.download-label')
+                  a.click()
+                })
+              </script>
+            <?php }
+        } else {
+            $shipment->setRegisterAt(new \DateTime());
+            $updateShipmentResp = $api->updateShipment($shipment);
+        }
+    }
 }
 
-function createWebhookCurlRequest($url, $data_string, $authorization = null) 
-{    
+/**
+ * @param      $url
+ * @param      $data_string
+ * @param null $authorization
+ *
+ * @return bool|string
+ */
+function createWebhookCurlRequest($url, $data_string, $authorization = null)
+{
     switch ($url) {
         case MYPARCEL_WEBHOOK_URL:
-                $httpHeader = array(                                                                          
-                'Content-Type: application/json',   
-                        $authorization                                                                                         
-                    );   
+            $httpHeader = [
+                'Content-Type: application/json',
+                $authorization,
+            ];
             break;
         case MYPARCEL_WEBHOOK_ACCESS_TOKEN:
-                $httpHeader = array(                                                                          
-                'Content-Type: application/json',                                                                                            
-                    );   
+            $httpHeader = [
+                'Content-Type: application/json',
+            ];
             break;
-    }        
+    }
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL,$url);    
-    curl_setopt($ch, CURLOPT_POST,           1 );
-    curl_setopt($ch, CURLOPT_POSTFIELDS,     $data_string ); 
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);                                                                      
-    curl_setopt($ch, CURLOPT_HTTPHEADER,$httpHeader );                                                                   
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
     $result = curl_exec($ch);
     if (curl_errno($ch)) {
-       $error_msg   = curl_error($ch);
+        $error_msg = curl_error($ch);
     }
-    curl_close ($ch);
-    return $result; 
+    curl_close($ch);
+
+    return $result;
 }
 
+/**
+ * @param $post_id
+ *
+ * @return array|false|string|void
+ */
 function getShipmentCurrentStatus($post_id)
 {
-    $shipmentData = [];
-    $getOrderMetaData = get_post_meta($post_id, GET_META_SHIPMENT_TRACKING_KEY, true);    
-    $getOrderMeta = json_decode($getOrderMetaData);                
-    if(! $getOrderMeta ) return; // Exit
-    $getAuth    = new MyParcel_API();
-    $shipment   = new Shipment();                
-    $api        = $getAuth->apiAuthentication();            
-    if(!empty($getOrderMeta->trackingKey)) {
-    $shipment   = $api->getShipment($getOrderMeta->trackingKey);
-        $shipmentStatus = $shipment->getShipmentStatus();
-        $status         = $shipmentStatus->getStatus();      
-        $shipmentData['name'] = $status->getName();
+    $shipmentData     = [];
+    $getOrderMetaData = get_post_meta($post_id, GET_META_SHIPMENT_TRACKING_KEY, true);
+    $getOrderMeta     = json_decode($getOrderMetaData);
+    if (!$getOrderMeta) {
+        return;
+    } // Exit
+    $getAuth  = new MyParcel_API();
+    $shipment = new Shipment();
+    $api      = $getAuth->apiAuthentication();
+    if (!empty($getOrderMeta->trackingKey)) {
+        $shipment                    = $api->getShipment($getOrderMeta->trackingKey);
+        $shipmentStatus              = $shipment->getShipmentStatus();
+        $status                      = $shipmentStatus->getStatus();
+        $shipmentData['name']        = $status->getName();
         $shipmentData['description'] = $status->getDescription();
-        $shipmentData = json_encode($shipmentData);
+        $shipmentData                = json_encode($shipmentData);
 
-        return $shipmentData;            
+        return $shipmentData;
     }
 }   
