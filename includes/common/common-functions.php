@@ -5,6 +5,9 @@ declare(strict_types=1);
 use MyParcelCom\ApiSdk\Resources\Shipment;
 use MyParcelCom\ApiSdk\Resources\ShipmentItem;
 use MyParcelCom\ApiSdk\Resources\File;
+use MyParcelCom\ApiSdk\LabelCombiner;
+use MyParcelCom\ApiSdk\Resources\Interfaces\FileInterface;
+use MyParcelCom\ApiSdk\LabelCombinerInterface;
 
 /**
  * @param $orderId
@@ -516,9 +519,6 @@ function getAuthToken()
 
 }
 
-/**
- * @param $accessToken
- */
 function registerMyParcelWebhook($accessToken)
 {
     $webhookUrl      = plugins_url('', dirname(__FILE__)).'/webhook.php';
@@ -574,9 +574,6 @@ function registerMyParcelWebhook($accessToken)
     }
 }
 
-/**
- * @return string
- */
 function getDefaultShopId()
 {
     $getAuth       = new MyParcel_API();
@@ -587,11 +584,6 @@ function getDefaultShopId()
     return !empty($defaultShopId) ? $defaultShopId : MYPARCEL_DEFAULT_SHOP_ID;
 }
 
-/**
- * @param $post_id
- *
- * @throws Exception
- */
 function getShipmentFiles($post_id)
 {
     $getOrderMetaData = get_post_meta($post_id, GET_META_SHIPMENT_TRACKING_KEY, true);
@@ -648,13 +640,6 @@ function getShipmentFiles($post_id)
     }
 }
 
-/**
- * @param      $url
- * @param      $data_string
- * @param null $authorization
- *
- * @return bool|string
- */
 function createWebhookCurlRequest($url, $data_string, $authorization = null)
 {
     switch ($url) {
@@ -685,11 +670,6 @@ function createWebhookCurlRequest($url, $data_string, $authorization = null)
     return $result;
 }
 
-/**
- * @param $post_id
- *
- * @return array|false|string|void
- */
 function getShipmentCurrentStatus($post_id)
 {
     $shipmentData     = [];
@@ -710,5 +690,236 @@ function getShipmentCurrentStatus($post_id)
         $shipmentData                = json_encode($shipmentData);
 
         return $shipmentData;
+    }
+}
+
+add_action('manage_posts_extra_tablenav', 'admin_order_list_top_bar_button', 20, 1);
+function admin_order_list_top_bar_button($which)
+{
+    global $typenow;
+    if ('shop_order' === $typenow && 'top' === $which) {
+        ?>
+      <!-- Button trigger modal -->
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#labelModal" title="Print Selected">
+        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+      </button>
+      <!-- Modal -->
+      <div class="modal fade" id="labelModal" tabindex="-1" role="dialog" aria-labelledby="labelModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="labelModalLabel">Label position</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <div class="row">
+                <div class="col-lg-6" id="printer-orintation">
+                  <label class="container">
+                    <input type="radio" checked="checked" name="selectorientation" class="toggle" value="1"> A4 - default printer
+                  </label>
+                  <label class="container">
+                    <input type="radio" name="selectorientation" class="toggle" value="2"> A6 - label printer
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="modal-body">
+              <div class="row cntnr" id="orientation1">
+                <div class="col-lg-6">
+                  <label class="container">
+                    <input type="radio" checked="checked" name="radio" class="toggle" value="1"> 1
+                  </label>
+                </div>
+                <div class="col-lg-6">
+                  <label class="container">
+                    <input type="radio" name="radio" class="toggle" value="2"> 2
+                  </label>
+                </div>
+                <div class="col-lg-6">
+                  <label class="container">
+                    <input type="radio" name="radio" class="toggle" value="3"> 3
+                  </label>
+                </div>
+                <div class="col-lg-6">
+                  <label class="container">
+                    <input type="radio" name="radio" class="toggle" value="4"> 4
+                  </label>
+                </div>
+              </div>
+              <div class="row cntnr" id="orientation2" style="display: none;">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <div id='loadingmessage' style='display:none'>
+                  <?php $loader = plugins_url('', __FILE__).'/../../assets/images/ajax-loader.gif'; ?>
+                <img class="img-responsive center-block" src="<?php echo $loader; ?>"/>
+              </div>
+              <div class="alert alert-danger" style="display: none;">
+                Label is not available.
+              </div>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" id="download-pdf">Download</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <style type="text/css">
+        .modal-dialog {
+          width: 30%;
+          margin: 0 auto;
+        }
+
+        .modal-content {
+          height: auto;
+          min-height: 100%;
+          border-radius: 0;
+        }
+
+        .cntnr .col-lg-6 {
+          border: 1px solid grey;
+          padding: 50px;
+        }
+
+        label.container input[type=radio] {
+          height: 20px;
+        }
+
+        .modal-content {
+          top: 35px;
+        }
+      </style>
+      <script type="text/javascript">
+        jQuery(document).ready(function ($) {
+          var selectVal
+          $('#printer-orintation input[name=\'selectorientation\']').click(function () {
+            selectVal = $(this).val()
+            $('div.cntnr').hide()
+            $('#orientation' + selectVal).show()
+          })
+          $('#download-pdf').click(function (e) {
+            var selected = []
+            e.preventDefault()
+            $('#loadingmessage').show()  // show the loading message.
+            $('.wp-list-table #the-list tr input[name=\'post[]\']:checked').map(function () {
+              if ($('.wp-list-table #the-list tr input[name=\'post[]\']').is(':checked')) {
+                var idx = $.inArray($(this).val(), selected)
+                if (idx == -1) {
+                  selected.push($(this).val())
+                }
+              } else {
+                selected.splice($(this).val())
+              }
+            }) // <----
+            var selectOrientation = $('input[name=\'radio\']:checked').val()
+            if (selectOrientation) {
+              var data = {
+                'action': 'my_action',
+                'selectOrientation': selectOrientation,
+                'orderIds': selected,
+                'labelPrinter': selectVal
+              }
+              var templateUrl = '<?= get_site_url(); ?>'
+              var ajaxscript = {ajax_url: templateUrl + '/wp-admin/admin-ajax.php'}
+              // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
+              jQuery.post(ajaxscript.ajax_url, data, function (response) {
+                if (response === 'Failed') {
+                  $('.modal-footer .alert-danger').show() // hide the loading message
+                } else {
+                  const linkSource = 'data:application/pdf;base64,' + response
+                  const downloadLink = document.createElement('a')
+                  const fileName = 'label.pdf'
+                  downloadLink.href = linkSource
+                  downloadLink.download = fileName
+                  downloadLink.click()
+                }
+                $('#loadingmessage').hide() // hide the loading message
+                $('#labelModal').modal('hide')
+              })
+            }
+            return false
+
+          })
+          // });
+        })
+      </script>
+        <?php
+    }
+}
+
+add_action('wp_ajax_my_action', 'my_action');
+function my_action()
+{
+    define(LOCATION_TOP, 1);
+    define(LOCATION_BOTTOM, 2);
+    define(LOCATION_RIGHT, 4);
+    define(LOCATION_LEFT, 8);
+    define(LOCATION_TOP_LEFT, LOCATION_TOP | LOCATION_LEFT);
+    define(LOCATION_TOP_RIGHT, LOCATION_TOP | LOCATION_RIGHT);
+    define(LOCATION_BOTTOM_LEFT, LOCATION_BOTTOM | LOCATION_LEFT);
+    define(LOCATION_BOTTOM_RIGHT, LOCATION_BOTTOM | LOCATION_RIGHT);
+    global $wpdb;
+    $selectOrientation = intval($_POST['selectOrientation']);
+    $orderIds          = $_POST['orderIds'];
+    $labelPrinter      = intval($_POST['labelPrinter']);
+    $getAuth           = new MyParcel_API();
+    $shipment          = new Shipment();
+    $file              = new File();
+    $labelCombiner     = new LabelCombiner();
+    $api               = $getAuth->apiAuthentication();
+    $shipmentRecords   = [];
+    $shipments         = [];
+    foreach ($orderIds as $orderId) {
+        $getShipmentKey = get_post_meta($orderId, 'shipment_track_key', true);
+        if (!empty($getShipmentKey)) {
+            $getShipmentKey = json_decode($getShipmentKey);
+            $shipments[]    = $api->getShipment($getShipmentKey->trackingKey);
+        } else {
+            echo "Failed";
+            exit();
+        }
+    }
+    $files = [];
+    if (!empty($shipments)) {
+        foreach ($shipments as $shipment) {
+            $files = array_merge(
+                $files,
+                $shipment->getFiles(File::DOCUMENT_TYPE_LABEL)
+            );
+        }
+    }
+    $combinedFile = $labelCombiner->combineLabels(
+        $files,
+        labelPrintter($labelPrinter),
+        getOrientation($selectOrientation),
+        20
+    );
+    echo $combinedFile->getBase64Data();
+    wp_die(); // this is required to terminate immediately and return a proper response
+}
+
+function getOrientation($selectOrientation)
+{
+    switch ($selectOrientation) {
+        case 1:
+            return LOCATION_TOP_LEFT;
+            break;
+        case 2:
+            return LOCATION_TOP_RIGHT;
+            break;
+        case 3:
+            return LOCATION_BOTTOM_LEFT;
+            break;
+        default:
+            return LOCATION_BOTTOM_RIGHT;
+            break;
+    }
+}
+
+function labelPrintter($labelPrinter)
+{
+    if (!empty($labelPrinter) && ($labelPrinter === 1)) {
+        return LabelCombinerInterface::PAGE_SIZE_A4;
+    } else {
+        return LabelCombinerInterface::PAGE_SIZE_A6;
     }
 }
