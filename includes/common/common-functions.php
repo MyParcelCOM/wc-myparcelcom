@@ -496,7 +496,7 @@ function renderOrderColumnContent($column, $orderId, $the_order)
 }
 
 /**
- * 
+ *
  */
 function getAuthToken()
 {
@@ -615,12 +615,12 @@ function getShipmentFiles($post_id)
     ];
     $logFileContent     = plugins_url('', dirname(__FILE__)).'/request.log';
     $getShipmentContent = file_get_contents($logFileContent, false, stream_context_create($sslOptions));
-    $isInRegex          = "/$getOrderMeta->trackingKey/";
-    if (preg_match($isInRegex, $getShipmentContent)) {
-        update_post_meta($post_id, MYPARCEL_RESPONSE_META, 1);
-    }
     if (!isset($getOrderMeta->trackingKey)) {
         return;
+    }
+    $isInRegex = "/$getOrderMeta->trackingKey/";
+    if (preg_match($isInRegex, $getShipmentContent)) {
+        update_post_meta($post_id, MYPARCEL_RESPONSE_META, 1);
     }
     $webhookResponseMeta = get_post_meta($post_id, MYPARCEL_RESPONSE_META, true);
     if (($webhookResponseMeta == 1) && !empty($getOrderMeta->trackingKey)) {
