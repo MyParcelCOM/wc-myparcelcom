@@ -757,22 +757,22 @@ function admin_order_list_top_bar_button($which)
             <div class="modal-body">
               <div class="row cntnr" id="orientation1" style="margin: 0px;">
                 <div class="col-lg-6">
-                  <label class="container">
+                  <label class="container radio-inline">
                     <input type="radio" checked="checked" name="radio" class="toggle" value="1"> 1
                   </label>
                 </div>
                 <div class="col-lg-6">
-                  <label class="container">
+                  <label class="container radio-inline">
                     <input type="radio" name="radio" class="toggle" value="2"> 2
                   </label>
                 </div>
                 <div class="col-lg-6">
-                  <label class="container">
+                  <label class="container radio-inline">
                     <input type="radio" name="radio" class="toggle" value="3"> 3
                   </label>
                 </div>
                 <div class="col-lg-6">
-                  <label class="container">
+                  <label class="container radio-inline">
                     <input type="radio" name="radio" class="toggle" value="4"> 4
                   </label>
                 </div>
@@ -812,7 +812,7 @@ function admin_order_list_top_bar_button($which)
         }
 
         label.container input[type=radio] {
-          height: 20px;
+          height: 16px;
         }
 
         .modal-content {
@@ -821,9 +821,10 @@ function admin_order_list_top_bar_button($which)
       </style>
       <script type="text/javascript">
         jQuery(document).ready(function ($) {
-          var selectVal
+          var selectVal = $('#printer-orintation input[name=\'selectorientation\']:checked').val()
           $('#printer-orintation input[name=\'selectorientation\']').click(function () {
             selectVal = $(this).val()
+            console.log('selectVal: ', selectVal)
             $('div.cntnr').hide()
             $('#orientation' + selectVal).show()
           })
@@ -919,7 +920,7 @@ function my_action()
     }
     $combinedFile = $labelCombiner->combineLabels(
         $files,
-        labelPrintter($labelPrinter),
+        labelPrinter($labelPrinter),
         getOrientation($selectOrientation),
         20
     );
@@ -955,7 +956,7 @@ function getOrientation($selectOrientation)
  *
  * @return string
  */
-function labelPrintter($labelPrinter)
+function labelPrinter($labelPrinter)
 {
     if (!empty($labelPrinter) && ($labelPrinter === 1)) {
         return LabelCombinerInterface::PAGE_SIZE_A4;
