@@ -495,30 +495,38 @@ function renderOrderColumnContent($column, $orderId, $the_order)
     }
 }
 
+/**
+ * 
+ */
 function getAuthToken()
 {
     $clientKey       = get_option('client_key');
     $clientSecretKey = get_option('client_secret_key');
     if (!empty($clientKey) && !empty($clientSecretKey)) {
-        $data              = [
+        $data          = [
             "grant_type"    => "client_credentials",
             "client_id"     => $clientKey,
             "client_secret" => $clientSecretKey,
             "scope"         => "*",
         ];
-        $data_string       = json_encode($data);
-        $url               = MYPARCEL_WEBHOOK_ACCESS_TOKEN;
-        $authorization     = '';
-        $result            = createWebhookCurlRequest($url, $data_string, $authorization);
-        $getToken          = json_decode($result);
-        $myparcelWebhookId = get_option(MYPARCEL_WEBHOOK_OPTION_ID);
-        if (empty($myparcelWebhookId)) {
-            registerMyParcelWebhook($getToken->access_token);
+        $data_string   = json_encode($data);
+        $url           = MYPARCEL_WEBHOOK_ACCESS_TOKEN;
+        $authorization = '';
+        $result        = createWebhookCurlRequest($url, $data_string, $authorization);
+        if (!empty($result)) {
+            $getToken          = json_decode($result);
+            $myparcelWebhookId = get_option(MYPARCEL_WEBHOOK_OPTION_ID);
+            if (empty($myparcelWebhookId)) {
+                registerMyParcelWebhook($getToken->access_token);
+            }
         }
     }
 
 }
 
+/**
+ * @param $accessToken
+ */
 function registerMyParcelWebhook($accessToken)
 {
     $webhookUrl      = plugins_url('', dirname(__FILE__)).'/webhook.php';
@@ -574,6 +582,9 @@ function registerMyParcelWebhook($accessToken)
     }
 }
 
+/**
+ * @return string
+ */
 function getDefaultShopId()
 {
     $getAuth       = new MyParcel_API();
@@ -584,6 +595,11 @@ function getDefaultShopId()
     return !empty($defaultShopId) ? $defaultShopId : MYPARCEL_DEFAULT_SHOP_ID;
 }
 
+/**
+ * @param $post_id
+ *
+ * @throws Exception
+ */
 function getShipmentFiles($post_id)
 {
     $getOrderMetaData = get_post_meta($post_id, GET_META_SHIPMENT_TRACKING_KEY, true);
@@ -599,12 +615,15 @@ function getShipmentFiles($post_id)
     ];
     $logFileContent     = plugins_url('', dirname(__FILE__)).'/request.log';
     $getShipmentContent = file_get_contents($logFileContent, false, stream_context_create($sslOptions));
+    $isInRegex          = "/$getOrderMeta->trackingKey/";
+    if (preg_match($isInRegex, $getShipmentContent)) {
+        update_post_meta($post_id, MYPARCEL_RESPONSE_META, 1);
+    }
     if (!isset($getOrderMeta->trackingKey)) {
         return;
     }
-    $isInRegex = "/$getOrderMeta->trackingKey/";
-    // preg_match returns true or false.
-    if (preg_match($isInRegex, $getShipmentContent) && !empty($getOrderMeta->trackingKey)) {
+    $webhookResponseMeta = get_post_meta($post_id, MYPARCEL_RESPONSE_META, true);
+    if (($webhookResponseMeta == 1) && !empty($getOrderMeta->trackingKey)) {
         $getAuth        = new MyParcel_API();
         $shipment       = new Shipment();
         $api            = $getAuth->apiAuthentication();
@@ -640,6 +659,13 @@ function getShipmentFiles($post_id)
     }
 }
 
+/**
+ * @param      $url
+ * @param      $data_string
+ * @param null $authorization
+ *
+ * @return bool|string
+ */
 function createWebhookCurlRequest($url, $data_string, $authorization = null)
 {
     switch ($url) {
@@ -670,6 +696,11 @@ function createWebhookCurlRequest($url, $data_string, $authorization = null)
     return $result;
 }
 
+/**
+ * @param $post_id
+ *
+ * @return array|false|string|void
+ */
 function getShipmentCurrentStatus($post_id)
 {
     $shipmentData     = [];
@@ -700,7 +731,7 @@ function admin_order_list_top_bar_button($which)
     if ('shop_order' === $typenow && 'top' === $which) {
         ?>
       <!-- Button trigger modal -->
-      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#labelModal" title="Print Selected">
+      <button type="button" id="primary-modal" class="btn btn-primary" data-toggle="modal" data-target="#labelModal" title="Print Selected">
         <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
       </button>
       <!-- Modal -->
@@ -724,7 +755,7 @@ function admin_order_list_top_bar_button($which)
               </div>
             </div>
             <div class="modal-body">
-              <div class="row cntnr" id="orientation1">
+              <div class="row cntnr" id="orientation1" style="margin: 0px;">
                 <div class="col-lg-6">
                   <label class="container">
                     <input type="radio" checked="checked" name="radio" class="toggle" value="1"> 1
@@ -754,7 +785,7 @@ function admin_order_list_top_bar_button($which)
                   <?php $loader = plugins_url('', __FILE__).'/../../assets/images/ajax-loader.gif'; ?>
                 <img class="img-responsive center-block" src="<?php echo $loader; ?>"/>
               </div>
-              <div class="alert alert-danger" style="display: none;">
+              <div class="alert alert-danger alert-dismissible fade in text-center" role="alert" style="display: none;">
                 Label is not available.
               </div>
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -822,8 +853,12 @@ function admin_order_list_top_bar_button($which)
               var ajaxscript = {ajax_url: templateUrl + '/wp-admin/admin-ajax.php'}
               // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
               jQuery.post(ajaxscript.ajax_url, data, function (response) {
-                if (response === 'Failed') {
-                  $('.modal-footer .alert-danger').show() // hide the loading message
+                var checkFailed = '<?= MYPARCEL_FAILED_TEXT; ?>'
+                if (response === checkFailed) {
+                  $('.modal-footer .alert-danger').fadeTo(2000, 500).slideUp(500, function () {
+                    $('.modal-footer .alert-danger').slideUp(1000)
+                  })
+                  $('#loadingmessage').hide() // hide the loading message
                 } else {
                   const linkSource = 'data:application/pdf;base64,' + response
                   const downloadLink = document.createElement('a')
@@ -831,15 +866,13 @@ function admin_order_list_top_bar_button($which)
                   downloadLink.href = linkSource
                   downloadLink.download = fileName
                   downloadLink.click()
+                  $('#loadingmessage').hide() // hide the loading message
+                  $('#labelModal').modal('hide')
                 }
-                $('#loadingmessage').hide() // hide the loading message
-                $('#labelModal').modal('hide')
               })
             }
             return false
-
           })
-          // });
         })
       </script>
         <?php
@@ -862,11 +895,8 @@ function my_action()
     $orderIds          = $_POST['orderIds'];
     $labelPrinter      = intval($_POST['labelPrinter']);
     $getAuth           = new MyParcel_API();
-    $shipment          = new Shipment();
-    $file              = new File();
     $labelCombiner     = new LabelCombiner();
     $api               = $getAuth->apiAuthentication();
-    $shipmentRecords   = [];
     $shipments         = [];
     foreach ($orderIds as $orderId) {
         $getShipmentKey = get_post_meta($orderId, 'shipment_track_key', true);
@@ -874,7 +904,7 @@ function my_action()
             $getShipmentKey = json_decode($getShipmentKey);
             $shipments[]    = $api->getShipment($getShipmentKey->trackingKey);
         } else {
-            echo "Failed";
+            echo MYPARCEL_FAILED_TEXT;
             exit();
         }
     }
@@ -897,6 +927,11 @@ function my_action()
     wp_die(); // this is required to terminate immediately and return a proper response
 }
 
+/**
+ * @param $selectOrientation
+ *
+ * @return mixed
+ */
 function getOrientation($selectOrientation)
 {
     switch ($selectOrientation) {
@@ -915,6 +950,11 @@ function getOrientation($selectOrientation)
     }
 }
 
+/**
+ * @param $labelPrinter
+ *
+ * @return string
+ */
 function labelPrintter($labelPrinter)
 {
     if (!empty($labelPrinter) && ($labelPrinter === 1)) {
