@@ -3,6 +3,7 @@
 define('ERROR_MESSAGE_CREDENTIAL', 'Incorrect client id or secret.');
 define('MYPARCEL_METHOD', 'myparcel');
 define('EXPORT_MYPARCEL_ORDER_TEXT', 'export_myparcel_order');
+define('PRINT_LABEL_ORDER_TEXT', 'print_label_shipment');
 define('SHIPMENT_PLUGIN_NOTICE', 'alive');
 define('ORDER_TYPE_TEXT', 'Shipped by');
 define('SHIPPED_STATUS_TEXT', 'Is partially shipped');
@@ -11,6 +12,7 @@ define('SHIPMENT_STATUS', 'Shipment Status');
 define('VIEW_STYLE_TYPE', 'view_order_style');
 define('CHECKOUT_PAGE_SCRIPT', 'checkout-page-script');
 define('EXPORT_ORDER_TO_MYPARCELCOM_TEXT', 'Export orders to MyParcel.com');
+define('PRINT_LABEL_SHIPMENT_TEXT', 'Print shipment label');
 define('GET_META_MYPARCEL_SHIPMENT_KEY', 'myparcel_shipment_key');
 define('GET_META_SHIPMENT_TRACKING_KEY', 'shipment_track_key');
 define('IS_EXISTS_TEXT', 'Exists');
@@ -39,6 +41,3 @@ define('MYPARCEL_WEBHOOK_OPTION_ID', 'myparcel_web_hook_id');
 define('MYPARCEL_DEFAULT_SHOP_ID', 'd90c6e53-8d05-49bf-b9cc-42400ed3f09f');
 define('MYPARCEL_RESPONSE_META', 'webhook_response_meta');
 define('MYPARCEL_FAILED_TEXT', 'Failed');
-
-
-

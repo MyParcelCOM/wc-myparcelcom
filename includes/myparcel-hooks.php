@@ -84,6 +84,7 @@ add_action('manage_shop_order_posts_custom_column', 'customOrdersListColumnConte
 function bulkActionsEditProduct($actions): array
 {
     $actions['export_myparcel_order'] = __(EXPORT_ORDER_TO_MYPARCELCOM_TEXT, 'export_myparcel_order');
+    $actions['print_label_shipment']  = __(PRINT_LABEL_SHIPMENT_TEXT, 'print_label_shipment');
 
     return $actions;
 }

@@ -1,36 +1,4 @@
-jQuery(function($){    
-    // $(document).on("click","#doaction,#doaction2", function(event){
-
-    //     var selectedBulkVal = $("#bulk-action-selector-top option:selected").text();
-    //     // console.log('currecnt val: ',selectedVal);
-    //     if("Export orders to MyParcel.com" === selectedBulkVal){
-    //         var orderArr = [] ; 
-    //         $("th.check-column input[type='checkbox']:checked").each(function() {
-    //             if($(this).val()){
-    //                     orderArr.push($(this).val());
-    //                     var current_parent = $(this).parent().parent().find('td.partial_shipment_status').text();
-    //                     if('Yes' === current_parent){
-    //                         event.preventDefault();
-    //                         // console.log('Vinod: ',orderArr);
-    //                         $("#confirm-modal").modal('show');
-
-    //                          $('#getConfirmValue').click(function() {
-    //                                 var selOrderTypeValue = $('input[name=partialshippend]:checked').val(); 
-    //                                 var dataStr = 'action=order_set_export&check_order_id='+selOrderTypeValue+'&orderArr='+orderArr;
-    //                                 exportToMyParcle(dataStr);
-    //                                 $("#confirm-modal").modal('hide');                                    
-    //                             });
-
-
-    //                     }else{
-    //                         $("#posts-filter").submit();
-    //                     }                    
-    //                 }
-    //         });        
-    //     }else{
-    //         $("#posts-filter").submit();
-    //     }
-    // });
+jQuery(function($){        
     function getURLParameter(url, name) {
         return (RegExp(name + '=' + '(.+?)(&|$)').exec(url)||[,null])[1];
     }    
@@ -152,20 +120,29 @@ jQuery(function($){
         });
 
     }
+      
+});
 
-    // function exportToMyParcle(dataStr){
-    //     $.ajax({
-    //         type: "POST",
-    //         data: dataStr,
-    //         dataType: 'json',
-    //         // cache: false,
-    //         // async: false,
-    //         url: ajaxUrl,
-    //         success: function(res){
-    //             console.log('Recieving the response: ',res);
-    //         }
-    //     });
-
-    // }
-
+jQuery( document ).ready(function($) {
+     var thisForm         = $('#posts-filter');        
+    $selectedOption = $("select#bulk-action-selector-top").children("option:selected").val();
+    $("select#bulk-action-selector-top").change(function(e){        
+        var thisButton     = $(this);
+        $selectedOption = $("select#bulk-action-selector-top").children("option:selected").val();
+        if($selectedOption === 'print_label_shipment') {                        
+            $('#doaction').attr('type', 'button');
+        } else {                        
+            $('#doaction').attr('type', 'submit');
+        } 
+    });
+    var btnId = $('#doaction');        
+    btnId.click(function() {        
+        if($selectedOption === 'print_label_shipment') {                        
+            btnId.attr('data-toggle', 'modal');
+            btnId.attr('data-target', '#labelModal');
+        } else {
+            btnId.removeAttr('data-toggle');
+            btnId.removeAttr('data-target');            
+        }
+    });  
 });
