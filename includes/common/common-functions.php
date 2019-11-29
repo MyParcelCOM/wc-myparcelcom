@@ -823,8 +823,7 @@ function admin_order_list_top_bar_button($which)
         jQuery(document).ready(function ($) {
           var selectVal = $("#printer-orintation input[name='selectorientation']:checked").val();
           $('#printer-orintation input[name=\'selectorientation\']').click(function () {
-            selectVal = $(this).val()
-            console.log('selectVal: ', selectVal); 
+            selectVal = $(this).val()            
             $('div.cntnr').hide()
             $('#orientation' + selectVal).show()
           })

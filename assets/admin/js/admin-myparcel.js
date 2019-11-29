@@ -2,8 +2,7 @@ jQuery(function($){
     function getURLParameter(url, name) {
         return (RegExp(name + '=' + '(.+?)(&|$)').exec(url)||[,null])[1];
     }    
-
-    // $(document).on('change','.ship_qty',function(){
+    
     $(document).ready(function () {   
         $('.btn-quanity-update').click(function (){
             var sortVal = $(this).parent();            
@@ -12,7 +11,7 @@ jQuery(function($){
             
             var qty = $(this).parent().find('.ship_qty').data('qty');
             var rqty = parseInt($(this).parent().find('.ship_qty').data('rqty'));
-            // var qty = $(this).data('qty');
+            
             var flagStatus = parseInt($(this).parent().find('.ship_qty').data('flag-id'));
             var shipQty = $(this).parent().find('.ship_qty').val();
 
@@ -20,27 +19,24 @@ jQuery(function($){
             var digitReg = /[^0-9]/g;
 
             var itemId = $(this).parent().find('.ship_qty').data('item-id');
-            var orderId = $(this).parent().find('.ship_qty').data('order-id');
-            // console.log('itemId ',itemId, 'orderId ',orderId);
-            // return false; 
+            var orderId = $(this).parent().find('.ship_qty').data('order-id');            
             
             if(digitReg.test(shipQty))
             {
                 var validationError = '<span class="qty-error"><br>Please enter only number.</span>';
-                console.log('Checking old values:- ',this);
+                
                 $(this).parent().find('.ship_qty').val(oldQty);
                 $('.qty-error').remove();
                 $(this).parent().find('.btn-quanity-update').after(validationError);
                 return false;
 
             }
-            // console.log("shipQty",shipQty);
-            // console.log("rqty",rqty);
+            
 
             if(shipQty == 0)
             {
                 var validationError = '<span class="qty-error"><br>Value should be greater then 0.</span>';
-                console.log('Checking old values:- ',this);
+                
                 $(this).parent().find('.ship_qty').val(oldQty);
                 $('.qty-error').remove();
                 $(this).parent().find('.btn-quanity-update').after(validationError);
@@ -48,7 +44,7 @@ jQuery(function($){
             }else if(rqty <= 0)
             {
                 var validationError = '<span class="qty-error"><br>All quantity are shipped for this item!.</span>';
-                console.log('Checking old values:- ',this);
+                
                 $(this).parent().find('.ship_qty').val(oldQty);
                 $('.qty-error').remove();
                 $(this).parent().find('.btn-quanity-update').after(validationError);
@@ -66,12 +62,11 @@ jQuery(function($){
                 $(".qty-error", cur).remove();
             }
             
-            var dataStr = 'action=order_set_shipped&order_id='+orderId+'&item_id='+itemId+'&qty='+qty+'&ship_quantity='+shipQty+'&productId='+productId+'&flagStatus='+flagStatus;
-            console.log('Get Datastr:-',dataStr); 
+            var dataStr = 'action=order_set_shipped&order_id='+orderId+'&item_id='+itemId+'&qty='+qty+'&ship_quantity='+shipQty+'&productId='+productId+'&flagStatus='+flagStatus;            
             orderSetShipped(dataStr);
         });
     }) ;    
-    // });
+    
 
     function orderSetShipped(dataStr){
 
@@ -83,7 +78,7 @@ jQuery(function($){
             async: false,
             url: ajaxUrl,
             success: function(res){
-                console.log(res); 
+                
                 var orderId = res.order_id;
                 var itemId = res.item_id;
                 var shipQty = res.shipped;
