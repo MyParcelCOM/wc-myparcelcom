@@ -496,7 +496,7 @@ function renderOrderColumnContent($column, $orderId, $the_order)
 }
 
 /**
- *
+ * 
  */
 function getAuthToken()
 {
@@ -618,7 +618,7 @@ function getShipmentFiles($post_id)
     if (!isset($getOrderMeta->trackingKey)) {
         return;
     }
-    $isInRegex = "/$getOrderMeta->trackingKey/";
+    $isInRegex          = "/$getOrderMeta->trackingKey/";
     if (preg_match($isInRegex, $getShipmentContent)) {
         update_post_meta($post_id, MYPARCEL_RESPONSE_META, 1);
     }
@@ -821,10 +821,10 @@ function admin_order_list_top_bar_button($which)
       </style>
       <script type="text/javascript">
         jQuery(document).ready(function ($) {
-          var selectVal = $('#printer-orintation input[name=\'selectorientation\']:checked').val()
+          var selectVal = $("#printer-orintation input[name='selectorientation']:checked").val();
           $('#printer-orintation input[name=\'selectorientation\']').click(function () {
             selectVal = $(this).val()
-            console.log('selectVal: ', selectVal)
+            console.log('selectVal: ', selectVal); 
             $('div.cntnr').hide()
             $('#orientation' + selectVal).show()
           })
@@ -904,7 +904,7 @@ function my_action()
         if (!empty($getShipmentKey)) {
             $getShipmentKey = json_decode($getShipmentKey);
             $shipments[]    = $api->getShipment($getShipmentKey->trackingKey);
-        }
+        }        
     }
     $files = [];
     if (!empty($shipments)) {

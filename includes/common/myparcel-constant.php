@@ -41,3 +41,6 @@ define('MYPARCEL_WEBHOOK_OPTION_ID', 'myparcel_web_hook_id');
 define('MYPARCEL_DEFAULT_SHOP_ID', 'd90c6e53-8d05-49bf-b9cc-42400ed3f09f');
 define('MYPARCEL_RESPONSE_META', 'webhook_response_meta');
 define('MYPARCEL_FAILED_TEXT', 'Failed');
+
+
+
