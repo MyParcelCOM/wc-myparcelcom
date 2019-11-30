@@ -1,6 +1,12 @@
 <?php
 require_once("../../../../wp-load.php");
 $responseData = file_get_contents("php://input");
-$log_filename = plugin_dir_path( __DIR__ ).'includes/request.log';	
-file_put_contents($log_filename, $responseData);
+$option_name  = MYPARCEL_WEBHOOK_RESPONSE;
+if (get_option($option_name) !== false) {
+    update_option($option_name, $responseData);
+} else {
+    $deprecated = null;
+    $autoload   = 'no';
+    add_option($option_name, $responseData, $deprecated, $autoload);
+}
 ?>
