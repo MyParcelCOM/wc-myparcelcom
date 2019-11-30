@@ -98,7 +98,6 @@ function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr)
     } else {
         foreach ($items as $item) {
             $shipItems = new ShipmentItem();
-            $product   = wc_get_product($items[$item_id]['product_id']);
             // Now you have access to (see above)...
             $quantity    = $item->get_quantity(); // get quantity
             $product     = $item->get_product(); // get the WC_Product object
@@ -178,18 +177,18 @@ function setOrderShipment(
     $flagStatus,
     $type = SHIPPED_TEXT
 ): array {
-    $shipmentNewAr                  = [];
-    $shipmentNewAr['order_id']      = $orderId;
-    $shipmentNewAr['item_id']       = $itemId;
-    $shipmentNewAr['shipped']       = $shipQty;
-    $shipmentNewAr['total_shipped'] = $totalShipQty;
-    $shipmentNewAr['qty']           = $qty;
-    $shipmentNewAr['type']          = $type;
-    $shipmentNewAr['weight']        = $weight;
-    $shipmentNewAr['remain_qty']    = $remainQty;
-    $shipmentNewAr['flagStatus']    = $flagStatus;
+    $shipments                  = [];
+    $shipments['order_id']      = $orderId;
+    $shipments['item_id']       = $itemId;
+    $shipments['shipped']       = $shipQty;
+    $shipments['total_shipped'] = $totalShipQty;
+    $shipments['qty']           = $qty;
+    $shipments['type']          = $type;
+    $shipments['weight']        = $weight;
+    $shipments['remain_qty']    = $remainQty;
+    $shipments['flagStatus']    = $flagStatus;
 
-    return $shipmentNewAr;
+    return $shipments;
 }
 
 /**
@@ -201,7 +200,7 @@ function setOrderShipment(
  */
 function extractShipmentItemArr($shippedItems, $ifShipmentTrue, &$totalWeight)
 {
-    $shippedItemeArray  = [];
+    $shippedItemArray   = [];
     $shippedItemsNewArr = [];
     $shippedCount       = 0;
     foreach ($shippedItems as $key => $shippedItem) {
@@ -225,7 +224,7 @@ function extractShipmentItemArr($shippedItems, $ifShipmentTrue, &$totalWeight)
                 $totalWeight               += $weightNew * $shippedQtyNew;
                 $shippedItem["flagStatus"] = 1;
                 array_push(
-                    $shippedItemeArray,
+                    $shippedItemArray,
                     [
                         "item_id" => $item_id,
                         "shipped" => $shippedQtyNew,
@@ -239,7 +238,7 @@ function extractShipmentItemArr($shippedItems, $ifShipmentTrue, &$totalWeight)
         array_push($shippedItemsNewArr, $shippedItem);
     }
     $response = [
-        "shippedItemeArray"  => $shippedItemeArray,
+        "shippedItemArray"   => $shippedItemArray,
         "shippedItemsNewArr" => $shippedItemsNewArr,
         "shippedCount"       => $shippedCount,
     ];
@@ -248,16 +247,16 @@ function extractShipmentItemArr($shippedItems, $ifShipmentTrue, &$totalWeight)
 }
 
 /**
- * @param array $shippedTrackingArray
- * @param array $shipmentTrackKey
- * @param array $shippedItemeArray
- * @param int   $postId
+ * @param array  $shippedTrackingArray
+ * @param string $shipmentTrackKey
+ * @param array  $shippedItemArray
+ * @param int    $postId
  */
-function setShipmentTrackingMeta($shippedTrackingArray, $shipmentTrackKey, $shippedItemeArray, $postId)
+function setShipmentTrackingMeta($shippedTrackingArray, $shipmentTrackKey, $shippedItemArray, $postId)
 {
     $shipTrackingArray = [
         "trackingKey" => $shipmentTrackKey,
-        "items"       => $shippedItemeArray,
+        "items"       => $shippedItemArray,
     ];
     array_push($shippedTrackingArray, $shipTrackingArray);
     $shippedTrackingArray = json_encode($shippedTrackingArray);
@@ -265,10 +264,10 @@ function setShipmentTrackingMeta($shippedTrackingArray, $shipmentTrackKey, $ship
 }
 
 /**
- * @param null $shipKey
  * @param int  $postId
+ * @param null $shipKey
  */
-function updateShipmentKey($shipKey = null, $postId)
+function updateShipmentKey($postId, $shipKey = null)
 {
     if (!empty($shipKey)) {
         update_post_meta($postId, GET_META_MYPARCEL_SHIPMENT_KEY, $shipKey); //Update the shipment key on database
@@ -496,7 +495,7 @@ function renderOrderColumnContent($column, $orderId, $the_order)
 }
 
 /**
- *
+ * Get Auth Token
  */
 function getAuthToken()
 {
@@ -509,35 +508,34 @@ function getAuthToken()
             "client_secret" => $clientSecretKey,
             "scope"         => "*",
         ];
-        $data_string   = json_encode($data);
+        $dataString    = json_encode($data);
         $url           = MYPARCEL_WEBHOOK_ACCESS_TOKEN;
         $authorization = '';
-        $result        = createWebhookCurlRequest($url, $data_string, $authorization);
+        $result        = createWebHookCurlRequest($url, $dataString, $authorization);
         if (!empty($result)) {
             $getToken          = json_decode($result);
-            $myparcelWebhookId = get_option(MYPARCEL_WEBHOOK_OPTION_ID);
-            if (empty($myparcelWebhookId)) {
-                registerMyParcelWebhook($getToken->access_token);
+            $myparcelWebHookId = get_option(MYPARCEL_WEBHOOK_OPTION_ID);
+            if (empty($myparcelWebHookId)) {
+                registerMyParcelWebHook($getToken->access_token);
             }
         }
     }
-
 }
 
 /**
  * @param $accessToken
  */
-function registerMyParcelWebhook($accessToken)
+function registerMyParcelWebHook($accessToken)
 {
-    $webhookUrl      = plugins_url('', dirname(__FILE__)).'/webhook.php';
-    $webhookname     = getDefaultShopId().'-myparcelcom';
+    $webHookUrl      = plugins_url('', dirname(__FILE__)).'/webhook.php';
+    $webHookName     = getDefaultShopId().'-myparcelcom';
     $data            = [
         "data" =>
             [
                 "type"          => "hooks",
                 "attributes"    =>
                     [
-                        "name"    => $webhookname,
+                        "name"    => $webHookName,
                         "order"   => 100,
                         "active"  => true,
                         "trigger" => [
@@ -548,7 +546,7 @@ function registerMyParcelWebhook($accessToken)
                             "action_type" => "send-resource",
                             "values"      => [
                                 [
-                                    "url"      => $webhookUrl,
+                                    "url"      => $webHookUrl,
                                     "includes" => [
                                         "status",
                                         "shipment",
@@ -568,17 +566,17 @@ function registerMyParcelWebhook($accessToken)
 
             ],
     ];
-    $data_string     = json_encode($data);
+    $dataString      = json_encode($data);
     $authorization   = "Authorization: Bearer $accessToken";
     $url             = MYPARCEL_WEBHOOK_URL;
-    $result          = createWebhookCurlRequest($url, $data_string, $authorization);
-    $webhookResponse = json_decode($result);
+    $result          = createWebHookCurlRequest($url, $dataString, $authorization);
+    $webHookResponse = json_decode($result);
     if (get_option(MYPARCEL_WEBHOOK_OPTION_ID) !== false) {
-        update_option(MYPARCEL_WEBHOOK_OPTION_ID, $webhookResponse->data->id);
+        update_option(MYPARCEL_WEBHOOK_OPTION_ID, $webHookResponse->data->id);
     } else {
         $deprecated = null;
         $autoload   = 'no';
-        add_option(MYPARCEL_WEBHOOK_OPTION_ID, $webhookResponse->data->id, $deprecated, $autoload);
+        add_option(MYPARCEL_WEBHOOK_OPTION_ID, $webHookResponse->data->id, $deprecated, $autoload);
     }
 }
 
@@ -610,19 +608,20 @@ function getShipmentFiles($post_id)
     if (!isset($getOrderMeta->trackingKey)) {
         return;
     }
-    $webhookData = get_option(MYPARCEL_WEBHOOK_RESPONSE);
-    if (!empty($webhookData)) {
-        $getShipmentContent = json_decode($webhookData, true);
-        $getShipmentdata    = $getShipmentContent['included'];
-        if (!empty($getShipmentdata)) {
-            $id = array_column($getShipmentdata, 'id');
+
+    $webHookData = get_option(MYPARCEL_WEBHOOK_RESPONSE);
+    if (!empty($webHookData)) {
+        $getShipmentContent = json_decode($webHookData, true);
+        $getShipmentData    = $getShipmentContent['included'];
+        if (!empty($getShipmentData)) {
+            $id = array_column($getShipmentData, 'id');
             if (in_array($getOrderMeta->trackingKey, $id)) {
                 update_post_meta($post_id, MYPARCEL_RESPONSE_META, 1);
             }
         }
     }
-    $webhookResponseMeta = get_post_meta($post_id, MYPARCEL_RESPONSE_META, true);
-    if (($webhookResponseMeta == 1) && !empty($getOrderMeta->trackingKey)) {
+    $webHookResponseMeta = get_post_meta($post_id, MYPARCEL_RESPONSE_META, true);
+    if (($webHookResponseMeta == 1) && !empty($getOrderMeta->trackingKey)) {
         $getAuth        = new MyParcel_API();
         $shipment       = new Shipment();
         $api            = $getAuth->apiAuthentication();
@@ -660,12 +659,12 @@ function getShipmentFiles($post_id)
 
 /**
  * @param      $url
- * @param      $data_string
+ * @param      $dataString
  * @param null $authorization
  *
  * @return bool|string
  */
-function createWebhookCurlRequest($url, $data_string, $authorization = null)
+function createWebHookCurlRequest($url, $dataString, $authorization = null)
 {
     switch ($url) {
         case MYPARCEL_WEBHOOK_URL:
@@ -683,7 +682,7 @@ function createWebhookCurlRequest($url, $data_string, $authorization = null)
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
     $result = curl_exec($ch);
@@ -823,7 +822,6 @@ function admin_order_list_top_bar_button($which)
           var selectVal = $('#printer-orintation input[name=\'selectorientation\']:checked').val()
           $('#printer-orintation input[name=\'selectorientation\']').click(function () {
             selectVal = $(this).val()
-            console.log('selectVal: ', selectVal)
             $('div.cntnr').hide()
             $('#orientation' + selectVal).show()
           })
@@ -850,9 +848,9 @@ function admin_order_list_top_bar_button($which)
                 'labelPrinter': selectVal
               }
               var templateUrl = '<?= get_site_url(); ?>'
-              var ajaxscript = {ajax_url: templateUrl + '/wp-admin/admin-ajax.php'}
+              var ajaxScript = {ajax_url: templateUrl + '/wp-admin/admin-ajax.php'}
               // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
-              jQuery.post(ajaxscript.ajax_url, data, function (response) {
+              jQuery.post(ajaxScript.ajax_url, data, function (response) {
                 var checkFailed = '<?= MYPARCEL_FAILED_TEXT; ?>'
                 if (response === checkFailed) {
                   $('.modal-footer .alert-danger').fadeTo(2000, 500).slideUp(500, function () {

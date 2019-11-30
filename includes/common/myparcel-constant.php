@@ -1,5 +1,4 @@
 <?php
-
 define('ERROR_MESSAGE_CREDENTIAL', 'Incorrect client id or secret.');
 define('MYPARCEL_METHOD', 'myparcel');
 define('EXPORT_MYPARCEL_ORDER_TEXT', 'export_myparcel_order');

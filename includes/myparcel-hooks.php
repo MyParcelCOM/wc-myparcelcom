@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use MyParcelCom\ApiSdk\MyParcelComApi;
 use MyParcelCom\ApiSdk\Resources\Address;
 use MyParcelCom\ApiSdk\Resources\Shipment;
 use MyParcelCom\ApiSdk\Resources\Interfaces\PhysicalPropertiesInterface;
@@ -19,12 +20,15 @@ function myparcelExceptionRedirection()
  */
 function addFrontEndJs(): void
 {
-    $absPath = __FILE__; 
-    wp_enqueue_style(VIEW_STYLE_TYPE, plugins_url('', $absPath).'/../assets/front-end/css/frontend-myparcel.css');
+    $absolutePath = __FILE__;
+    wp_enqueue_style(
+        VIEW_STYLE_TYPE,
+        plugins_url('', $absolutePath).'/../assets/front-end/css/frontend-myparcel.css'
+    );
     if (is_page('checkout')) {
         wp_register_script(
             CHECKOUT_PAGE_SCRIPT,
-            plugins_url('woocommerce-connect-myparcel/assets/front-end/js/address-checkout-page.js', $absPath),
+            plugins_url('woocommerce-connect-myparcel/assets/front-end/js/address-checkout-page.js', $absolutePath),
             '',
             '1.0',
             true
@@ -35,7 +39,6 @@ function addFrontEndJs(): void
 
 add_action('wp_enqueue_scripts', 'addFrontEndJs');
 
-
 /**
  * @param array $columns
  *
@@ -43,20 +46,20 @@ add_action('wp_enqueue_scripts', 'addFrontEndJs');
  */
 function customShopOrderColumn($columns): array
 {
-    $newColumn = [];
-    $i         = 0;
+    $customShopOrderColumn = [];
+    $i                     = 0;
     foreach ($columns as $key => $value) {
         if (5 === $i) {
-            $newColumn['order_type']     = __(ORDER_TYPE_TEXT, 'order_type');
-            $newColumn['shipped_status'] = __(SHIPPED_STATUS_TEXT, 'shipped_status');
-            $newColumn['shipped_label'] = __(SHIPPED_LABEL, 'shipped_label');
-            $newColumn['get_shipment_status'] = __(SHIPMENT_STATUS, 'get_shipment_status');
+            $customShopOrderColumn['order_type']          = __(ORDER_TYPE_TEXT, 'order_type');
+            $customShopOrderColumn['shipped_status']      = __(SHIPPED_STATUS_TEXT, 'shipped_status');
+            $customShopOrderColumn['shipped_label']       = __(SHIPPED_LABEL, 'shipped_label');
+            $customShopOrderColumn['get_shipment_status'] = __(SHIPMENT_STATUS, 'get_shipment_status');
         }
-        $newColumn[$key] = $value;
+        $customShopOrderColumn[$key] = $value;
         $i++;
     }
 
-    return $newColumn;
+    return $customShopOrderColumn;
 }
 
 add_filter('manage_edit-shop_order_columns', 'customShopOrderColumn', 11);
@@ -69,7 +72,7 @@ add_filter('manage_edit-shop_order_columns', 'customShopOrderColumn', 11);
 function customOrdersListColumnContent($column): void
 {
     global $post, $woocommerce, $the_order;
-    $order = new WC_Order($post->ID);
+    $order   = new WC_Order($post->ID);
     $orderId = trim(str_replace('#', '', $order->get_order_number()));
     renderOrderColumnContent($column, $orderId, $the_order);
 }
@@ -84,7 +87,7 @@ add_action('manage_shop_order_posts_custom_column', 'customOrdersListColumnConte
 function bulkActionsEditProduct($actions): array
 {
     $actions['export_myparcel_order'] = __(EXPORT_ORDER_TO_MYPARCELCOM_TEXT, 'export_myparcel_order');
-    $actions['print_label_shipment'] = __(PRINT_LABEL_SHIPMENT_TEXT, 'print_label_shipment');
+    $actions['print_label_shipment']  = __(PRINT_LABEL_SHIPMENT_TEXT, 'print_label_shipment');
 
     return $actions;
 }
@@ -110,7 +113,7 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
                 break;
             }
         }
-        if ($isAllMyParcelOrder) {
+        if (!empty($isAllMyParcelOrder)) {
             $orderShippedCount = 0;
             foreach ($postIds as $postId) {
                 //Check if order belongs to partial shipment or normal one
@@ -123,17 +126,16 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
                 if ($shippedData) {
                     $shippedItems        = (!empty($shippedData)) ? json_decode($shippedData, true) : '';
                     $totalWeight         = 0;
-                    $itemIdArr           = [];
                     $extractShippedItems = extractShipmentItemArr($shippedItems, $ifShipmentTrue, $totalWeight);
-                    $shippedItemeArray   = $extractShippedItems["shippedItemeArray"];
+                    $shippedItemArray    = $extractShippedItems["shippedItemeArray"];
                     $shippedItemsNewArr  = $extractShippedItems["shippedItemsNewArr"];
                     $shippedCount        = $extractShippedItems["shippedCount"];
                     if ($shippedCount < count($shippedItemsNewArr)) {
                         $shippedItemsNewArr = json_encode($shippedItemsNewArr);
                         $packages           = WC()->shipping->get_packages();
-                        $shipmentTrackKey   = createPartialOrderShipment($postId, $totalWeight, $shippedItemeArray);
+                        $shipmentTrackKey   = createPartialOrderShipment($postId, $totalWeight, $shippedItemArray);
                         update_post_meta($postId, GET_META_MYPARCEL_ORDER_SHIPMENT_TEXT, $shippedItemsNewArr);
-                        setShipmentTrackingMeta($shippedTrackingArray, $shipmentTrackKey, $shippedItemeArray, $postId);                        
+                        setShipmentTrackingMeta($shippedTrackingArray, $shipmentTrackKey, $shippedItemArray, $postId);
                     } else {
                         return $redirectTo = add_query_arg(['check_action' => 'shipped_already_created'], $redirectTo);
                     }
@@ -141,9 +143,17 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
                     $orderShippedCount++;
                     // Update the shipment key 
                     if (!empty($shipKey)) {
-                        update_post_meta($postId, GET_META_MYPARCEL_SHIPMENT_KEY, $shipKey); //Update the shipment key on database
+                        update_post_meta(
+                            $postId,
+                            GET_META_MYPARCEL_SHIPMENT_KEY,
+                            $shipKey
+                        ); //Update the shipment key on database
                     } else {
-                        add_post_meta($postId, GET_META_MYPARCEL_SHIPMENT_KEY, uniqid()); //Update the shipment key on database
+                        add_post_meta(
+                            $postId,
+                            GET_META_MYPARCEL_SHIPMENT_KEY,
+                            uniqid()
+                        ); //Update the shipment key on database
                     }
                     $redirectTo = ($orderShippedCount > 0) ? add_query_arg(
                         ['export_shipment_action' => $orderShippedCount, 'check_action' => 'export_order'],
@@ -151,23 +161,22 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
                     ) : $redirectTo;
                 } else {
                     if (empty($shipKey) || $shipKey === '') {
-                        $order_data       = getOrderData($postId);
                         $totalWeight      = getTotalWeightByPostID($postId);
                         $packages         = WC()->shipping->get_packages();
                         $shipmentTrackKey = createPartialOrderShipment($postId, $totalWeight);
                         $orderShippedCount++;
                         /* Update the shipment key*/
-                        updateShipmentKey($shipKey, $postId);
+                        updateShipmentKey($postId,$shipKey);
                         $getMyParcelKey = get_post_meta($postId, GET_META_MYPARCEL_SHIPMENT_KEY, true);
                         if ($getMyParcelKey) {
-                                $shipTrackingArray = [
-                                    "trackingKey" => $shipmentTrackKey,
-                                    "items"       => '',
-                                ];
-                                
+                            $shipTrackingArray = [
+                                "trackingKey" => $shipmentTrackKey,
+                                "items"       => '',
+                            ];
+
                             $shippedTrackingArray = json_encode($shipTrackingArray);
                             update_post_meta($postId, GET_META_SHIPMENT_TRACKING_KEY, $shippedTrackingArray);
-                            update_post_meta($postId, '_my_parcel_shipment_for_normal_order', 'exported');                            
+                            update_post_meta($postId, '_my_parcel_shipment_for_normal_order', 'exported');
                         }
                         $redirectTo = ($orderShippedCount > 0) ? add_query_arg(
                             ['export_shipment_action' => $orderShippedCount, 'check_action' => 'export_order'],
@@ -222,7 +231,6 @@ function exportPrintBulkActionAdminNotice(): void
         }
         delete_transient("shipment-plugin-notice");
     }
-
 }
 
 add_action('admin_notices', 'exportPrintBulkActionAdminNotice');
@@ -250,13 +258,17 @@ function isMyParcelOrder($orderId): bool
     return false;
 }
 
-add_action('wp_head', 'incAdminAjaxUrl');
+/**
+ * Admin Ajax URL
+ */
 function incAdminAjaxUrl()
 {
     echo '<script type="text/javascript">
            var ajaxurl = "'.admin_url('admin-ajax.php').'";
          </script>';
 }
+
+add_action('wp_head', 'incAdminAjaxUrl');
 
 /**
  * @param array $orderId
@@ -273,60 +285,59 @@ function getPartialShippingQuantity($orderId): array
 }
 
 /**
- * Logic for exporing order to Myparcel.com
+ * Logic for exporting order to Myparcel.com
  *
  * @param array $orderId
  *
  * @return $shipmentId
  **/
-function createPartialOrderShipment($orderId, $totalWeight, $shippedItemsNewArr = [])
+function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
 {
     global $woocommerce;
     $currency       = get_woocommerce_currency();
     $countAllWeight = ($totalWeight) ? $totalWeight : 500;
-    $order_data     = getOrderData($orderId);
+    $orderData      = getOrderData($orderId);
     $shipment       = new Shipment();
     // SHIPPING INFORMATION:
-    $order_shipping_first_name = $order_data['shipping']['first_name'];
-    $order_shipping_last_name  = $order_data['shipping']['last_name'];
-    $order_shipping_address_1  = $order_data['shipping']['address_1'];
-    $order_shipping_city       = $order_data['shipping']['city'];
-    $order_shipping_postcode   = $order_data['shipping']['postcode'];
-    $order_shipping_country    = $order_data['shipping']['country'];
-    $order_billing_email       = $order_data['billing']['email'];
-    $order_billing_phone       = $order_data['billing']['phone'];
-    $isEU                      = isEUCountry($order_shipping_country);
+    $orderShippingFirstName = $orderData['shipping']['first_name'];
+    $orderShippingLastName  = $orderData['shipping']['last_name'];
+    $orderShippingAddress1  = $orderData['shipping']['address_1'];
+    $orderShippingCity      = $orderData['shipping']['city'];
+    $orderShippingPostcode  = $orderData['shipping']['postcode'];
+    $orderShippingCountry   = $orderData['shipping']['country'];
+    $orderBillingEmail      = $orderData['billing']['email'];
+    $orderBillingPhone      = $orderData['billing']['phone'];
+    $isEU                   = isEUCountry($orderShippingCountry);
     if ($isEU == false) {
-        $shipAddItems = setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr);
+        $shipAddItems = setItemForNonEuCountries($orderId, $currency, $shippedItems);
     } else {
-        $shipAddItems = setItemForEuCountries($orderId, $shippedItemsNewArr);
+        $shipAddItems = setItemForEuCountries($orderId, $shippedItems);
     }
     $recipient = new Address();    // Creating address object
     $recipient
-        ->setStreet1($order_shipping_address_1)
-        ->setCity($order_shipping_city)
-        ->setPostalCode($order_shipping_postcode)
-        ->setFirstName($order_shipping_first_name)
-        ->setLastName($order_shipping_last_name)
-        ->setCountryCode($order_shipping_country)
-        ->setEmail($order_billing_email)
-        ->setPhoneNumber($order_billing_phone);
+        ->setStreet1($orderShippingAddress1)
+        ->setCity($orderShippingCity)
+        ->setPostalCode($orderShippingPostcode)
+        ->setFirstName($orderShippingFirstName)
+        ->setLastName($orderShippingLastName)
+        ->setCountryCode($orderShippingCountry)
+        ->setEmail($orderBillingEmail)
+        ->setPhoneNumber($orderBillingPhone);
     // Create the shipment and set required parameters.
     $shipment
         ->setRecipientAddress($recipient)
-        ->setWeight($countAllWeight, PhysicalPropertiesInterface::WEIGHT_GRAM)                
-        ->setDescription('Order id: '.(string)($orderId))        
+        ->setWeight($countAllWeight, PhysicalPropertiesInterface::WEIGHT_GRAM)
+        ->setDescription('Order id: '.(string)($orderId))
         ->setItems($shipAddItems);
     $getAuth = new MyParcel_API();
-    $api     = $getAuth->apiAuthentication();    
+    $api     = $getAuth->apiAuthentication();
 
-    $services = $api->getServices($shipment);    
+    $services = $api->getServices($shipment);
     // Have the SDK determine the cheapest service and post the shipment to the MyParcel.com API.
-    $createdShipment = $api->createShipment($shipment);        
+    $createdShipment = $api->createShipment($shipment);
     $shipmentId      = $createdShipment->getId();
 
     return $shipmentId;
-
 }
 
 /**
@@ -360,7 +371,11 @@ function express_shipping_update_order_status($order_id)
     // Get the WC_Order_Item_Shipping object data
     foreach ($order->get_shipping_methods() as $shipping_item) {
         $methodId = $shipping_item->get_id();
-        $pd       = wc_update_order_item_meta($methodId, 'method_id', MYPARCEL_METHOD); //Update all the method id to myparcel
+        $pd       = wc_update_order_item_meta(
+            $methodId,
+            'method_id',
+            MYPARCEL_METHOD
+        ); //Update all the method id to myparcel
     }
 }
 
@@ -383,13 +398,13 @@ function notify_shop_owner_new_order($order_id)
 }
 
 /**
- * @param CountryCode $countrycode
+ * @param CountryCode $countryCode
  *
  * @return bool
  **/
-function isEUCountry($countrycode)
+function isEUCountry($countryCode)
 {
-    $eu_countrycodes = [
+    $euCountryCodes = [
         'AT',
         'BE',
         'BG',
@@ -420,12 +435,12 @@ function isEUCountry($countrycode)
         'SK',
     ];
 
-    return (in_array($countrycode, $eu_countrycodes));
+    return (in_array($countryCode, $euCountryCodes));
 }
 
 function shutDownFunction()
 {
-    $error = error_get_last();        
+    $error = error_get_last();
     if ($error != null || $error != '') {
         // Given URL
         $url = $error['file'];
@@ -441,16 +456,16 @@ function shutDownFunction()
         if ($error['type'] === E_ERROR && $message === IS_EXISTS_TEXT) {
             myparcelExceptionRedirection();
         }
-
     }
 }
 
 register_shutdown_function('shutDownFunction');
 
-add_action('init', 'register_session');
 function register_session()
 {
     if (!session_id()) {
         session_start();
     }
 }
+
+add_action('init', 'register_session');

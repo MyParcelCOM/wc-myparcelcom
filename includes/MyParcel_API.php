@@ -12,7 +12,6 @@ class MyParcel_API
     protected const CHECK_ACT_TEST_MODE  = '1';
 
     /**
-     *
      * @return MyParcelComApi
      */
     public function apiAuthentication(): MyParcelComApi
@@ -24,8 +23,8 @@ class MyParcel_API
             $apiUrl     = self::API_SANDBOX_URL;
             $apiAuthUrl = self::API_SANDBOX_AUTH_URL;
         } else {
-            $apiUrl     = self::API_URL; // Production api URL
-            $apiAuthUrl = self::API_AUTH_URL; //Production api Auth URL
+            $apiUrl     = self::API_URL; // Production API URL
+            $apiAuthUrl = self::API_AUTH_URL; //Production API Auth URL
         }
         if (!empty($apiUrl) && !empty($apiAuthUrl) && !empty($clientKey) && !empty($clientSecretKey)) {
             $api           = new MyParcelComApi($apiUrl);
@@ -41,4 +40,3 @@ class MyParcel_API
         }
     }
 }
-

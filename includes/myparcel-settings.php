@@ -1,19 +1,30 @@
 <?php declare(strict_types=1);
 
-add_action('admin_enqueue_scripts', 'settingPageJsCss', 999);
-
 /**
  *
  * @return void
  */
 function settingPageJsCss(): void
 {
-    wp_enqueue_script('validation', plugins_url('', __FILE__).'/../assets/admin/js/jquery.validate.js', '', '', false);
-    wp_register_script('setting_page_js', plugins_url('', __FILE__).'/../assets/admin/js/setting-page.js', '', '', true);
+    wp_enqueue_script(
+        'validation',
+        plugins_url('', __FILE__).'/../assets/admin/js/jquery.validate.js',
+        '',
+        '',
+        false
+    );
+
+    wp_register_script(
+        'setting_page_js',
+        plugins_url('', __FILE__).'/../assets/admin/js/setting-page.js',
+        '',
+        '',
+        true
+    );
     wp_enqueue_script('setting_page_js');
 }
 
-add_action('admin_init', 'registerSettings');
+add_action('admin_enqueue_scripts', 'settingPageJsCss', 999);
 
 /**
  * Register setting in setting panel
@@ -34,13 +45,15 @@ function registerSettings(): void
     register_setting('myplugin_options_group', 'checkValidation', 'validationCallBack');
 }
 
+add_action('admin_init', 'registerSettings');
+
 /**
  *
  * @return bool
  */
 function validationCallBack(): bool
 {
-    $error = false;
+    $error     = false;
     $clientKey = get_option('client_key');
     $secretKey = get_option('client_secret_key');
     if (empty($clientKey) || empty($secretKey)) {
@@ -59,12 +72,16 @@ function validationCallBack(): bool
         return false;
     } else {
 
-        add_settings_error('show_message', esc_attr('settings_updated'), __(MYPARCEL_SETTING_SAVE_TEXT), 'updated');
+        add_settings_error(
+            'show_message',
+            esc_attr('settings_updated'),
+            __(MYPARCEL_SETTING_SAVE_TEXT),
+            'updated'
+        );
         add_action('admin_notices', 'printErrors');
 
         return true;
     }
-
 }
 
 /**
@@ -87,16 +104,22 @@ function updateOption(): void
     update_option('ship_exists', '0');
 }
 
-add_action('admin_menu', 'addSettingMenu');
-
 /**
  *
  * @return void
  */
 function addSettingMenu(): void
 {
-    add_options_page('API Setting', MYPARCEL_API_SETTING_TEXT, 'manage_options', 'api_setting', 'settingPage');
+    add_options_page(
+        'API Setting',
+        MYPARCEL_API_SETTING_TEXT,
+        'manage_options',
+        'api_setting',
+        'settingPage'
+    );
 }
+
+add_action('admin_menu', 'addSettingMenu');
 
 /**
  *
@@ -107,5 +130,3 @@ function settingPage(): void
     global $woocommerce;
     prepareHtmlForSettingPage();
 }
-
-?>
