@@ -585,7 +585,7 @@ function registerMyParcelWebHook($accessToken)
  */
 function getDefaultShopId()
 {
-    $getAuth       = new MyParcel_API();
+    $getAuth       = new MyParcelApi();
     $api           = $getAuth->apiAuthentication();
     $shop          = $api->getDefaultShop();
     $defaultShopId = $shop->getId();
@@ -622,7 +622,7 @@ function getShipmentFiles($post_id)
     }
     $webHookResponseMeta = get_post_meta($post_id, MYPARCEL_RESPONSE_META, true);
     if (($webHookResponseMeta == 1) && !empty($getOrderMeta->trackingKey)) {
-        $getAuth        = new MyParcel_API();
+        $getAuth        = new MyParcelApi();
         $shipment       = new Shipment();
         $api            = $getAuth->apiAuthentication();
         $shipment       = $api->getShipment($getOrderMeta->trackingKey);
@@ -630,7 +630,7 @@ function getShipmentFiles($post_id)
         $shipmentStatus = $shipment->getShipmentStatus();
         $status         = $shipmentStatus->getStatus();
         if (!empty($getRegisterAt) && ($status->getCode() === MYPARCEL_SHIPMENT_REGISTERED)) {
-            $getAuth  = new MyParcel_API();
+            $getAuth  = new MyParcelApi();
             $file     = new File();
             $api      = $getAuth->apiAuthentication();
             $shipment = $api->getShipment($getOrderMeta->trackingKey);
@@ -707,7 +707,7 @@ function getShipmentCurrentStatus($post_id)
     if (!$getOrderMeta) {
         return;
     } // Exit
-    $getAuth  = new MyParcel_API();
+    $getAuth  = new MyParcelApi();
     $shipment = new Shipment();
     $api      = $getAuth->apiAuthentication();
     if (!empty($getOrderMeta->trackingKey)) {
@@ -892,7 +892,7 @@ function my_action()
     $selectOrientation = intval($_POST['selectOrientation']);
     $orderIds          = $_POST['orderIds'];
     $labelPrinter      = intval($_POST['labelPrinter']);
-    $getAuth           = new MyParcel_API();
+    $getAuth           = new MyParcelApi();
     $labelCombiner     = new LabelCombiner();
     $api               = $getAuth->apiAuthentication();
     $shipments         = [];

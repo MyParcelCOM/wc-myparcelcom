@@ -166,7 +166,7 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
                         $shipmentTrackKey = createPartialOrderShipment($postId, $totalWeight);
                         $orderShippedCount++;
                         /* Update the shipment key*/
-                        updateShipmentKey($postId,$shipKey);
+                        updateShipmentKey($postId, $shipKey);
                         $getMyParcelKey = get_post_meta($postId, GET_META_MYPARCEL_SHIPMENT_KEY, true);
                         if ($getMyParcelKey) {
                             $shipTrackingArray = [
@@ -329,7 +329,7 @@ function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
         ->setWeight($countAllWeight, PhysicalPropertiesInterface::WEIGHT_GRAM)
         ->setDescription('Order id: '.(string)($orderId))
         ->setItems($shipAddItems);
-    $getAuth = new MyParcel_API();
+    $getAuth = new MyParcelApi();
     $api     = $getAuth->apiAuthentication();
 
     $services = $api->getServices($shipment);

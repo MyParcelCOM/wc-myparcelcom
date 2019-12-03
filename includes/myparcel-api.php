@@ -3,7 +3,7 @@
 use \MyParcelCom\ApiSdk\MyParcelComApi;
 use \MyParcelCom\ApiSdk\Authentication\ClientCredentials;
 
-class MyParcel_API
+class MyParcelApi
 {
     protected const API_URL              = 'https://api.myparcel.com';
     protected const API_AUTH_URL         = 'https://auth.myparcel.com';
