@@ -1,1 +1,2 @@
-# woo-plugin
+# mp-woocommerce-plugin
+Myparcel Wordpress woo-commerce Plugin
