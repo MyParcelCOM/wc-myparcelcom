@@ -4,7 +4,7 @@
  *
  * @return void
  */
-function settingPageJsCss(): void
+function settingPageJsCss()
 {
     wp_enqueue_script(
         'validation',
@@ -31,17 +31,19 @@ add_action('admin_enqueue_scripts', 'settingPageJsCss', 999);
  *
  * @return void
  */
-function registerSettings(): void
+function registerSettings()
 {
     add_option('client_key', '');
     add_option('client_secret_key', '');
     add_option('ship_exists', '0');
     add_option('act_test_mode', '0');
+    add_option('myparcel_shopid', '');
 
     register_setting('myplugin_options_group', 'client_key');
     register_setting('myplugin_options_group', 'client_secret_key');
     register_setting('myplugin_options_group', 'ship_exists');
     register_setting('myplugin_options_group', 'act_test_mode');
+    register_setting('myplugin_options_group', 'myparcel_shopid');
     register_setting('myplugin_options_group', 'checkValidation', 'validationCallBack');
 }
 
@@ -53,9 +55,10 @@ add_action('admin_init', 'registerSettings');
  */
 function validationCallBack(): bool
 {
-    $error     = false;
-    $clientKey = get_option('client_key');
-    $secretKey = get_option('client_secret_key');
+    $error          = false;
+    $clientKey      = get_option('client_key');
+    $secretKey      = get_option('client_secret_key');
+    $myparcelshopId = get_option('myparcel_shopid');
     if (empty($clientKey) || empty($secretKey)) {
         $error = true;
     }
@@ -86,9 +89,26 @@ function validationCallBack(): bool
 
 /**
  *
+ * Action called to register webhook token
+ */
+add_action(
+    'update_option_myparcel_shopid',
+    function ($old_value, $new_value) {
+        if ($old_value != $new_value) {
+            if (function_exists('getAuthToken')) {
+                getAuthToken();
+            }
+        }
+    },
+    10,
+    2
+);
+
+/**
+ *
  * @return void
  */
-function printErrors(): void
+function printErrors()
 {
     settings_errors('show_message');
 }
@@ -97,18 +117,19 @@ function printErrors(): void
  *
  * @return void
  */
-function updateOption(): void
+function updateOption()
 {
     update_option('client_key', '');
     update_option('client_secret_key', '');
     update_option('ship_exists', '0');
+    update_option('myparcel_shopid', '');
 }
 
 /**
  *
  * @return void
  */
-function addSettingMenu(): void
+function addSettingMenu()
 {
     add_options_page(
         'API Setting',
@@ -125,8 +146,10 @@ add_action('admin_menu', 'addSettingMenu');
  *
  * @return void
  */
-function settingPage(): void
+function settingPage()
 {
     global $woocommerce;
     prepareHtmlForSettingPage();
 }
+
+

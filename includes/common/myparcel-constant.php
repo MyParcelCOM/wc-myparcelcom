@@ -41,3 +41,6 @@ define('MYPARCEL_DEFAULT_SHOP_ID', 'd90c6e53-8d05-49bf-b9cc-42400ed3f09f');
 define('MYPARCEL_RESPONSE_META', 'webhook_response_meta');
 define('MYPARCEL_FAILED_TEXT', 'Failed');
 define('MYPARCEL_WEBHOOK_RESPONSE', 'webhook_response_option');
+define('MYPARCEL_SHOPID', 'MyParcel.com Shop');
+define('MYPARCEL_SHOPID_HELPTEXT', 'Please select the related MyParcel.com shop for this Wordpress Shop.');
+define('MYPARCEL_CHOOSESHOPID', 'Choose Shop ID');

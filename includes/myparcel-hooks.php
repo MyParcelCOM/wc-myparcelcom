@@ -18,7 +18,7 @@ function myparcelExceptionRedirection()
  *
  * @return void
  */
-function addFrontEndJs(): void
+function addFrontEndJs()
 {
     $absolutePath = __FILE__;
     wp_enqueue_style(
@@ -69,7 +69,7 @@ add_filter('manage_edit-shop_order_columns', 'customShopOrderColumn', 11);
  *
  * @return void
  */
-function customOrdersListColumnContent($column): void
+function customOrdersListColumnContent($column)
 {
     global $post, $woocommerce, $the_order;
     $order   = new WC_Order($post->ID);
@@ -203,7 +203,7 @@ set_transient("shipment-plugin-notice", SHIPMENT_PLUGIN_NOTICE, 3);
  *
  * @return void
  */
-function exportPrintBulkActionAdminNotice(): void
+function exportPrintBulkActionAdminNotice()
 {
     if (SHIPMENT_PLUGIN_NOTICE === get_transient("shipment-plugin-notice")) {
         if (!empty($_REQUEST['export_shipment_action']) && 'export_order' == $_REQUEST['check_action']) {
@@ -298,16 +298,21 @@ function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
     $countAllWeight = ($totalWeight) ? $totalWeight : 500;
     $orderData      = getOrderData($orderId);
     $shipment       = new Shipment();
+
     // SHIPPING INFORMATION:
     $orderShippingFirstName = $orderData['shipping']['first_name'];
     $orderShippingLastName  = $orderData['shipping']['last_name'];
     $orderShippingAddress1  = $orderData['shipping']['address_1'];
+    $orderShippingAddress2  = $orderData['shipping']['address_2'];
+    $orderShippingCompany   = $orderData['shipping']['company'];
     $orderShippingCity      = $orderData['shipping']['city'];
     $orderShippingPostcode  = $orderData['shipping']['postcode'];
     $orderShippingCountry   = $orderData['shipping']['country'];
     $orderBillingEmail      = $orderData['billing']['email'];
     $orderBillingPhone      = $orderData['billing']['phone'];
     $isEU                   = isEUCountry($orderShippingCountry);
+    $selectedShop           = getSelectedShop();
+
     if ($isEU == false) {
         $shipAddItems = setItemForNonEuCountries($orderId, $currency, $shippedItems);
     } else {
@@ -316,6 +321,8 @@ function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
     $recipient = new Address();    // Creating address object
     $recipient
         ->setStreet1($orderShippingAddress1)
+        ->setStreet2($orderShippingAddress2)
+        ->setCompany($orderShippingAddress1)
         ->setCity($orderShippingCity)
         ->setPostalCode($orderShippingPostcode)
         ->setFirstName($orderShippingFirstName)
@@ -328,17 +335,38 @@ function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
         ->setRecipientAddress($recipient)
         ->setWeight($countAllWeight, PhysicalPropertiesInterface::WEIGHT_GRAM)
         ->setDescription('Order id: '.(string)($orderId))
-        ->setItems($shipAddItems);
-    $getAuth = new MyParcelApi();
-    $api     = $getAuth->apiAuthentication();
+        ->setItems($shipAddItems)
+        ->setShop($selectedShop);
 
+    $getAuth  = new MyParcelApi();
+    $api      = $getAuth->apiAuthentication();
     $services = $api->getServices($shipment);
     // Have the SDK determine the cheapest service and post the shipment to the MyParcel.com API.
     $createdShipment = $api->createShipment($shipment);
     $shipmentId      = $createdShipment->getId();
+    setShipmentRegister($shipmentId);
 
     return $shipmentId;
 }
+
+
+/**
+ * @param Shipment $shipment
+ * @param string   $when
+ *
+ * @return mixed
+ **/
+function setShipmentRegister($shipmentId)
+{
+    $getAuth  = new MyParcelApi();
+    $api      = $getAuth->apiAuthentication();
+    $shipment = $api->getShipment($shipmentId);
+    $shipment->setRegisterAt(new \DateTime());
+    $updateShipmentResp = $api->updateShipment($shipment);
+
+    return;
+}
+
 
 /**
  * @param Shipment $shipment
