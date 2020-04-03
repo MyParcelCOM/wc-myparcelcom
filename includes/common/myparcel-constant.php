@@ -1,14 +1,17 @@
 <?php
-
 define('ERROR_MESSAGE_CREDENTIAL', 'Incorrect client id or secret.');
 define('MYPARCEL_METHOD', 'myparcel');
 define('EXPORT_MYPARCEL_ORDER_TEXT', 'export_myparcel_order');
+define('PRINT_LABEL_ORDER_TEXT', 'print_label_shipment');
 define('SHIPMENT_PLUGIN_NOTICE', 'alive');
 define('ORDER_TYPE_TEXT', 'Shipped by');
-define('SHIPPED_STATUS_TEXT', 'Shipping status');
+define('SHIPPED_STATUS_TEXT', 'Is partially shipped');
+define('SHIPPED_LABEL', 'Label');
+define('SHIPMENT_STATUS', 'Shipment Status');
 define('VIEW_STYLE_TYPE', 'view_order_style');
 define('CHECKOUT_PAGE_SCRIPT', 'checkout-page-script');
 define('EXPORT_ORDER_TO_MYPARCELCOM_TEXT', 'Export orders to MyParcel.com');
+define('PRINT_LABEL_SHIPMENT_TEXT', 'Print shipment label');
 define('GET_META_MYPARCEL_SHIPMENT_KEY', 'myparcel_shipment_key');
 define('GET_META_SHIPMENT_TRACKING_KEY', 'shipment_track_key');
 define('IS_EXISTS_TEXT', 'Exists');
@@ -25,8 +28,16 @@ define('MYPARCEL_API_ACT_TESTMODE_TEXT', 'Activate testmode');
 define('MYPARCEL_API_TEXT', 'MyParcel.com');
 define('MYPARCEL_API_CURRENT_VERSION', 'Current version');
 define('MYPARCEL_API_SUPPORT_TEXT', 'MyParcel.com support');
-define('MYPARCEL_PARTIALLY_SHIPPED_TEXT', 'Partially Shipped.');
-define('MYPARCEL_FULLY_SHIPPED_TEXT', 'Fully Shipped.');
+define('MYPARCEL_PARTIALLY_SHIPPED_TEXT', 'Yes.');
+define('MYPARCEL_FULLY_SHIPPED_TEXT', 'No');
 define('MYPARCEL_NA_TEXT', 'NA');
 define('MYPARCEL_SETTING_SAVE_TEXT', 'Settings saved.');
-
+define('MYPARCEL_WEBHOOK_URL', 'https://sandbox-api.myparcel.com/hooks');
+define('MYPARCEL_WEBHOOK_ACCESS_TOKEN', 'https://sandbox-auth.myparcel.com/access-token');
+define('MYPARCEL_SHIPMENT_REGISTERED', 'shipment-registered');
+define('MYPARCEL_SHIPMENT_LABEL_NOT_AVAILABLE', 'Label is not available yet.');
+define('MYPARCEL_WEBHOOK_OPTION_ID', 'myparcel_web_hook_id');
+define('MYPARCEL_DEFAULT_SHOP_ID', 'd90c6e53-8d05-49bf-b9cc-42400ed3f09f');
+define('MYPARCEL_RESPONSE_META', 'webhook_response_meta');
+define('MYPARCEL_FAILED_TEXT', 'Failed');
+define('MYPARCEL_WEBHOOK_RESPONSE', 'webhook_response_option');

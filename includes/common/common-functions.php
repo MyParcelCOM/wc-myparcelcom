@@ -1,6 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
+use MyParcelCom\ApiSdk\Resources\Shipment;
 use MyParcelCom\ApiSdk\Resources\ShipmentItem;
+use MyParcelCom\ApiSdk\Resources\File;
+use MyParcelCom\ApiSdk\LabelCombiner;
+use MyParcelCom\ApiSdk\Resources\Interfaces\FileInterface;
+use MyParcelCom\ApiSdk\LabelCombinerInterface;
 
 /**
  * @param $orderId
@@ -91,7 +98,6 @@ function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr)
     } else {
         foreach ($items as $item) {
             $shipItems = new ShipmentItem();
-            $product   = wc_get_product($items[$item_id]['product_id']);
             // Now you have access to (see above)...
             $quantity    = $item->get_quantity(); // get quantity
             $product     = $item->get_product(); // get the WC_Product object
@@ -160,20 +166,29 @@ function setItemForEuCountries($orderId, $shippedItemsNewArr)
  *
  * @return array
  */
-function setOrderShipment($orderId, $itemId, $shipQty, $totalShipQty, $qty, $weight, $remainQty, $flagStatus, $type = SHIPPED_TEXT): array
-{
-    $shipmentNewAr                  = [];
-    $shipmentNewAr['order_id']      = $orderId;
-    $shipmentNewAr['item_id']       = $itemId;
-    $shipmentNewAr['shipped']       = $shipQty;
-    $shipmentNewAr['total_shipped'] = $totalShipQty;
-    $shipmentNewAr['qty']           = $qty;
-    $shipmentNewAr['type']          = $type;
-    $shipmentNewAr['weight']        = $weight;
-    $shipmentNewAr['remain_qty']    = $remainQty;
-    $shipmentNewAr['flagStatus']    = $flagStatus;
+function setOrderShipment(
+    $orderId,
+    $itemId,
+    $shipQty,
+    $totalShipQty,
+    $qty,
+    $weight,
+    $remainQty,
+    $flagStatus,
+    $type = SHIPPED_TEXT
+): array {
+    $shipments                  = [];
+    $shipments['order_id']      = $orderId;
+    $shipments['item_id']       = $itemId;
+    $shipments['shipped']       = $shipQty;
+    $shipments['total_shipped'] = $totalShipQty;
+    $shipments['qty']           = $qty;
+    $shipments['type']          = $type;
+    $shipments['weight']        = $weight;
+    $shipments['remain_qty']    = $remainQty;
+    $shipments['flagStatus']    = $flagStatus;
 
-    return $shipmentNewAr;
+    return $shipments;
 }
 
 /**
@@ -185,7 +200,7 @@ function setOrderShipment($orderId, $itemId, $shipQty, $totalShipQty, $qty, $wei
  */
 function extractShipmentItemArr($shippedItems, $ifShipmentTrue, &$totalWeight)
 {
-    $shippedItemeArray  = [];
+    $shippedItemArray   = [];
     $shippedItemsNewArr = [];
     $shippedCount       = 0;
     foreach ($shippedItems as $key => $shippedItem) {
@@ -209,7 +224,7 @@ function extractShipmentItemArr($shippedItems, $ifShipmentTrue, &$totalWeight)
                 $totalWeight               += $weightNew * $shippedQtyNew;
                 $shippedItem["flagStatus"] = 1;
                 array_push(
-                    $shippedItemeArray,
+                    $shippedItemArray,
                     [
                         "item_id" => $item_id,
                         "shipped" => $shippedQtyNew,
@@ -223,7 +238,7 @@ function extractShipmentItemArr($shippedItems, $ifShipmentTrue, &$totalWeight)
         array_push($shippedItemsNewArr, $shippedItem);
     }
     $response = [
-        "shippedItemeArray"  => $shippedItemeArray,
+        "shippedItemArray"   => $shippedItemArray,
         "shippedItemsNewArr" => $shippedItemsNewArr,
         "shippedCount"       => $shippedCount,
     ];
@@ -232,16 +247,16 @@ function extractShipmentItemArr($shippedItems, $ifShipmentTrue, &$totalWeight)
 }
 
 /**
- * @param array $shippedTrackingArray
- * @param array $shipmentTrackKey
- * @param array $shippedItemeArray
- * @param int   $postId
+ * @param array  $shippedTrackingArray
+ * @param string $shipmentTrackKey
+ * @param array  $shippedItemArray
+ * @param int    $postId
  */
-function setShipmentTrackingMeta($shippedTrackingArray, $shipmentTrackKey, $shippedItemeArray, $postId)
+function setShipmentTrackingMeta($shippedTrackingArray, $shipmentTrackKey, $shippedItemArray, $postId)
 {
     $shipTrackingArray = [
         "trackingKey" => $shipmentTrackKey,
-        "items"       => $shippedItemeArray,
+        "items"       => $shippedItemArray,
     ];
     array_push($shippedTrackingArray, $shipTrackingArray);
     $shippedTrackingArray = json_encode($shippedTrackingArray);
@@ -249,10 +264,10 @@ function setShipmentTrackingMeta($shippedTrackingArray, $shipmentTrackKey, $ship
 }
 
 /**
- * @param null $shipKey
  * @param int  $postId
+ * @param null $shipKey
  */
-function updateShipmentKey($shipKey = null, $postId)
+function updateShipmentKey($postId, $shipKey = null)
 {
     if (!empty($shipKey)) {
         update_post_meta($postId, GET_META_MYPARCEL_SHIPMENT_KEY, $shipKey); //Update the shipment key on database
@@ -271,8 +286,16 @@ function updateShipmentKey($shipKey = null, $postId)
  * @param $tdHtml
  * @param $remainHtml
  */
-function prepareHtmlForUpdateQuantity($shipped, $key, $itemQuantity, $orderId, $itemId, &$qtyHtml, &$tdHtml, &$remainHtml)
-{
+function prepareHtmlForUpdateQuantity(
+    $shipped,
+    $key,
+    $itemQuantity,
+    $orderId,
+    $itemId,
+    &$qtyHtml,
+    &$tdHtml,
+    &$remainHtml
+) {
     if (is_int($key)) {
         if (isset($shipped[$key]['type']) && 'shipped' == $shipped[$key]['type']) {
             if (isset($shipped[$key]['total_shipped']) && $shipped[$key]['total_shipped'] == $itemQuantity) {
@@ -319,7 +342,8 @@ function prepareHtmlForSettingPage()
           </td>
         </tr>
         <tr valign="top">
-          <th scope="row"><label for="client_secret_key"><?php echo MYPARCEL_API_CLIENTSECRET_LABEL_TEXT; ?> </label></th>
+          <th scope="row"><label for="client_secret_key"><?php echo MYPARCEL_API_CLIENTSECRET_LABEL_TEXT; ?> </label>
+          </th>
           <td>
             <input type="password" id="client_secret_key" class="regular-text" name="client_secret_key"
                    value="<?php echo get_option('client_secret_key'); ?>"/>
@@ -366,7 +390,13 @@ function enqueueJsAndCssFile()
     wp_enqueue_style('font-awesome-icon', plugins_url('', __FILE__).'/../../assets/admin/css/font-awesome.css');
     wp_enqueue_style('fancybox', plugins_url('', __FILE__).'/../../assets/admin/css/jquery.fancybox.min.css');
     wp_enqueue_style('wcp_style', plugins_url('', __FILE__).'/../../assets/admin/css/admin-myparcel.css');
-    wp_enqueue_script('fancybox', plugins_url('', __FILE__).'/../../assets/admin/js/jquery.fancybox.min.js', ['jquery'], '', false);
+    wp_enqueue_script(
+        'fancybox',
+        plugins_url('', __FILE__).'/../../assets/admin/js/jquery.fancybox.min.js',
+        ['jquery'],
+        '',
+        false
+    );
     wp_register_script(
         'wcp_partial_ship_script',
         plugins_url('', __FILE__).'/../../assets/admin/js/admin-myparcel.js',
@@ -407,7 +437,10 @@ function renderOrderColumnContent($column, $orderId, $the_order)
         case 'shipped_status' :
             $order                = wc_get_order($orderId);
             $items                = $order->get_items();
-            $orderShipmentDetails = json_decode(get_post_meta($orderId, GET_META_MYPARCEL_ORDER_SHIPMENT_TEXT, true), true);
+            $orderShipmentDetails = json_decode(
+                get_post_meta($orderId, GET_META_MYPARCEL_ORDER_SHIPMENT_TEXT, true),
+                true
+            );
             $orderShipmentStatus  = "";
             if (!empty($orderShipmentDetails)) {
                 $totalCount     = count($items);
@@ -437,6 +470,491 @@ function renderOrderColumnContent($column, $orderId, $the_order)
             echo $orderShipmentStatus;
             break;
 
+        case 'shipped_label' :
+            if (!$orderId) {
+                return;
+            } // Exit
+            getShipmentFiles($orderId);
+            break;
+
+        case 'get_shipment_status' :
+            if (!$orderId) {
+                return;
+            } // Exit
+            $shipmentData = getShipmentCurrentStatus($orderId);
+            if (!empty($shipmentData)) {
+                $shipmentValues = json_decode($shipmentData);
+                ?>
+              <div class="order-status status-completed" id="welcomeShipment" title="<?php echo $shipmentValues->description; ?>">
+                <span><?php echo ucfirst($shipmentValues->name); ?></span>
+              </div>
+                <?php
+            }
+            break;
     }
 }
 
+/**
+ * Get Auth Token
+ */
+function getAuthToken()
+{
+    $clientKey       = get_option('client_key');
+    $clientSecretKey = get_option('client_secret_key');
+    if (!empty($clientKey) && !empty($clientSecretKey)) {
+        $data          = [
+            "grant_type"    => "client_credentials",
+            "client_id"     => $clientKey,
+            "client_secret" => $clientSecretKey,
+            "scope"         => "*",
+        ];
+        $dataString    = json_encode($data);
+        $url           = MYPARCEL_WEBHOOK_ACCESS_TOKEN;
+        $authorization = '';
+        $result        = createWebHookCurlRequest($url, $dataString, $authorization);
+        if (!empty($result)) {
+            $getToken          = json_decode($result);
+            $myparcelWebHookId = get_option(MYPARCEL_WEBHOOK_OPTION_ID);
+            if (empty($myparcelWebHookId)) {
+                registerMyParcelWebHook($getToken->access_token);
+            }
+        }
+    }
+}
+
+/**
+ * @param $accessToken
+ */
+function registerMyParcelWebHook($accessToken)
+{
+    $webHookUrl      = plugins_url('', dirname(__FILE__)).'/webhook.php';
+    $webHookName     = getDefaultShopId().'-myparcelcom';
+    $data            = [
+        "data" =>
+            [
+                "type"          => "hooks",
+                "attributes"    =>
+                    [
+                        "name"    => $webHookName,
+                        "order"   => 100,
+                        "active"  => true,
+                        "trigger" => [
+                            "resource_type"   => "shipment-statuses",
+                            "resource_action" => "create",
+                        ],
+                        "action"  => [
+                            "action_type" => "send-resource",
+                            "values"      => [
+                                [
+                                    "url"      => $webHookUrl,
+                                    "includes" => [
+                                        "status",
+                                        "shipment",
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                "relationships" => [
+                    "owner" => [
+                        "data" => [
+                            "type" => "shops",
+                            "id"   => getDefaultShopId(),
+                        ],
+                    ],
+                ],
+
+            ],
+    ];
+    $dataString      = json_encode($data);
+    $authorization   = "Authorization: Bearer $accessToken";
+    $url             = MYPARCEL_WEBHOOK_URL;
+    $result          = createWebHookCurlRequest($url, $dataString, $authorization);
+    $webHookResponse = json_decode($result);
+    if (get_option(MYPARCEL_WEBHOOK_OPTION_ID) !== false) {
+        update_option(MYPARCEL_WEBHOOK_OPTION_ID, $webHookResponse->data->id);
+    } else {
+        $deprecated = null;
+        $autoload   = 'no';
+        add_option(MYPARCEL_WEBHOOK_OPTION_ID, $webHookResponse->data->id, $deprecated, $autoload);
+    }
+}
+
+/**
+ * @return string
+ */
+function getDefaultShopId()
+{
+    $getAuth       = new MyParcelApi();
+    $api           = $getAuth->apiAuthentication();
+    $shop          = $api->getDefaultShop();
+    $defaultShopId = $shop->getId();
+
+    return !empty($defaultShopId) ? $defaultShopId : MYPARCEL_DEFAULT_SHOP_ID;
+}
+
+/**
+ * @param $post_id
+ *
+ * @throws Exception
+ */
+function getShipmentFiles($post_id)
+{
+    $getOrderMetaData = get_post_meta($post_id, GET_META_SHIPMENT_TRACKING_KEY, true);
+    $getOrderMeta     = json_decode($getOrderMetaData);
+    if (!$getOrderMeta) {
+        return;
+    } // Exit
+    if (!isset($getOrderMeta->trackingKey)) {
+        return;
+    }
+
+    $webHookData = get_option(MYPARCEL_WEBHOOK_RESPONSE);
+    if (!empty($webHookData)) {
+        $getShipmentContent = json_decode($webHookData, true);
+        $getShipmentData    = $getShipmentContent['included'];
+        if (!empty($getShipmentData)) {
+            $id = array_column($getShipmentData, 'id');
+            if (in_array($getOrderMeta->trackingKey, $id)) {
+                update_post_meta($post_id, MYPARCEL_RESPONSE_META, 1);
+            }
+        }
+    }
+    $webHookResponseMeta = get_post_meta($post_id, MYPARCEL_RESPONSE_META, true);
+    if (($webHookResponseMeta == 1) && !empty($getOrderMeta->trackingKey)) {
+        $getAuth        = new MyParcelApi();
+        $shipment       = new Shipment();
+        $api            = $getAuth->apiAuthentication();
+        $shipment       = $api->getShipment($getOrderMeta->trackingKey);
+        $getRegisterAt  = $shipment->getRegisterAt();
+        $shipmentStatus = $shipment->getShipmentStatus();
+        $status         = $shipmentStatus->getStatus();
+        if (!empty($getRegisterAt) && ($status->getCode() === MYPARCEL_SHIPMENT_REGISTERED)) {
+            $getAuth  = new MyParcelApi();
+            $file     = new File();
+            $api      = $getAuth->apiAuthentication();
+            $shipment = $api->getShipment($getOrderMeta->trackingKey);
+            $labels   = $shipment->getFiles(File::DOCUMENT_TYPE_LABEL);
+            if (!empty($labels)) {
+                foreach ($labels as $label) {
+                    $label = $label->getBase64Data('application/pdf');
+                    echo '<p><a class="button download-label" download="label.pdf" href="data:application/octet-stream;base64,'.$label.'"><i class="fa fa-file-pdf-o" style="font-size:20px;color:red"></i></a></p>';
+                    ?>
+                    <?php
+                }
+                ?>
+              <script type="text/javascript">
+                jQuery(document).ready(function ($) {
+                  let a = $('.download-label')
+                  a.click()
+                })
+              </script>
+            <?php }
+        } else {
+            $shipment->setRegisterAt(new \DateTime());
+            $updateShipmentResp = $api->updateShipment($shipment);
+        }
+    }
+}
+
+/**
+ * @param      $url
+ * @param      $dataString
+ * @param null $authorization
+ *
+ * @return bool|string
+ */
+function createWebHookCurlRequest($url, $dataString, $authorization = null)
+{
+    switch ($url) {
+        case MYPARCEL_WEBHOOK_URL:
+            $httpHeader = [
+                'Content-Type: application/json',
+                $authorization,
+            ];
+            break;
+        case MYPARCEL_WEBHOOK_ACCESS_TOKEN:
+            $httpHeader = [
+                'Content-Type: application/json',
+            ];
+            break;
+    }
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
+    $result = curl_exec($ch);
+    if (curl_errno($ch)) {
+        $error_msg = curl_error($ch);
+    }
+    curl_close($ch);
+
+    return $result;
+}
+
+/**
+ * @param $post_id
+ *
+ * @return array|false|string|void
+ */
+function getShipmentCurrentStatus($post_id)
+{
+    $shipmentData     = [];
+    $getOrderMetaData = get_post_meta($post_id, GET_META_SHIPMENT_TRACKING_KEY, true);
+    $getOrderMeta     = json_decode($getOrderMetaData);
+    if (!$getOrderMeta) {
+        return;
+    } // Exit
+    $getAuth  = new MyParcelApi();
+    $shipment = new Shipment();
+    $api      = $getAuth->apiAuthentication();
+    if (!empty($getOrderMeta->trackingKey)) {
+        $shipment                    = $api->getShipment($getOrderMeta->trackingKey);
+        $shipmentStatus              = $shipment->getShipmentStatus();
+        $status                      = $shipmentStatus->getStatus();
+        $shipmentData['name']        = $status->getName();
+        $shipmentData['description'] = $status->getDescription();
+        $shipmentData                = json_encode($shipmentData);
+
+        return $shipmentData;
+    }
+}
+
+add_action('manage_posts_extra_tablenav', 'admin_order_list_top_bar_button', 20, 1);
+function admin_order_list_top_bar_button($which)
+{
+    global $typenow;
+    if ('shop_order' === $typenow && 'top' === $which) {
+        ?>
+      <!-- Button trigger modal -->
+      <button type="button" id="primary-modal" class="btn btn-primary" data-toggle="modal" data-target="#labelModal" title="Print Selected">
+        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+      </button>
+      <!-- Modal -->
+      <div class="modal fade" id="labelModal" tabindex="-1" role="dialog" aria-labelledby="labelModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="labelModalLabel">Label position</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <div class="row">
+                <div class="col-lg-6" id="printer-orintation">
+                  <label class="container">
+                    <input type="radio" checked="checked" name="selectorientation" class="toggle" value="1"> A4 - default printer
+                  </label>
+                  <label class="container">
+                    <input type="radio" name="selectorientation" class="toggle" value="2"> A6 - label printer
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="modal-body">
+              <div class="row cntnr" id="orientation1" style="margin: 0px;">
+                <div class="col-lg-6">
+                  <label class="container radio-inline">
+                    <input type="radio" checked="checked" name="radio" class="toggle" value="1"> 1
+                  </label>
+                </div>
+                <div class="col-lg-6">
+                  <label class="container radio-inline">
+                    <input type="radio" name="radio" class="toggle" value="2"> 2
+                  </label>
+                </div>
+                <div class="col-lg-6">
+                  <label class="container radio-inline">
+                    <input type="radio" name="radio" class="toggle" value="3"> 3
+                  </label>
+                </div>
+                <div class="col-lg-6">
+                  <label class="container radio-inline">
+                    <input type="radio" name="radio" class="toggle" value="4"> 4
+                  </label>
+                </div>
+              </div>
+              <div class="row cntnr" id="orientation2" style="display: none;">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <div id='loadingmessage' style='display:none'>
+                  <?php $loader = plugins_url('', __FILE__).'/../../assets/images/ajax-loader.gif'; ?>
+                <img class="img-responsive center-block" src="<?php echo $loader; ?>"/>
+              </div>
+              <div class="alert alert-danger alert-dismissible fade in text-center" role="alert" style="display: none;">
+                Label is not available.
+              </div>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" id="download-pdf">Download</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <style type="text/css">
+        .modal-dialog {
+          width: 30%;
+          margin: 0 auto;
+        }
+
+        .modal-content {
+          height: auto;
+          min-height: 100%;
+          border-radius: 0;
+        }
+
+        .cntnr .col-lg-6 {
+          border: 1px solid grey;
+          padding: 50px;
+        }
+
+        label.container input[type=radio] {
+          height: 16px;
+        }
+
+        .modal-content {
+          top: 35px;
+        }
+      </style>
+      <script type="text/javascript">
+        jQuery(document).ready(function ($) {
+          var selectVal = $('#printer-orintation input[name=\'selectorientation\']:checked').val()
+          $('#printer-orintation input[name=\'selectorientation\']').click(function () {
+            selectVal = $(this).val()
+            $('div.cntnr').hide()
+            $('#orientation' + selectVal).show()
+          })
+          $('#download-pdf').click(function (e) {
+            var selected = []
+            e.preventDefault()
+            $('#loadingmessage').show()  // show the loading message.
+            $('.wp-list-table #the-list tr input[name=\'post[]\']:checked').map(function () {
+              if ($('.wp-list-table #the-list tr input[name=\'post[]\']').is(':checked')) {
+                var idx = $.inArray($(this).val(), selected)
+                if (idx == -1) {
+                  selected.push($(this).val())
+                }
+              } else {
+                selected.splice($(this).val())
+              }
+            }) // <----
+            var selectOrientation = $('input[name=\'radio\']:checked').val()
+            if (selectOrientation) {
+              var data = {
+                'action': 'my_action',
+                'selectOrientation': selectOrientation,
+                'orderIds': selected,
+                'labelPrinter': selectVal
+              }
+              var templateUrl = '<?= get_site_url(); ?>'
+              var ajaxScript = {ajax_url: templateUrl + '/wp-admin/admin-ajax.php'}
+              // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
+              jQuery.post(ajaxScript.ajax_url, data, function (response) {
+                var checkFailed = '<?= MYPARCEL_FAILED_TEXT; ?>'
+                if (response === checkFailed) {
+                  $('.modal-footer .alert-danger').fadeTo(2000, 500).slideUp(500, function () {
+                    $('.modal-footer .alert-danger').slideUp(500)
+                  })
+                  $('#loadingmessage').hide() // hide the loading message
+                } else {
+                  const linkSource = 'data:application/pdf;base64,' + response
+                  const downloadLink = document.createElement('a')
+                  const fileName = 'label.pdf'
+                  downloadLink.href = linkSource
+                  downloadLink.download = fileName
+                  downloadLink.click()
+                  $('#loadingmessage').hide() // hide the loading message
+                  $('#labelModal').modal('hide')
+                }
+              })
+            }
+            return false
+          })
+        })
+      </script>
+        <?php
+    }
+}
+
+add_action('wp_ajax_my_action', 'my_action');
+function my_action()
+{
+    define(LOCATION_TOP, 1);
+    define(LOCATION_BOTTOM, 2);
+    define(LOCATION_RIGHT, 4);
+    define(LOCATION_LEFT, 8);
+    define(LOCATION_TOP_LEFT, LOCATION_TOP | LOCATION_LEFT);
+    define(LOCATION_TOP_RIGHT, LOCATION_TOP | LOCATION_RIGHT);
+    define(LOCATION_BOTTOM_LEFT, LOCATION_BOTTOM | LOCATION_LEFT);
+    define(LOCATION_BOTTOM_RIGHT, LOCATION_BOTTOM | LOCATION_RIGHT);
+    global $wpdb;
+    $selectOrientation = intval($_POST['selectOrientation']);
+    $orderIds          = $_POST['orderIds'];
+    $labelPrinter      = intval($_POST['labelPrinter']);
+    $getAuth           = new MyParcelApi();
+    $labelCombiner     = new LabelCombiner();
+    $api               = $getAuth->apiAuthentication();
+    $shipments         = [];
+    foreach ($orderIds as $orderId) {
+        $getShipmentKey = get_post_meta($orderId, 'shipment_track_key', true);
+        if (!empty($getShipmentKey)) {
+            $getShipmentKey = json_decode($getShipmentKey);
+            $shipments[]    = $api->getShipment($getShipmentKey->trackingKey);
+        }
+    }
+    $files = [];
+    if (!empty($shipments)) {
+        foreach ($shipments as $shipment) {
+            $files = array_merge(
+                $files,
+                $shipment->getFiles(File::DOCUMENT_TYPE_LABEL)
+            );
+        }
+    }
+    $combinedFile = $labelCombiner->combineLabels(
+        $files,
+        labelPrinter($labelPrinter),
+        getOrientation($selectOrientation),
+        20
+    );
+    echo $combinedFile->getBase64Data();
+    wp_die(); // this is required to terminate immediately and return a proper response
+}
+
+/**
+ * @param $selectOrientation
+ *
+ * @return mixed
+ */
+function getOrientation($selectOrientation)
+{
+    switch ($selectOrientation) {
+        case 1:
+            return LOCATION_TOP_LEFT;
+            break;
+        case 2:
+            return LOCATION_TOP_RIGHT;
+            break;
+        case 3:
+            return LOCATION_BOTTOM_LEFT;
+            break;
+        default:
+            return LOCATION_BOTTOM_RIGHT;
+            break;
+    }
+}
+
+/**
+ * @param $labelPrinter
+ *
+ * @return string
+ */
+function labelPrinter($labelPrinter)
+{
+    if (!empty($labelPrinter) && ($labelPrinter === 1)) {
+        return LabelCombinerInterface::PAGE_SIZE_A4;
+    } else {
+        return LabelCombinerInterface::PAGE_SIZE_A6;
+    }
+}
