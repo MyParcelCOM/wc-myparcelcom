@@ -3,7 +3,7 @@
 use \MyParcelCom\ApiSdk\MyParcelComApi;
 use \MyParcelCom\ApiSdk\Authentication\ClientCredentials;
 
-class MyParcelApi
+class MyParcel_API
 {
     protected const API_URL              = 'https://api.myparcel.com';
     protected const API_AUTH_URL         = 'https://auth.myparcel.com';
@@ -36,9 +36,6 @@ class MyParcelApi
             $authenticator->getAuthorizationHeader(true);
             $api->authenticate($authenticator);
 
-            return $api;
-        } else{
-            $api = new MyParcelComApi();
             return $api;
         }
     }

@@ -321,6 +321,23 @@ function prepareHtmlForUpdateQuantity(
 }
 
 /**
+ *
+ * @return array
+ */
+function getMyParcelShopList()
+{
+    $getAuth = new MyParcelApi();
+    $api     = $getAuth->apiAuthentication();
+    if ($api) {
+        $shops   = $api->getShops()->get();
+        return $shops;
+    } else {
+        return false;
+    }
+
+}
+
+/**
  * @desc setting page html
  */
 function prepareHtmlForSettingPage()
@@ -349,6 +366,32 @@ function prepareHtmlForSettingPage()
                    value="<?php echo get_option('client_secret_key'); ?>"/>
           </td>
         </tr>
+        <tr valign="top">
+          <th scope="row"><label for="myparcel_shopid"><?php echo MYPARCEL_SHOPID; ?> </label>
+          </th>
+          <td>
+            <select class="regular-text" id="myparcel_shopid" name="myparcel_shopid">
+                <?php
+                $shops = getMyParcelShopList();
+
+                if (!empty($shops)) {
+                    foreach ($shops as $shop) {
+                        if (!empty(get_option('myparcel_shopid'))) {
+                            echo "<option value='".$shop->getId()."' ".($shop->getId() == get_option(
+                                    'myparcel_shopid'
+                                ) ? 'selected' : '').">".$shop->getName()."</option>";
+                        } else {
+                            echo "<option value='".$shop->getId()."' ".($shop->getId(
+                                ) == MYPARCEL_DEFAULT_SHOP_ID ? 'selected' : '').">".$shop->getName()."</option>";
+                        }
+                    }
+                }
+                ?>
+            </select>
+            <p><?php echo MYPARCEL_SHOPID_HELPTEXT; ?></p>
+
+          </td>
+        </tr>
         <tr>
           <th scope="row"><?php echo MYPARCEL_API_ACT_TESTMODE_TEXT; ?></th>
           <td>
@@ -361,13 +404,15 @@ function prepareHtmlForSettingPage()
             </fieldset>
           </td>
         </tr>
+
+
         </tbody>
       </table>
       <h2><?php echo MYPARCEL_API_TEXT; ?></h2>
       <table cellpadding="5" cellspacing="5" class="form-table">
         <tr valign="top">
           <th scope="row"><label><?php echo MYPARCEL_API_CURRENT_VERSION; ?></label></th>
-          <td>1.0</td>
+          <td>2.0.1</td>
         </tr>
         <tr valign="top">
           <th scope="row"><label><?php echo MYPARCEL_API_SUPPORT_TEXT; ?></label></th>
@@ -513,11 +558,8 @@ function getAuthToken()
         $authorization = '';
         $result        = createWebHookCurlRequest($url, $dataString, $authorization);
         if (!empty($result)) {
-            $getToken          = json_decode($result);
-            $myparcelWebHookId = get_option(MYPARCEL_WEBHOOK_OPTION_ID);
-            if (empty($myparcelWebHookId)) {
-                registerMyParcelWebHook($getToken->access_token);
-            }
+            $getToken = json_decode($result);
+            registerMyParcelWebHook($getToken->access_token);
         }
     }
 }
@@ -527,8 +569,9 @@ function getAuthToken()
  */
 function registerMyParcelWebHook($accessToken)
 {
+    $shop            = getSelectedShop();
     $webHookUrl      = plugins_url('', dirname(__FILE__)).'/webhook.php';
-    $webHookName     = getDefaultShopId().'-myparcelcom';
+    $webHookName     = getRegisteredShopId().'-'.$shop->getName();
     $data            = [
         "data" =>
             [
@@ -559,7 +602,7 @@ function registerMyParcelWebHook($accessToken)
                     "owner" => [
                         "data" => [
                             "type" => "shops",
-                            "id"   => getDefaultShopId(),
+                            "id"   => getRegisteredShopId(),
                         ],
                     ],
                 ],
@@ -583,7 +626,7 @@ function registerMyParcelWebHook($accessToken)
 /**
  * @return string
  */
-function getDefaultShopId()
+function getDefaultShopId(): string
 {
     $getAuth       = new MyParcelApi();
     $api           = $getAuth->apiAuthentication();
@@ -591,6 +634,16 @@ function getDefaultShopId()
     $defaultShopId = $shop->getId();
 
     return !empty($defaultShopId) ? $defaultShopId : MYPARCEL_DEFAULT_SHOP_ID;
+}
+
+/**
+ * @return string
+ */
+function getRegisteredShopId(): string
+{
+    $regsiteredShopId = get_option('myparcel_shopid');
+
+    return $regsiteredShopId;
 }
 
 /**
@@ -635,10 +688,11 @@ function getShipmentFiles($post_id)
             $api      = $getAuth->apiAuthentication();
             $shipment = $api->getShipment($getOrderMeta->trackingKey);
             $labels   = $shipment->getFiles(File::DOCUMENT_TYPE_LABEL);
+            $label = "myparcelcom-".date('Ymdhis')."-label.pdf";
             if (!empty($labels)) {
                 foreach ($labels as $label) {
                     $label = $label->getBase64Data('application/pdf');
-                    echo '<p><a class="button download-label" download="label.pdf" href="data:application/octet-stream;base64,'.$label.'"><i class="fa fa-file-pdf-o" style="font-size:20px;color:red"></i></a></p>';
+                    echo '<p><a class="button download-label" download="'.$label.'" href="data:application/octet-stream;base64,'.$label.'"><i class="fa fa-file-pdf-o" style="font-size:20px;color:red"></i></a></p>';
                     ?>
                     <?php
                 }
@@ -694,6 +748,7 @@ function createWebHookCurlRequest($url, $dataString, $authorization = null)
     return $result;
 }
 
+
 /**
  * @param $post_id
  *
@@ -721,6 +776,7 @@ function getShipmentCurrentStatus($post_id)
         return $shipmentData;
     }
 }
+
 
 add_action('manage_posts_extra_tablenav', 'admin_order_list_top_bar_button', 20, 1);
 function admin_order_list_top_bar_button($which)
@@ -858,9 +914,10 @@ function admin_order_list_top_bar_button($which)
                   })
                   $('#loadingmessage').hide() // hide the loading message
                 } else {
+
                   const linkSource = 'data:application/pdf;base64,' + response
                   const downloadLink = document.createElement('a')
-                  const fileName = 'label.pdf'
+                  const fileName = "myparcelcom-<?php echo date('Ymdhis');?>-label.pdf"
                   downloadLink.href = linkSource
                   downloadLink.download = fileName
                   downloadLink.click()
@@ -953,8 +1010,29 @@ function getOrientation($selectOrientation)
 function labelPrinter($labelPrinter)
 {
     if (!empty($labelPrinter) && ($labelPrinter === 1)) {
+
         return LabelCombinerInterface::PAGE_SIZE_A4;
     } else {
+
         return LabelCombinerInterface::PAGE_SIZE_A6;
+    }
+}
+
+/**
+ * Get selected Shop
+ *
+ * @return array
+ **/
+function getSelectedShop()
+{
+    $getAuth = new MyParcelApi();
+    $api     = $getAuth->apiAuthentication();
+    $shops   = $api->getShops()->get();
+    foreach ($shops as $shop) {
+        if ($shop->getId() == getRegisteredShopId()) {
+            $shopDetails = $shop;
+
+            return $shopDetails;
+        }
     }
 }

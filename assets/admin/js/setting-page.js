@@ -35,6 +35,9 @@ jQuery(function($){
             },
             company_name: {
                 required: true
+            },
+            myparcel_shopid : {
+                required: true
             }
              
        },
@@ -71,6 +74,9 @@ jQuery(function($){
                 required: "Required"
             },
             company_name: {
+                required: "Required"
+            }
+            myparcel_shopid: {
                 required: "Required"
             }
             
