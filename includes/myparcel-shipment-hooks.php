@@ -4,7 +4,7 @@
  *
  * @return void
  */
-function adminLoadJsCss(): void
+function adminLoadJsCss()
 {
     ?>
   <script type="text/javascript">
@@ -42,7 +42,7 @@ add_action('admin_enqueue_scripts', 'adminLoadJsCss', 999);
  *
  * @return void
  */
-function orderItemHeaders($order): void
+function orderItemHeaders($order)
 {
     $orderId = $order->get_id();
     if (isMyParcelOrder($orderId)) {
@@ -61,7 +61,7 @@ add_action('woocommerce_admin_order_item_headers', 'orderItemHeaders', 10, 1);
  *
  * @return void
  */
-function orderItemValues($product, $item, $itemId): void
+function orderItemValues($product, $item, $itemId)
 {
     if (isMyParcelOrder($item->get_order_id())) {
         if ($product) {

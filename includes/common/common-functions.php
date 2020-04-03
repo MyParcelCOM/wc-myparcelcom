@@ -328,9 +328,13 @@ function getMyParcelShopList()
 {
     $getAuth = new MyParcelApi();
     $api     = $getAuth->apiAuthentication();
-    $shops   = $api->getShops()->get();
+    if ($api) {
+        $shops   = $api->getShops()->get();
+        return $shops;
+    } else {
+        return false;
+    }
 
-    return $shops;
 }
 
 /**
@@ -369,14 +373,17 @@ function prepareHtmlForSettingPage()
             <select class="regular-text" id="myparcel_shopid" name="myparcel_shopid">
                 <?php
                 $shops = getMyParcelShopList();
-                foreach ($shops as $shop) {
-                    if (!empty(get_option('myparcel_shopid'))) {
-                        echo "<option value='".$shop->getId()."' ".($shop->getId() == get_option(
-                                'myparcel_shopid'
-                            ) ? 'selected' : '').">".$shop->getName()."</option>";
-                    } else {
-                        echo "<option value='".$shop->getId()."' ".($shop->getId(
-                            ) == MYPARCEL_DEFAULT_SHOP_ID ? 'selected' : '').">".$shop->getName()."</option>";
+
+                if (!empty($shops)) {
+                    foreach ($shops as $shop) {
+                        if (!empty(get_option('myparcel_shopid'))) {
+                            echo "<option value='".$shop->getId()."' ".($shop->getId() == get_option(
+                                    'myparcel_shopid'
+                                ) ? 'selected' : '').">".$shop->getName()."</option>";
+                        } else {
+                            echo "<option value='".$shop->getId()."' ".($shop->getId(
+                                ) == MYPARCEL_DEFAULT_SHOP_ID ? 'selected' : '').">".$shop->getName()."</option>";
+                        }
                     }
                 }
                 ?>
@@ -562,8 +569,9 @@ function getAuthToken()
  */
 function registerMyParcelWebHook($accessToken)
 {
+    $shop            = getSelectedShop();
     $webHookUrl      = plugins_url('', dirname(__FILE__)).'/webhook.php';
-    $webHookName     = getRegisteredShopId().'-wpmyparcelcom';
+    $webHookName     = getRegisteredShopId().'-'.$shop->getName();
     $data            = [
         "data" =>
             [
@@ -680,10 +688,11 @@ function getShipmentFiles($post_id)
             $api      = $getAuth->apiAuthentication();
             $shipment = $api->getShipment($getOrderMeta->trackingKey);
             $labels   = $shipment->getFiles(File::DOCUMENT_TYPE_LABEL);
+            $label = "myparcelcom-".date('Ymdhis')."-label.pdf";
             if (!empty($labels)) {
                 foreach ($labels as $label) {
                     $label = $label->getBase64Data('application/pdf');
-                    echo '<p><a class="button download-label" download="label.pdf" href="data:application/octet-stream;base64,'.$label.'"><i class="fa fa-file-pdf-o" style="font-size:20px;color:red"></i></a></p>';
+                    echo '<p><a class="button download-label" download="'.$label.'" href="data:application/octet-stream;base64,'.$label.'"><i class="fa fa-file-pdf-o" style="font-size:20px;color:red"></i></a></p>';
                     ?>
                     <?php
                 }
@@ -905,9 +914,10 @@ function admin_order_list_top_bar_button($which)
                   })
                   $('#loadingmessage').hide() // hide the loading message
                 } else {
+
                   const linkSource = 'data:application/pdf;base64,' + response
                   const downloadLink = document.createElement('a')
-                  const fileName = 'label.pdf'
+                  const fileName = "myparcelcom-<?php echo date('Ymdhis');?>-label.pdf"
                   downloadLink.href = linkSource
                   downloadLink.download = fileName
                   downloadLink.click()

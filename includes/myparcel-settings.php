@@ -4,7 +4,7 @@
  *
  * @return void
  */
-function settingPageJsCss(): void
+function settingPageJsCss()
 {
     wp_enqueue_script(
         'validation',
@@ -31,7 +31,7 @@ add_action('admin_enqueue_scripts', 'settingPageJsCss', 999);
  *
  * @return void
  */
-function registerSettings(): void
+function registerSettings()
 {
     add_option('client_key', '');
     add_option('client_secret_key', '');
@@ -59,7 +59,7 @@ function validationCallBack(): bool
     $clientKey      = get_option('client_key');
     $secretKey      = get_option('client_secret_key');
     $myparcelshopId = get_option('myparcel_shopid');
-    if (empty($clientKey) || empty($secretKey) || empty($myparcelshopId)) {
+    if (empty($clientKey) || empty($secretKey)) {
         $error = true;
     }
     if ($error) {
@@ -108,7 +108,7 @@ add_action(
  *
  * @return void
  */
-function printErrors(): void
+function printErrors()
 {
     settings_errors('show_message');
 }
@@ -117,7 +117,7 @@ function printErrors(): void
  *
  * @return void
  */
-function updateOption(): void
+function updateOption()
 {
     update_option('client_key', '');
     update_option('client_secret_key', '');
@@ -129,7 +129,7 @@ function updateOption(): void
  *
  * @return void
  */
-function addSettingMenu(): void
+function addSettingMenu()
 {
     add_options_page(
         'API Setting',
@@ -146,7 +146,7 @@ add_action('admin_menu', 'addSettingMenu');
  *
  * @return void
  */
-function settingPage(): void
+function settingPage()
 {
     global $woocommerce;
     prepareHtmlForSettingPage();

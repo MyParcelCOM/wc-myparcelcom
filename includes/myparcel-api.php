@@ -37,6 +37,9 @@ class MyParcelApi
             $api->authenticate($authenticator);
 
             return $api;
+        } else{
+            $api = new MyParcelComApi();
+            return $api;
         }
     }
 }
