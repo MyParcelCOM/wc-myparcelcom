@@ -2,6 +2,7 @@
 
 use \MyParcelCom\ApiSdk\MyParcelComApi;
 use \MyParcelCom\ApiSdk\Authentication\ClientCredentials;
+use \MyParcelCom\ApiSdk\Exceptions\AuthenticationException;
 
 class MyParcelApi
 {
@@ -14,7 +15,7 @@ class MyParcelApi
     /**
      * @return MyParcelComApi
      */
-    public function apiAuthentication(): MyParcelComApi
+    public function apiAuthentication(): ?MyParcelComApi
     {
         $clientKey       = get_option('client_key');
         $clientSecretKey = get_option('client_secret_key');
@@ -27,18 +28,23 @@ class MyParcelApi
             $apiAuthUrl = self::API_AUTH_URL; //Production API Auth URL
         }
         if (!empty($apiUrl) && !empty($apiAuthUrl) && !empty($clientKey) && !empty($clientSecretKey)) {
-            $api           = new MyParcelComApi($apiUrl);
-            $authenticator = new ClientCredentials(
-                $clientKey,
-                $clientSecretKey,
-                $apiAuthUrl
-            );
-            $authenticator->getAuthorizationHeader(true);
-            $api->authenticate($authenticator);
+            try {
+                $api           = new MyParcelComApi($apiUrl);
+                $authenticator = new ClientCredentials(
+                    $clientKey,
+                    $clientSecretKey,
+                    $apiAuthUrl
+                );
+                $authenticator->getAuthorizationHeader(true);
+                $api->authenticate($authenticator);
 
-            return $api;
-        } else{
+                return $api;
+            } catch (AuthenticationException $e) {
+                return null;
+            }
+        } else {
             $api = new MyParcelComApi();
+
             return $api;
         }
     }

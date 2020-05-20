@@ -326,16 +326,25 @@ function prepareHtmlForUpdateQuantity(
  */
 function getMyParcelShopList()
 {
-    $getAuth = new MyParcelApi();
-    $api     = $getAuth->apiAuthentication();
-    if ($api) {
-        $shops   = $api->getShops()->get();
-        return $shops;
-    } else {
-        return false;
+    $shops = [];
+    if (!empty(get_option('client_key')) && !empty(get_option('client_secret_key'))) {
+        $getAuth = new MyParcelApi();
+        $api     = $getAuth->apiAuthentication();
+        if ($api) {
+            $shops = $api->getShops()->get();
+            usort(
+                $shops,
+                function ($a, $b) {
+                    return strcmp($a->getName(), $b->getName());
+                }
+            );
+        }
+
     }
 
+    return $shops;
 }
+
 
 /**
  * @desc setting page html
@@ -559,7 +568,9 @@ function getAuthToken()
         $result        = createWebHookCurlRequest($url, $dataString, $authorization);
         if (!empty($result)) {
             $getToken = json_decode($result);
-            registerMyParcelWebHook($getToken->access_token);
+            if (isset($getToken->access_token)) {
+                registerMyParcelWebHook($getToken->access_token);
+            }
         }
     }
 }
@@ -688,7 +699,7 @@ function getShipmentFiles($post_id)
             $api      = $getAuth->apiAuthentication();
             $shipment = $api->getShipment($getOrderMeta->trackingKey);
             $labels   = $shipment->getFiles(File::DOCUMENT_TYPE_LABEL);
-            $label = "myparcelcom-".date('Ymdhis')."-label.pdf";
+            $label    = "myparcelcom-".date('Ymdhis')."-label.pdf";
             if (!empty($labels)) {
                 foreach ($labels as $label) {
                     $label = $label->getBase64Data('application/pdf');
@@ -1034,5 +1045,32 @@ function getSelectedShop()
 
             return $shopDetails;
         }
+    }
+}
+
+
+/**
+ * Get installed woocommerce version
+ *
+ * @string
+ **/
+function wpbo_get_woo_version_number()
+{
+    // If get_plugins() isn't available, require it
+    if (!function_exists('get_plugins')) {
+        require_once(ABSPATH.'wp-admin/includes/plugin.php');
+    }
+
+    // Create the plugins folder and file variables
+    $plugin_folder = get_plugins('/'.'woocommerce');
+    $plugin_file   = 'woocommerce.php';
+
+    // If the plugin version number is set, return it
+    if (isset($plugin_folder[$plugin_file]['Version'])) {
+        return $plugin_folder[$plugin_file]['Version'];
+
+    } else {
+        // Otherwise return null
+        return null;
     }
 }
