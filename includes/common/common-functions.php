@@ -777,14 +777,14 @@ function getShipmentCurrentStatus($post_id)
     $shipment = new Shipment();
     $api      = $getAuth->apiAuthentication();
     if (!empty($getOrderMeta->trackingKey)) {
-        try{
+        try {
             $shipment                    = $api->getShipment($getOrderMeta->trackingKey);
             $shipmentStatus              = $shipment->getShipmentStatus();
             $status                      = $shipmentStatus->getStatus();
             $shipmentData['name']        = $status->getName();
             $shipmentData['description'] = $status->getDescription();
             $shipmentData                = json_encode($shipmentData);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
         }
 
         return $shipmentData;
