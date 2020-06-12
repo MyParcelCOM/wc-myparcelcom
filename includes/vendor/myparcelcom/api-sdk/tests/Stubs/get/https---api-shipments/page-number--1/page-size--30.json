@@ -108,10 +108,15 @@
           "non_delivery": "return",
           "incoterm": "DDU"
         },
-        "description": "order #8008135",
+        "description": "Fidget spinners",
+        "customer_reference": "#8008135",
         "price": {
           "amount": 100,
           "currency": "EUR"
+        },
+        "total_value": {
+          "amount": 600,
+          "currency": "GBP"
         },
         "barcode": "3SABCD0123456789",
         "tracking_code": "TR4CK1NGC0D3",
@@ -121,14 +126,8 @@
           "width": 50,
           "length": 50,
           "volume": 0.06,
-          "weight": 24
-        },
-        "physical_properties_verified": {
-          "height": 240,
-          "width": 500,
-          "length": 500,
-          "volume": 60,
-          "weight": 240
+          "weight": 24,
+          "volumetric_weight": 12
         },
         "register_at": 1526913941,
         "created_at": 1504801719,

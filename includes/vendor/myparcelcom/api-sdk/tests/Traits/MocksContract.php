@@ -50,9 +50,10 @@ trait MocksContract
      * @param int                      $weight
      * @param ServiceInterface|null    $service
      * @param ServiceOptionInterface[] $serviceOptions
+     * @param null|int                 $volumetricWeight
      * @return ShipmentInterface
      */
-    protected function getMockedShipment($weight = 5000, ServiceInterface $service = null, array $serviceOptions = [])
+    protected function getMockedShipment($weight = 5000, ServiceInterface $service = null, array $serviceOptions = [], $volumetricWeight = null)
     {
         $physicalPropertiesMock = $this->getMockBuilder(PhysicalPropertiesInterface::class)
             ->disableOriginalConstructor()
@@ -60,9 +61,8 @@ trait MocksContract
             ->disableArgumentCloning()
             ->disallowMockingUnknownTypes()
             ->getMock();
-        $physicalPropertiesMock
-            ->method('getWeight')
-            ->willReturn($weight);
+        $physicalPropertiesMock->method('getWeight')->willReturn($weight);
+        $physicalPropertiesMock->method('getVolumetricWeight')->willReturn($volumetricWeight);
 
         $contractMock = $this->getMockBuilder(ContractInterface::class)
             ->disableOriginalConstructor()
@@ -115,9 +115,10 @@ trait MocksContract
     /**
      * @param ServiceRateInterface[] $serviceRates
      * @param string|null            $deliveryMethod
+     * @param bool                   $usesVolumetricWeight
      * @return ServiceInterface
      */
-    protected function getMockedService(array $serviceRates = [], $deliveryMethod = null)
+    protected function getMockedService(array $serviceRates = [], $deliveryMethod = null, $usesVolumetricWeight = false)
     {
         $mock = $this->getMockBuilder(ServiceInterface::class)
             ->disableOriginalConstructor()
@@ -131,6 +132,8 @@ trait MocksContract
         $mock
             ->method('getDeliveryMethod')
             ->willReturn($deliveryMethod);
+        $mock->method('usesVolumetricWeight')
+            ->willReturn($usesVolumetricWeight);
 
         return $mock;
     }

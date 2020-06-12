@@ -3,7 +3,6 @@
 namespace MyParcelCom\ApiSdk\Tests\Unit;
 
 use MyParcelCom\ApiSdk\Resources\Interfaces\CarrierInterface;
-use MyParcelCom\ApiSdk\Resources\Interfaces\RegionInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ServiceRateInterface;
 use MyParcelCom\ApiSdk\Resources\Service;
 use MyParcelCom\ApiSdk\Resources\ServiceRate;
@@ -62,28 +61,6 @@ class ServiceTest extends TestCase
         $carrier = new $mock();
 
         $this->assertEquals($carrier, $service->setCarrier($carrier)->getCarrier());
-    }
-
-    /** @test */
-    public function testRegionFrom()
-    {
-        $service = new Service();
-
-        $mock = $this->getMockClass(RegionInterface::class);
-        $region = new $mock();
-
-        $this->assertEquals($region, $service->setRegionFrom($region)->getRegionFrom());
-    }
-
-    /** @test */
-    public function testRegionTo()
-    {
-        $service = new Service();
-
-        $mock = $this->getMockClass(RegionInterface::class);
-        $region = new $mock();
-
-        $this->assertEquals($region, $service->setRegionTo($region)->getRegionTo());
     }
 
     /** @test */
@@ -152,6 +129,15 @@ class ServiceTest extends TestCase
     }
 
     /** @test */
+    public function testItIndicatesWhetherAServiceUsesVolumetricWeight()
+    {
+        $service = new Service();
+
+        $service->setUsesVolumetricWeight(true);
+        $this->assertTrue($service->usesVolumetricWeight());
+    }
+
+    /** @test */
     public function testJsonSerialize()
     {
         $carrier = $this->getMockBuilder(CarrierInterface::class)
@@ -166,30 +152,6 @@ class ServiceTest extends TestCase
                 'type' => 'carriers',
             ]);
 
-        $regionFrom = $this->getMockBuilder(RegionInterface::class)
-            ->disableOriginalConstructor()
-            ->disableOriginalClone()
-            ->disableArgumentCloning()
-            ->disallowMockingUnknownTypes()
-            ->getMock();
-        $regionFrom->method('jsonSerialize')
-            ->willReturn([
-                'id'   => 'region-id-1',
-                'type' => 'regions',
-            ]);
-
-        $regionTo = $this->getMockBuilder(RegionInterface::class)
-            ->disableOriginalConstructor()
-            ->disableOriginalClone()
-            ->disableArgumentCloning()
-            ->disallowMockingUnknownTypes()
-            ->getMock();
-        $regionTo->method('jsonSerialize')
-            ->willReturn([
-                'id'   => 'region-id-2',
-                'type' => 'regions',
-            ]);
-
         $service = (new Service())
             ->setId('service-id')
             ->setName('Easy Delivery Service')
@@ -199,41 +161,29 @@ class ServiceTest extends TestCase
             ->setHandoverMethod('drop-off')
             ->setDeliveryDays(['Monday'])
             ->setCarrier($carrier)
-            ->setRegionFrom($regionFrom)
-            ->setRegionTo($regionTo);
+            ->setUsesVolumetricWeight(true);
 
         $this->assertEquals([
             'id'            => 'service-id',
             'type'          => 'services',
             'attributes'    => [
-                'name'            => 'Easy Delivery Service',
-                'package_type'    => Service::PACKAGE_TYPE_PARCEL,
-                'transit_time'    => [
+                'name'                   => 'Easy Delivery Service',
+                'package_type'           => Service::PACKAGE_TYPE_PARCEL,
+                'transit_time'           => [
                     'min' => 7,
                     'max' => 14,
                 ],
-                'handover_method' => 'drop-off',
-                'delivery_days'   => [
+                'handover_method'        => 'drop-off',
+                'delivery_days'          => [
                     'Monday',
                 ],
+                'uses_volumetric_weight' => true,
             ],
             'relationships' => [
-                'carrier'     => [
+                'carrier' => [
                     'data' => [
                         'id'   => 'carrier-id-1',
                         'type' => 'carriers',
-                    ],
-                ],
-                'region_from' => [
-                    'data' => [
-                        'id'   => 'region-id-1',
-                        'type' => 'regions',
-                    ],
-                ],
-                'region_to'   => [
-                    'data' => [
-                        'id'   => 'region-id-2',
-                        'type' => 'regions',
                     ],
                 ],
             ],

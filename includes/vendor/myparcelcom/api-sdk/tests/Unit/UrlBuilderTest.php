@@ -22,6 +22,6 @@ class UrlBuilderTest extends TestCase
         $this->assertEquals('/bin', $url->setPath('/bin')->getPath());
         $this->assertEquals('imagination', $url->setFragment('imagination')->getFragment());
 
-        $this->assertEquals('torrent://GabeN@guest:Tawny/bin?0=que&1=pasa#imagination', (string)$url->setPassword(''));
+        $this->assertEquals('torrent://GabeN@guest:Tawny/bin?0=que&1=pasa#imagination', (string) $url->setPassword(''));
     }
 }

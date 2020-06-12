@@ -312,6 +312,7 @@ function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
     $orderBillingPhone      = $orderData['billing']['phone'];
     $isEU                   = isEUCountry($orderShippingCountry);
     $selectedShop           = getSelectedShop();
+    $woocommerceVersion     = 'WooCommerce_'.wpbo_get_woo_version_number();
 
     if ($isEU == false) {
         $shipAddItems = setItemForNonEuCountries($orderId, $currency, $shippedItems);
@@ -336,7 +337,8 @@ function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
         ->setWeight($countAllWeight, PhysicalPropertiesInterface::WEIGHT_GRAM)
         ->setDescription('Order id: '.(string)($orderId))
         ->setItems($shipAddItems)
-        ->setShop($selectedShop);
+        ->setShop($selectedShop)
+        ->setChannel($woocommerceVersion);
 
     $getAuth  = new MyParcelApi();
     $api      = $getAuth->apiAuthentication();

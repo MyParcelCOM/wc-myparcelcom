@@ -66,10 +66,15 @@
           "phone_number": "+31 234 567 890"
         }
       },
-      "description": "order #8008135",
+      "description": "Fidget spinners",
+      "customer_reference": "#8008135",
       "price": {
         "amount": 100,
         "currency": "EUR"
+      },
+      "total_value": {
+        "amount": 600,
+        "currency": "GBP"
       },
       "barcode": "3SABCD0123456789",
       "tracking_code": "TR4CK1NGC0D3",
@@ -79,14 +84,8 @@
         "width": 50,
         "length": 50,
         "volume": 0.06,
-        "weight": 24
-      },
-      "physical_properties_verified": {
-        "height": 240,
-        "width": 500,
-        "length": 500,
-        "volume": 60,
-        "weight": 240
+        "weight": 24,
+        "volumetric_weight": 12
       },
       "items": [
         {
@@ -142,15 +141,6 @@
             "id": "service-option-id-1"
           }
         ]
-      },
-      "parent": {
-        "data": {
-          "type": "shipments",
-          "id": "shipment-id-0"
-        },
-        "links": {
-          "related": "https://api/shipments/shipment-id-0"
-        }
       },
       "shop": {
         "data": {

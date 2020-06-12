@@ -39,7 +39,7 @@ class PromiseCollectionTest extends TestCase
             $start = ($this->pageNumber - 1) * $this->pageSize;
             $resources = [];
             for ($n = $start; $n < 123 && $n < $start + $this->pageSize; $n++) {
-                $resources[] = (object)['id' => $n];
+                $resources[] = (object) ['id' => $n];
             }
 
             return $resources;

@@ -25,6 +25,9 @@ class PhysicalProperties implements PhysicalPropertiesInterface
     /** @var int */
     private $width;
 
+    /** @var int */
+    private $volumetricWeight;
+
     /** @var array */
     private static $unitConversion = [
         self::WEIGHT_GRAM     => 1,
@@ -39,7 +42,7 @@ class PhysicalProperties implements PhysicalPropertiesInterface
      */
     public function setWidth($width)
     {
-        $this->width = (int)$width;
+        $this->width = (int) $width;
 
         return $this;
     }
@@ -57,7 +60,7 @@ class PhysicalProperties implements PhysicalPropertiesInterface
      */
     public function setHeight($height)
     {
-        $this->height = (int)$height;
+        $this->height = (int) $height;
 
         return $this;
     }
@@ -75,7 +78,7 @@ class PhysicalProperties implements PhysicalPropertiesInterface
      */
     public function setLength($length)
     {
-        $this->length = (int)$length;
+        $this->length = (int) $length;
 
         return $this;
     }
@@ -97,7 +100,7 @@ class PhysicalProperties implements PhysicalPropertiesInterface
             throw new MyParcelComException('invalid unit: ' . $unit);
         }
 
-        $this->weight = (int)round($weight * self::$unitConversion[$unit]);
+        $this->weight = (int) round($weight * self::$unitConversion[$unit]);
 
         return $this;
     }
@@ -111,7 +114,7 @@ class PhysicalProperties implements PhysicalPropertiesInterface
             throw new MyParcelComException('invalid unit: ' . $unit);
         }
 
-        return (int)round($this->weight / self::$unitConversion[$unit]);
+        return (int) round($this->weight / self::$unitConversion[$unit]);
     }
 
     /**
@@ -130,5 +133,31 @@ class PhysicalProperties implements PhysicalPropertiesInterface
     public function getVolume()
     {
         return $this->volume;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getVolumetricWeight()
+    {
+        if ($this->volumetricWeight) {
+            return $this->volumetricWeight;
+        }
+
+        if (!$this->length || !$this->width || !$this->height) {
+            return null;
+        }
+
+        return (int) ceil($this->length * $this->width * $this->height / 5000);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setVolumetricWeight($volumetricWeight)
+    {
+        $this->volumetricWeight = $volumetricWeight;
+
+        return $this;
     }
 }

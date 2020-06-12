@@ -16,8 +16,6 @@ class ServiceRate implements ServiceRateInterface
     const ATTRIBUTE_PRICE = 'price';
     const ATTRIBUTE_CURRENCY = 'currency';
     const ATTRIBUTE_AMOUNT = 'amount';
-    const ATTRIBUTE_STEP_PRICE = 'step_price';
-    const ATTRIBUTE_STEP_SIZE = 'step_size';
     const ATTRIBUTE_WEIGHT_MIN = 'weight_min';
     const ATTRIBUTE_WEIGHT_MAX = 'weight_max';
     const ATTRIBUTE_WIDTH_MAX = 'width_max';
@@ -40,11 +38,6 @@ class ServiceRate implements ServiceRateInterface
             self::ATTRIBUTE_CURRENCY => null,
             self::ATTRIBUTE_AMOUNT   => null,
         ],
-        self::ATTRIBUTE_STEP_PRICE => [
-            self::ATTRIBUTE_CURRENCY => null,
-            self::ATTRIBUTE_AMOUNT   => null,
-        ],
-        self::ATTRIBUTE_STEP_SIZE  => null,
         self::ATTRIBUTE_WEIGHT_MIN => null,
         self::ATTRIBUTE_WEIGHT_MAX => null,
         self::ATTRIBUTE_WIDTH_MAX  => null,
@@ -215,7 +208,6 @@ class ServiceRate implements ServiceRateInterface
     public function setCurrency($currency)
     {
         $this->attributes[self::ATTRIBUTE_PRICE][self::ATTRIBUTE_CURRENCY] = $currency;
-        $this->attributes[self::ATTRIBUTE_STEP_PRICE][self::ATTRIBUTE_CURRENCY] = $currency;
 
         return $this;
     }
@@ -244,42 +236,6 @@ class ServiceRate implements ServiceRateInterface
     public function getPrice()
     {
         return $this->attributes[self::ATTRIBUTE_PRICE][self::ATTRIBUTE_AMOUNT];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setStepPrice($stepPrice)
-    {
-        $this->attributes[self::ATTRIBUTE_STEP_PRICE][self::ATTRIBUTE_AMOUNT] = $stepPrice;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getStepPrice()
-    {
-        return $this->attributes[self::ATTRIBUTE_STEP_PRICE][self::ATTRIBUTE_AMOUNT];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setStepSize($stepSize)
-    {
-        $this->attributes[self::ATTRIBUTE_STEP_SIZE] = $stepSize;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getStepSize()
-    {
-        return $this->attributes[self::ATTRIBUTE_STEP_SIZE];
     }
 
     /**

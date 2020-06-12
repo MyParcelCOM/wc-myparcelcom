@@ -57,7 +57,9 @@ class ShipmentProxyTest extends TestCase
         $this->assertEquals('AED', $this->shipmentProxy->setCurrency('AED')->getCurrency());
         $this->assertEquals('Tracking-code_134', $this->shipmentProxy->setTrackingCode('Tracking-code_134')->getTrackingCode());
         $this->assertEquals('https://I.Track.U/134', $this->shipmentProxy->setTrackingUrl('https://I.Track.U/134')->getTrackingUrl());
+        $this->assertEquals('Cartoon Network', $this->shipmentProxy->setChannel('Cartoon Network')->getChannel());
         $this->assertEquals('Something living with hair', $this->shipmentProxy->setDescription('Something living with hair')->getDescription());
+        $this->assertEquals('#1234', $this->shipmentProxy->setCustomerReference('#1234')->getCustomerReference());
         $this->assertEquals('|||||||||||||', $this->shipmentProxy->setBarcode('|||||||||||||')->getBarcode());
         $this->assertEquals(12, $this->shipmentProxy->setWeight(12)->getWeight());
         $this->assertEquals('80-90A', $this->shipmentProxy->setPickupLocationCode('80-90A')->getPickupLocationCode());
@@ -78,10 +80,6 @@ class ShipmentProxyTest extends TestCase
         /** @var PhysicalPropertiesInterface $physicalProperties */
         $physicalProperties = $this->getMockBuilder(PhysicalPropertiesInterface::class)->getMock();
         $this->assertEquals($physicalProperties, $this->shipmentProxy->setPhysicalProperties($physicalProperties)->getPhysicalProperties());
-
-        /** @var PhysicalPropertiesInterface $physicalPropertiesVerified */
-        $physicalPropertiesVerified = $this->getMockBuilder(PhysicalPropertiesInterface::class)->getMock();
-        $this->assertEquals($physicalPropertiesVerified, $this->shipmentProxy->setPhysicalPropertiesVerified($physicalPropertiesVerified)->getPhysicalPropertiesVerified());
 
         /** @var ShopInterface $shop */
         $shop = $this->getMockBuilder(ShopInterface::class)->getMock();
@@ -165,26 +163,23 @@ class ShipmentProxyTest extends TestCase
         $this->assertEquals('Doe', $this->shipmentProxy->getPickupLocationAddress()->getLastName());
 
         $this->assertEquals('Playstation 4', $this->shipmentProxy->setDescription('Playstation 4')->getDescription());
+        $this->assertEquals('#1234', $this->shipmentProxy->setCustomerReference('#1234')->getCustomerReference());
         $this->assertEquals(50, $this->shipmentProxy->setPrice(50)->getPrice());
         $this->assertEquals('EUR', $this->shipmentProxy->getCurrency());
         $this->assertEquals('3SABCD0123456789', $this->shipmentProxy->getBarcode());
         $this->assertEquals('TR4CK1NGC0D3', $this->shipmentProxy->getTrackingCode());
         $this->assertEquals('https://track.me/TR4CK1NGC0D3', $this->shipmentProxy->getTrackingUrl());
         $this->assertEquals(24, $this->shipmentProxy->getWeight());
+        $this->assertEquals(600, $this->shipmentProxy->getTotalValueAmount());
+        $this->assertEquals('GBP', $this->shipmentProxy->getTotalValueCurrency());
 
         $this->assertInstanceOf(PhysicalPropertiesInterface::class, $this->shipmentProxy->getPhysicalProperties());
         $this->assertEquals(24, $this->shipmentProxy->getPhysicalProperties()->getHeight());
-        $this->assertEquals(24, $this->shipmentProxy->getPhysicalProperties()->getWeight());
+        $this->assertEquals(50, $this->shipmentProxy->getPhysicalProperties()->getWidth());
         $this->assertEquals(50, $this->shipmentProxy->getPhysicalProperties()->getLength());
         $this->assertEquals(0.06, $this->shipmentProxy->getPhysicalProperties()->getVolume());
         $this->assertEquals(24, $this->shipmentProxy->getPhysicalProperties()->getWeight());
-
-        $this->assertInstanceOf(PhysicalPropertiesInterface::class, $this->shipmentProxy->getPhysicalPropertiesVerified());
-        $this->assertEquals(240, $this->shipmentProxy->getPhysicalPropertiesVerified()->getHeight());
-        $this->assertEquals(240, $this->shipmentProxy->getPhysicalPropertiesVerified()->getWeight());
-        $this->assertEquals(500, $this->shipmentProxy->getPhysicalPropertiesVerified()->getLength());
-        $this->assertEquals(60, $this->shipmentProxy->getPhysicalPropertiesVerified()->getVolume());
-        $this->assertEquals(240, $this->shipmentProxy->getPhysicalPropertiesVerified()->getWeight());
+        $this->assertEquals(12, $this->shipmentProxy->getPhysicalProperties()->getVolumetricWeight());
 
         $customs = $this->shipmentProxy->getCustoms();
         $this->assertInstanceOf(CustomsInterface::class, $customs);

@@ -10,7 +10,6 @@
         "height_max": 560,
         "volume_max": 126,
         "length_max": 750,
-        "step_size": 1000,
         "price": {
           "amount": 400,
           "currency": "EUR"
@@ -139,7 +138,6 @@
         "weight_min": 400,
         "weight_max": 1000,
         "length_max": 200,
-        "step_size": 1000,
         "price": {
           "amount": 589,
           "currency": "GBP"
@@ -201,8 +199,8 @@
     "total_records": 2
   },
   "links": {
-    "self": "https://api/service-rates?filter[service]=a3057e77-005b-4945-a41c-20ddbe4dab08&page[size]=30&page[number]=1",
-    "first": "https://api/service-rates?filter[service]=a3057e77-005b-4945-a41c-20ddbe4dab08&page[size]=30&page[number]=1",
-    "last": "https://api/service-rates?filter[service]=a3057e77-005b-4945-a41c-20ddbe4dab08&page[size]=30&page[number]=1"
+    "self": "https://api/service-rates?filter[service]=a3057e77-005b-4945-a41c-20ddbe4dab08&filter[weight]=500&page[size]=30&page[number]=1",
+    "first": "https://api/service-rates?filter[service]=a3057e77-005b-4945-a41c-20ddbe4dab08&filter[weight]=500&page[size]=30&page[number]=1",
+    "last": "https://api/service-rates?filter[service]=a3057e77-005b-4945-a41c-20ddbe4dab08&filter[weight]=500&page[size]=30&page[number]=1"
   }
 }

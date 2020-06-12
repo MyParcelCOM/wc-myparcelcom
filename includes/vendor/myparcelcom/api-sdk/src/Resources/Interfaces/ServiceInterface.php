@@ -29,6 +29,17 @@ interface ServiceInterface extends ResourceInterface
     public function getName();
 
     /**
+     * @param string $code
+     * @return $this
+     */
+    public function setCode($code);
+
+    /**
+     * @return string
+     */
+    public function getCode();
+
+    /**
      * @param string $packageType
      * @return $this
      */
@@ -73,28 +84,6 @@ interface ServiceInterface extends ResourceInterface
     public function getCarrier();
 
     /**
-     * @param RegionInterface $region
-     * @return $this
-     */
-    public function setRegionFrom(RegionInterface $region);
-
-    /**
-     * @return RegionInterface
-     */
-    public function getRegionFrom();
-
-    /**
-     * @param RegionInterface $region
-     * @return $this
-     */
-    public function setRegionTo(RegionInterface $region);
-
-    /**
-     * @return RegionInterface
-     */
-    public function getRegionTo();
-
-    /**
      * @param string $handoverMethod
      * @return $this
      */
@@ -104,6 +93,17 @@ interface ServiceInterface extends ResourceInterface
      * @return string
      */
     public function getHandoverMethod();
+
+    /**
+     * @param bool $usesVolumetricWeight
+     * @return $this
+     */
+    public function setUsesVolumetricWeight($usesVolumetricWeight);
+
+    /**
+     * @return bool
+     */
+    public function usesVolumetricWeight();
 
     /**
      * @param string[] $deliveryDays
@@ -149,5 +149,5 @@ interface ServiceInterface extends ResourceInterface
      * @param array $filters
      * @return ServiceRateInterface[]
      */
-    public function getServiceRates(array $filters = []);
+    public function getServiceRates(array $filters = ['has_active_contract' => 'true']);
 }

@@ -11,35 +11,35 @@ interface PhysicalPropertiesInterface extends \JsonSerializable
     const WEIGHT_STONE = 'stones';
 
     /**
-     * @param int $width
+     * @param null|int $width
      * @return $this
      */
     public function setWidth($width);
 
     /**
-     * @return int
+     * @return null|int
      */
     public function getWidth();
 
     /**
-     * @param int $height
+     * @param null|int $height
      * @return $this
      */
     public function setHeight($height);
 
     /**
-     * @return int
+     * @return null|int
      */
     public function getHeight();
 
     /**
-     * @param int $length
+     * @param null|int $length
      * @return $this
      */
     public function setLength($length);
 
     /**
-     * @return int
+     * @return null|int
      */
     public function getLength();
 
@@ -66,4 +66,18 @@ interface PhysicalPropertiesInterface extends \JsonSerializable
      * @return int
      */
     public function getVolume();
+
+    /**
+     * @param int $volumetricWeight
+     * @return $this
+     */
+    public function setVolumetricWeight($volumetricWeight);
+
+    /**
+     * Returns the volumetric weight if already set.
+     * Calculates the shipment's volumetric weight in grams based on set dimensions otherwise.
+     *
+     * @return null|int Returns null if not all dimensions are set.
+     */
+    public function getVolumetricWeight();
 }

@@ -59,7 +59,7 @@ class ClientCredentialsTest extends TestCase
         $this->httpClient->method('sendRequest')
             ->willReturnCallback(function (RequestInterface $request) {
                 $method = strtolower($request->getMethod());
-                $path = urldecode((string)$request->getUri());
+                $path = urldecode((string) $request->getUri());
                 $jsonBody = json_decode($request->getBody()->getContents(), true);
 
                 if ($this->response->getStatusCode() >= 400) {

@@ -38,8 +38,8 @@ class LabelCombiner implements LabelCombinerInterface
      * @param string          $pageSize
      * @param int             $startLocation
      * @param int             $margin
-     * @throws MyParcelComException
      * @return FileInterface
+     * @throws MyParcelComException
      */
     public function combineLabels(
         array $files,

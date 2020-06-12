@@ -88,7 +88,7 @@ class ClientCredentials implements AuthenticatorInterface
      */
     protected function isAuthenticating()
     {
-        return (bool)$this->cache->get(self::CACHE_AUTHENTICATING);
+        return (bool) $this->cache->get(self::CACHE_AUTHENTICATING);
     }
 
     /**
@@ -134,7 +134,7 @@ class ClientCredentials implements AuthenticatorInterface
                 throw new RequestException($request, $response);
             }
 
-            $data = json_decode((string)$response->getBody(), true);
+            $data = json_decode((string) $response->getBody(), true);
 
             $header = [
                 self::HEADER_AUTH => $data['token_type'] . ' ' . $data['access_token'],
@@ -230,7 +230,7 @@ class ClientCredentials implements AuthenticatorInterface
             );
         }
 
-        $response = json_decode((string)$exception->getResponse()->getBody(), true);
+        $response = json_decode((string) $exception->getResponse()->getBody(), true);
         $message = 'An unknown error occurred while authenticating with the oauth2 server';
 
         if (!empty($response['errors'])) {

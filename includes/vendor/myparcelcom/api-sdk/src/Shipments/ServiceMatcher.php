@@ -19,9 +19,11 @@ class ServiceMatcher
      */
     public function matches(ShipmentInterface $shipment, ServiceInterface $service)
     {
-        if ($shipment->getPhysicalProperties() === null
+        if (
+            $shipment->getPhysicalProperties() === null
             || $shipment->getPhysicalProperties()->getWeight() === null
-            || $shipment->getPhysicalProperties()->getWeight() < 0) {
+            || $shipment->getPhysicalProperties()->getWeight() < 0
+        ) {
             throw new InvalidResourceException(
                 'Cannot match shipment and service without a valid shipment weight.'
             );
@@ -30,7 +32,9 @@ class ServiceMatcher
         // TODO: Add check for matching regions. We need to implement ancestor regions in the SDK in order to do this.
         return $this->matchesDeliveryMethod($shipment, $service)
             && ($serviceRates = $service->getServiceRates([
-                'weight' => $shipment->getPhysicalProperties()->getWeight(),
+                'has_active_contract' => 'true',
+                'weight'              => $shipment->getPhysicalProperties()->getWeight(),
+                'volumetric_weight'   => $shipment->getPhysicalProperties()->getVolumetricWeight(),
             ]))
             && $this->getMatchedOptions($shipment, $serviceRates);
     }
