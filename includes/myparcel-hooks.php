@@ -295,7 +295,7 @@ function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
 {
     global $woocommerce;
     $currency       = get_woocommerce_currency();
-    $countAllWeight = ($totalWeight) ? $totalWeight : 500;
+    $countAllWeight = $totalWeight > 1 ? $totalWeight : 1;
     $orderData      = getOrderData($orderId);
     $shipment       = new Shipment();
 
