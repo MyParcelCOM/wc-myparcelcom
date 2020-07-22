@@ -1,4 +1,5 @@
 <?php
+define('MYPARCEL_PLUGIN_VERSION', '2.0.1');
 define('ERROR_MESSAGE_CREDENTIAL', 'Incorrect client id or secret.');
 define('MYPARCEL_METHOD', 'myparcel');
 define('EXPORT_MYPARCEL_ORDER_TEXT', 'export_myparcel_order');

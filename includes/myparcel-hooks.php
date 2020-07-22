@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 use MyParcelCom\ApiSdk\MyParcelComApi;
 use MyParcelCom\ApiSdk\Resources\Address;
+use MyParcelCom\ApiSdk\Resources\Customs;
 use MyParcelCom\ApiSdk\Resources\Shipment;
 use MyParcelCom\ApiSdk\Resources\Interfaces\PhysicalPropertiesInterface;
+use MyParcelCom\ApiSdk\Http\Exceptions\RequestException;
 
 function myparcelExceptionRedirection()
 {
@@ -295,7 +297,7 @@ function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
 {
     global $woocommerce;
     $currency       = get_woocommerce_currency();
-    $countAllWeight = $totalWeight > 1 ? $totalWeight : 1;
+    $countAllWeight = $totalWeight > 1 ? $totalWeight : ceil($totalWeight);
     $orderData      = getOrderData($orderId);
     $shipment       = new Shipment();
 
@@ -312,10 +314,17 @@ function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
     $orderBillingPhone      = $orderData['billing']['phone'];
     $isEU                   = isEUCountry($orderShippingCountry);
     $selectedShop           = getSelectedShop();
-    $woocommerceVersion     = 'WooCommerce_'.wpbo_get_woo_version_number();
+    $senderCountry = $selectedShop->getSenderAddress()->getCountryCode();
+    $woocommerceVersion     = 'WooCommerce_'.MYPARCEL_PLUGIN_VERSION;
 
     if ($isEU == false) {
-        $shipAddItems = setItemForNonEuCountries($orderId, $currency, $shippedItems);
+        $shipAddItems = setItemForNonEuCountries($orderId, $currency, $shippedItems, $senderCountry);
+        $customs = new Customs();
+        $customs->setContentType(Customs::CONTENT_TYPE_MERCHANDISE);
+        $customs->setNonDelivery(Customs::NON_DELIVERY_RETURN);
+        $customs->setIncoterm(Customs::INCOTERM_DDP);
+        $customs->setInvoiceNumber('N/A');
+        $shipment->setCustoms($customs);
     } else {
         $shipAddItems = setItemForEuCountries($orderId, $shippedItems);
     }
@@ -323,7 +332,7 @@ function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
     $recipient
         ->setStreet1($orderShippingAddress1)
         ->setStreet2($orderShippingAddress2)
-        ->setCompany($orderShippingAddress1)
+        ->setCompany($orderShippingCompany)
         ->setCity($orderShippingCity)
         ->setPostalCode($orderShippingPostcode)
         ->setFirstName($orderShippingFirstName)

@@ -70,7 +70,7 @@ function getTotalWeightByPostID($postId)
 }
 
 //set Ship item for non EU country by post id
-function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr)
+function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr, $senderCountry='')
 {
     global $woocommerce;
     $items        = getOrderItems($orderId);
@@ -91,6 +91,8 @@ function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr)
                 ->setDescription($productName)
                 ->setQuantity($quantity)
                 ->setItemValue($itemValue)
+                ->setOriginCountryCode($senderCountry)
+                ->setHsCode('0000')
                 ->setCurrency($currency);
 
             $shipAddItems[] = $shipItems;
@@ -110,6 +112,8 @@ function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr)
                 ->setDescription($productName)
                 ->setQuantity($quantity)
                 ->setItemValue($itemValue)
+                ->setOriginCountryCode($senderCountry)
+                ->setHsCode('0000')
                 ->setCurrency($currency);
 
             $shipAddItems[] = $shipItems;
