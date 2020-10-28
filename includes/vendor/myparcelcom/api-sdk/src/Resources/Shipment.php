@@ -25,13 +25,13 @@ class Shipment implements ShipmentInterface
     const ATTRIBUTE_BARCODE = 'barcode';
     const ATTRIBUTE_TRACKING_CODE = 'tracking_code';
     const ATTRIBUTE_TRACKING_URL = 'tracking_url';
+    const ATTRIBUTE_CHANNEL = 'channel';
     const ATTRIBUTE_DESCRIPTION = 'description';
+    const ATTRIBUTE_CUSTOMER_REFERENCE= 'customer_reference';
     const ATTRIBUTE_AMOUNT = 'amount';
     const ATTRIBUTE_PRICE = 'price';
     const ATTRIBUTE_CURRENCY = 'currency';
-    const ATTRIBUTE_WEIGHT = 'weight';
     const ATTRIBUTE_PHYSICAL_PROPERTIES = 'physical_properties';
-    const ATTRIBUTE_PHYSICAL_PROPERTIES_VERIFIED = 'physical_properties_verified';
     const ATTRIBUTE_RECIPIENT_ADDRESS = 'recipient_address';
     const ATTRIBUTE_SENDER_ADDRESS = 'sender_address';
     const ATTRIBUTE_RETURN_ADDRESS = 'return_address';
@@ -41,6 +41,7 @@ class Shipment implements ShipmentInterface
     const ATTRIBUTE_CUSTOMS = 'customs';
     const ATTRIBUTE_ITEMS = 'items';
     const ATTRIBUTE_REGISTER_AT = 'register_at';
+    const ATTRIBUTE_TOTAL_VALUE = 'total_value';
 
     const RELATIONSHIP_CONTRACT = 'contract';
     const RELATIONSHIP_FILES = 'files';
@@ -48,6 +49,9 @@ class Shipment implements ShipmentInterface
     const RELATIONSHIP_SERVICE_OPTIONS = 'service_options';
     const RELATIONSHIP_STATUS = 'shipment_status';
     const RELATIONSHIP_SHOP = 'shop';
+
+    const META_LABEL_MIME_TYPE = 'label_mime_type';
+    const META_SERVICE_CODE = 'service_code';
 
     /** @var string */
     private $id;
@@ -63,21 +67,25 @@ class Shipment implements ShipmentInterface
 
     /** @var array */
     private $attributes = [
-        self::ATTRIBUTE_BARCODE                      => null,
-        self::ATTRIBUTE_TRACKING_CODE                => null,
-        self::ATTRIBUTE_TRACKING_URL                 => null,
-        self::ATTRIBUTE_DESCRIPTION                  => null,
-        self::ATTRIBUTE_PRICE                        => null,
-        self::ATTRIBUTE_WEIGHT                       => null,
-        self::ATTRIBUTE_PHYSICAL_PROPERTIES          => null,
-        self::ATTRIBUTE_PHYSICAL_PROPERTIES_VERIFIED => null,
-        self::ATTRIBUTE_RECIPIENT_ADDRESS            => null,
-        self::ATTRIBUTE_SENDER_ADDRESS               => null,
-        self::ATTRIBUTE_RETURN_ADDRESS               => null,
-        self::ATTRIBUTE_PICKUP                       => null,
-        self::ATTRIBUTE_CUSTOMS                      => null,
-        self::ATTRIBUTE_ITEMS                        => null,
-        self::ATTRIBUTE_REGISTER_AT                  => null,
+        self::ATTRIBUTE_BARCODE             => null,
+        self::ATTRIBUTE_TRACKING_CODE       => null,
+        self::ATTRIBUTE_TRACKING_URL        => null,
+        self::ATTRIBUTE_CHANNEL             => null,
+        self::ATTRIBUTE_DESCRIPTION         => null,
+        self::ATTRIBUTE_CUSTOMER_REFERENCE  => null,
+        self::ATTRIBUTE_PRICE               => null,
+        self::ATTRIBUTE_PHYSICAL_PROPERTIES => null,
+        self::ATTRIBUTE_RECIPIENT_ADDRESS   => null,
+        self::ATTRIBUTE_SENDER_ADDRESS      => null,
+        self::ATTRIBUTE_RETURN_ADDRESS      => null,
+        self::ATTRIBUTE_PICKUP              => null,
+        self::ATTRIBUTE_CUSTOMS             => null,
+        self::ATTRIBUTE_ITEMS               => null,
+        self::ATTRIBUTE_REGISTER_AT         => null,
+        self::ATTRIBUTE_TOTAL_VALUE         => [
+            'amount'   => null,
+            'currency' => null,
+        ],
     ];
 
     /** @var array */
@@ -100,6 +108,12 @@ class Shipment implements ShipmentInterface
         self::RELATIONSHIP_CONTRACT        => [
             'data' => null,
         ],
+    ];
+
+    /** @var array */
+    private $meta = [
+        self::META_LABEL_MIME_TYPE => 'application/pdf',
+        self::META_SERVICE_CODE    => null,
     ];
 
     /**
@@ -225,6 +239,24 @@ class Shipment implements ShipmentInterface
     /**
      * {@inheritdoc}
      */
+    public function setChannel($channel)
+    {
+        $this->attributes[self::ATTRIBUTE_CHANNEL] = $channel;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getChannel()
+    {
+        return $this->attributes[self::ATTRIBUTE_CHANNEL];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function setDescription($description)
     {
         $this->attributes[self::ATTRIBUTE_DESCRIPTION] = $description;
@@ -243,9 +275,27 @@ class Shipment implements ShipmentInterface
     /**
      * {@inheritdoc}
      */
+    public function setCustomerReference($customerReference)
+    {
+        $this->attributes[self::ATTRIBUTE_CUSTOMER_REFERENCE] = $customerReference;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCustomerReference()
+    {
+        return $this->attributes[self::ATTRIBUTE_CUSTOMER_REFERENCE];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function setPrice($price)
     {
-        $this->attributes[self::ATTRIBUTE_PRICE][self::ATTRIBUTE_AMOUNT] = (int)$price;
+        $this->attributes[self::ATTRIBUTE_PRICE][self::ATTRIBUTE_AMOUNT] = (int) $price;
 
         return $this;
     }
@@ -336,6 +386,7 @@ class Shipment implements ShipmentInterface
 
     /**
      * {@inheritdoc}
+     * @deprecated Use Shipment::getPhysicalProperties()->setWeight() instead.
      */
     public function setWeight($weight, $unit = PhysicalPropertiesInterface::WEIGHT_GRAM)
     {
@@ -349,6 +400,7 @@ class Shipment implements ShipmentInterface
 
     /**
      * {@inheritdoc}
+     * @deprecated Use Shipment::getPhysicalProperties()->getWeight() instead.
      */
     public function getWeight($unit = PhysicalPropertiesInterface::WEIGHT_GRAM)
     {
@@ -380,9 +432,12 @@ class Shipment implements ShipmentInterface
     /**
      * {@inheritdoc}
      */
-    public function setPhysicalPropertiesVerified(PhysicalPropertiesInterface $physicalProperties)
+    public function setVolumetricWeight($volumetricWeight)
     {
-        $this->attributes[self::ATTRIBUTE_PHYSICAL_PROPERTIES_VERIFIED] = $physicalProperties;
+        if ($this->getPhysicalProperties() === null) {
+            $this->setPhysicalProperties(new PhysicalProperties());
+        }
+        $this->getPhysicalProperties()->setVolumetricWeight($volumetricWeight);
 
         return $this;
     }
@@ -390,9 +445,13 @@ class Shipment implements ShipmentInterface
     /**
      * {@inheritdoc}
      */
-    public function getPhysicalPropertiesVerified()
+    public function getVolumetricWeight()
     {
-        return $this->attributes[self::ATTRIBUTE_PHYSICAL_PROPERTIES_VERIFIED];
+        if ($this->getPhysicalProperties() === null) {
+            $this->setPhysicalProperties(new PhysicalProperties());
+        }
+
+        return $this->getPhysicalProperties()->getVolumetricWeight();
     }
 
     /**
@@ -640,5 +699,59 @@ class Shipment implements ShipmentInterface
     public function getContract()
     {
         return $this->relationships[self::RELATIONSHIP_CONTRACT]['data'];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setTotalValueAmount($totalValueAmount)
+    {
+        $this->attributes[self::ATTRIBUTE_TOTAL_VALUE]['amount'] = $totalValueAmount;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTotalValueAmount()
+    {
+        return $this->attributes[self::ATTRIBUTE_TOTAL_VALUE]['amount'];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setTotalValueCurrency($totalValueCurrency)
+    {
+        $this->attributes[self::ATTRIBUTE_TOTAL_VALUE]['currency'] = $totalValueCurrency;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTotalValueCurrency()
+    {
+        return $this->attributes[self::ATTRIBUTE_TOTAL_VALUE]['currency'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setServiceCode($serviceCode)
+    {
+        $this->meta[self::META_SERVICE_CODE] = $serviceCode;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getServiceCode()
+    {
+        return $this->meta[self::META_SERVICE_CODE];
     }
 }

@@ -155,6 +155,25 @@ class ShipmentProxy implements ShipmentInterface, ResourceProxyInterface
     }
 
     /**
+     * @param string $channel
+     * @return $this
+     */
+    public function setChannel($channel)
+    {
+        $this->getResource()->setChannel($channel);
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getChannel()
+    {
+        return $this->getResource()->getChannel();
+    }
+
+    /**
      * @param string $description
      * @return $this
      */
@@ -171,6 +190,25 @@ class ShipmentProxy implements ShipmentInterface, ResourceProxyInterface
     public function getDescription()
     {
         return $this->getResource()->getDescription();
+    }
+
+    /**
+     * @param string $customerReference
+     * @return $this
+     */
+    public function setCustomerReference($customerReference)
+    {
+        $this->getResource()->setCustomerReference($customerReference);
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCustomerReference()
+    {
+        return $this->getResource()->getCustomerReference();
     }
 
     /**
@@ -358,22 +396,22 @@ class ShipmentProxy implements ShipmentInterface, ResourceProxyInterface
     }
 
     /**
-     * @param PhysicalPropertiesInterface $physicalProperties
+     * @param int $volumetricWeight
      * @return $this
      */
-    public function setPhysicalPropertiesVerified(PhysicalPropertiesInterface $physicalProperties)
+    public function setVolumetricWeight($volumetricWeight)
     {
-        $this->getResource()->setPhysicalPropertiesVerified($physicalProperties);
+        $this->getResource()->getPhysicalProperties()->setVolumetricWeight($volumetricWeight);
 
         return $this;
     }
 
     /**
-     * @return PhysicalPropertiesInterface|null
+     * @return int|null
      */
-    public function getPhysicalPropertiesVerified()
+    public function getVolumetricWeight()
     {
-        return $this->getResource()->getPhysicalPropertiesVerified();
+        return $this->getResource()->getPhysicalProperties()->getVolumetricWeight();
     }
 
     /**
@@ -547,6 +585,60 @@ class ShipmentProxy implements ShipmentInterface, ResourceProxyInterface
     public function getContract()
     {
         return $this->getResource()->getContract();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setTotalValueAmount($totalValueAmount)
+    {
+        $this->getResource()->setTotalValueAmount($totalValueAmount);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTotalValueAmount()
+    {
+        return $this->getResource()->getTotalValueAmount();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setTotalValueCurrency($totalValueCurrency)
+    {
+        $this->getResource()->setTotalValueCurrency($totalValueCurrency);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTotalValueCurrency()
+    {
+        return $this->getResource()->getTotalValueCurrency();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setServiceCode($serviceCode)
+    {
+        $this->getResource()->setServiceCode($serviceCode);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getServiceCode()
+    {
+        return $this->getResource()->getServiceCode();
     }
 
     /**

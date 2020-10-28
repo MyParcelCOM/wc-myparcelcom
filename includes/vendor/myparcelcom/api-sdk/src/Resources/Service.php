@@ -3,7 +3,6 @@
 namespace MyParcelCom\ApiSdk\Resources;
 
 use MyParcelCom\ApiSdk\Resources\Interfaces\CarrierInterface;
-use MyParcelCom\ApiSdk\Resources\Interfaces\RegionInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ResourceInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ServiceInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ServiceRateInterface;
@@ -14,6 +13,7 @@ class Service implements ServiceInterface
     use JsonSerializable;
 
     const ATTRIBUTE_NAME = 'name';
+    const ATTRIBUTE_CODE = 'code';
     const ATTRIBUTE_PACKAGE_TYPE = 'package_type';
     const ATTRIBUTE_TRANSIT_TIME = 'transit_time';
     const ATTRIBUTE_DELIVERY_DAYS = 'delivery_days';
@@ -21,10 +21,11 @@ class Service implements ServiceInterface
     const ATTRIBUTE_TRANSIT_TIME_MAX = 'max';
     const ATTRIBUTE_HANDOVER_METHOD = 'handover_method';
     const ATTRIBUTE_DELIVERY_METHOD = 'delivery_method';
+    const ATTRIBUTE_REGIONS_FROM = 'regions_from';
+    const ATTRIBUTE_REGIONS_TO = 'regions_to';
+    const ATTRIBUTE_USES_VOLUMETRIC_WEIGHT = 'uses_volumetric_weight';
 
     const RELATIONSHIP_CARRIER = 'carrier';
-    const RELATIONSHIP_REGION_FROM = 'region_from';
-    const RELATIONSHIP_REGION_TO = 'region_to';
 
     /** @var string */
     private $id;
@@ -42,6 +43,8 @@ class Service implements ServiceInterface
     private $attributes = [
         self::ATTRIBUTE_NAME            => null,
         self::ATTRIBUTE_PACKAGE_TYPE    => null,
+        self::ATTRIBUTE_REGIONS_FROM    => null,
+        self::ATTRIBUTE_REGIONS_TO      => null,
         self::ATTRIBUTE_TRANSIT_TIME    => [
             self::ATTRIBUTE_TRANSIT_TIME_MIN => null,
             self::ATTRIBUTE_TRANSIT_TIME_MAX => null,
@@ -53,13 +56,7 @@ class Service implements ServiceInterface
 
     /** @var array */
     private $relationships = [
-        self::RELATIONSHIP_CARRIER     => [
-            'data' => null,
-        ],
-        self::RELATIONSHIP_REGION_FROM => [
-            'data' => null,
-        ],
-        self::RELATIONSHIP_REGION_TO   => [
+        self::RELATIONSHIP_CARRIER => [
             'data' => null,
         ],
     ];
@@ -106,6 +103,24 @@ class Service implements ServiceInterface
     public function getName()
     {
         return $this->attributes[self::ATTRIBUTE_NAME];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setCode($code)
+    {
+        $this->attributes[self::ATTRIBUTE_CODE] = $code;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCode()
+    {
+        return $this->attributes[self::ATTRIBUTE_CODE];
     }
 
     /**
@@ -181,42 +196,6 @@ class Service implements ServiceInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function setRegionFrom(RegionInterface $region)
-    {
-        $this->relationships[self::RELATIONSHIP_REGION_FROM]['data'] = $region;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getRegionFrom()
-    {
-        return $this->relationships[self::RELATIONSHIP_REGION_FROM]['data'];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setRegionTo(RegionInterface $region)
-    {
-        $this->relationships[self::RELATIONSHIP_REGION_TO]['data'] = $region;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getRegionTo()
-    {
-        return $this->relationships[self::RELATIONSHIP_REGION_TO]['data'];
-    }
-
-    /**
      * @inheritdoc
      */
     public function setHandoverMethod($handoverMethod)
@@ -285,6 +264,24 @@ class Service implements ServiceInterface
     }
 
     /**
+     * @inheritdoc
+     */
+    public function setUsesVolumetricWeight($usesVolumetricWeight)
+    {
+        $this->attributes[self::ATTRIBUTE_USES_VOLUMETRIC_WEIGHT] = $usesVolumetricWeight;
+
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function usesVolumetricWeight()
+    {
+        return $this->attributes[self::ATTRIBUTE_USES_VOLUMETRIC_WEIGHT];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function setServiceRates(array $serviceRates)
@@ -311,7 +308,7 @@ class Service implements ServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function getServiceRates(array $filters = [])
+    public function getServiceRates(array $filters = ['has_active_contract' => 'true'])
     {
         if (empty($this->serviceRates) && isset($this->serviceRatesCallback)) {
             $this->setServiceRates(call_user_func_array($this->serviceRatesCallback, [$filters]));

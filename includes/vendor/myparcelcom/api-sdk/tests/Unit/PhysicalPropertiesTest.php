@@ -55,6 +55,29 @@ class PhysicalPropertiesTest extends TestCase
     }
 
     /** @test */
+    public function testVolumetricWeight()
+    {
+        $physicalProperties = new PhysicalProperties();
+
+        $physicalProperties->setHeight(60);
+        $physicalProperties->setWidth(70);
+
+        // If not all dimensions are set, and volumetric weight isn't set either,
+        // getVolumetricWeight should return null.
+        $this->assertNull($physicalProperties->getVolumetricWeight());
+
+        $physicalProperties->setLength(80);
+
+        // It calculates the volumetric weight otherwise.
+        $this->assertEquals(68, $physicalProperties->getVolumetricWeight());
+
+        // If volumetric weight is set, it should return the already set value,
+        // regardless of the dimensions.
+        $physicalProperties->setVolumetricWeight(1500);
+        $this->assertEquals(1500, $physicalProperties->getVolumetricWeight());
+    }
+
+    /** @test */
     public function testJsonSerialize()
     {
         $physicalProperties = (new PhysicalProperties())
@@ -62,14 +85,16 @@ class PhysicalPropertiesTest extends TestCase
             ->setLength(1100)
             ->setVolume(1200)
             ->setHeight(1300)
-            ->setWidth(1400);
+            ->setWidth(1400)
+            ->setVolumetricWeight(1500);
 
         $this->assertEquals([
-            'weight' => 1000,
-            'length' => 1100,
-            'volume' => 1200,
-            'height' => 1300,
-            'width'  => 1400,
+            'weight'            => 1000,
+            'length'            => 1100,
+            'volume'            => 1200,
+            'height'            => 1300,
+            'width'             => 1400,
+            'volumetric_weight' => 1500,
         ], $physicalProperties->jsonSerialize());
     }
 }

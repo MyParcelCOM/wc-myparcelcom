@@ -16,8 +16,8 @@ interface ResourceFactoryInterface
      *
      * @param string $type
      * @param array  $attributes
-     * @throws MyParcelComException
      * @return ResourceInterface
+     * @throws MyParcelComException
      */
     public function create($type, array $attributes = []);
 }

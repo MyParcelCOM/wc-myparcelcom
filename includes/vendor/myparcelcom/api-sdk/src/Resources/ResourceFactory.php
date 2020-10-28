@@ -142,6 +142,15 @@ class ResourceFactory implements ResourceFactoryInterface, ResourceProxyInterfac
             unset($properties['attributes']['price']);
         }
 
+        if (isset($properties['attributes']['total_value']['amount'])) {
+            $shipment->setTotalValueAmount($properties['attributes']['total_value']['amount']);
+            if (isset($properties['attributes']['total_value']['currency'])) {
+                $shipment->setTotalValueCurrency($properties['attributes']['total_value']['currency']);
+            }
+
+            unset($properties['attributes']['total_value']);
+        }
+
         if (isset($properties['attributes']['pickup_location']['code'])) {
             $shipment->setPickupLocationCode($properties['attributes']['pickup_location']['code']);
         }
@@ -195,8 +204,13 @@ class ResourceFactory implements ResourceFactoryInterface, ResourceProxyInterfac
             unset($properties['attributes']['transit_time']['max']);
         }
 
+        // TODO: Remove this when we remove the region relationships from services.
+        unset($properties['relationships']['region_from']);
+        unset($properties['relationships']['region_to']);
+
         if (isset($properties['id'])) {
             $service->setServiceRatesCallback(function (array $filters = []) use ($properties) {
+                $filters['has_active_contract'] = 'true';
                 $filters['service'] = $properties['id'];
 
                 return $this->api->getServiceRates($filters)->get();
@@ -221,12 +235,6 @@ class ResourceFactory implements ResourceFactoryInterface, ResourceProxyInterfac
             $serviceRate->setCurrency($properties['attributes']['price']['currency']);
 
             unset($properties['attributes']['price']);
-        }
-
-        if (isset($properties['attributes']['step_price']['amount'])) {
-            $serviceRate->setStepPrice($properties['attributes']['step_price']['amount']);
-
-            unset($properties['attributes']['step_price']);
         }
 
         if (isset($properties['relationships']['service_options'])) {
@@ -373,8 +381,8 @@ class ResourceFactory implements ResourceFactoryInterface, ResourceProxyInterfac
      *
      * @param string $type
      * @param array  $attributes
-     * @throws ResourceFactoryException
      * @return object
+     * @throws ResourceFactoryException
      */
     protected function createResource($type, array &$attributes = [])
     {
@@ -404,11 +412,11 @@ class ResourceFactory implements ResourceFactoryInterface, ResourceProxyInterfac
      * other resources need to be created and tries to instantiate them where
      * possible.
      *
-     * @todo Refactor this huge moth.
-     *
      * @param object $resource
      * @param array  $attributes
      * @return object
+     * @todo Refactor this huge moth.
+     *
      */
     protected function hydrate($resource, array $attributes)
     {

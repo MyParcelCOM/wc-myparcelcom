@@ -10,7 +10,6 @@
         "height_max": 560,
         "volume_max": 126,
         "length_max": 750,
-        "step_size": 1000,
         "price": {
           "amount": 400,
           "currency": "EUR"
@@ -128,69 +127,6 @@
           },
           "links": {
             "related": "https://api/contracts/a33dadb9-de8e-4731-90d2-cf760e3f7cff"
-          }
-        }
-      }
-    },
-    {
-      "id": "897ab6cf-101d-4886-87a8-398aef225cbe",
-      "type": "service-rates",
-      "attributes": {
-        "weight_min": 400,
-        "weight_max": 1000,
-        "length_max": 200,
-        "step_size": 1000,
-        "price": {
-          "amount": 589,
-          "currency": "GBP"
-        }
-      },
-      "links": {
-        "self": "https://api/service-rates/897ab6cf-101d-4886-87a8-398aef225cbe"
-      },
-      "relationships": {
-        "service_options": {
-          "data": [
-            {
-              "id": "3760473a-f588-445d-9738-d84933efab5f",
-              "type": "service-options",
-              "meta": {
-                "included": false,
-                "price": {
-                  "currency": "GBP",
-                  "amount": 650
-                }
-              }
-            },
-            {
-              "id": "a3119bf8-0e96-476f-afc7-6f403b302bd4",
-              "type": "service-options",
-              "meta": {
-                "included": true,
-                "price": {
-                  "currency": "GBP",
-                  "amount": 90
-                }
-              }
-            }
-          ]
-        },
-        "service": {
-          "data": {
-            "id": "a3057e77-005b-4945-a41c-20ddbe4dab08",
-            "type": "services"
-          },
-          "links": {
-            "related": "https://api/services/a3057e77-005b-4945-a41c-20ddbe4dab08"
-          }
-        },
-        "contract": {
-          "data": {
-            "id": "2e3bfa85-e5a9-4538-b81a-46b85d244bfb",
-            "type": "contracts"
-          },
-          "links": {
-            "related": "https://api/contracts/2e3bfa85-e5a9-4538-b81a-46b85d244bfb"
           }
         }
       }

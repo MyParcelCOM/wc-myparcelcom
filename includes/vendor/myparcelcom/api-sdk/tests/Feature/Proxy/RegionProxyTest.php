@@ -60,7 +60,7 @@ class RegionProxyTest extends TestCase
         $this->assertEquals('c1048135-db45-404e-adac-fdecd0c7134a', $this->regionProxy->getId());
         $this->assertEquals(ResourceInterface::TYPE_REGION, $this->regionProxy->getType());
         $this->assertEquals('GB', $this->regionProxy->getCountryCode());
-        $this->assertEquals('ENG', $this->regionProxy->getRegionCode());
+        $this->assertEquals('NIR', $this->regionProxy->getRegionCode());
         $this->assertEquals('GBP', $this->regionProxy->setCurrency('GBP')->getCurrency());
         $this->assertEquals('United Kingdom', $this->regionProxy->getName());
         $this->assertEquals('country', $this->regionProxy->getCategory());

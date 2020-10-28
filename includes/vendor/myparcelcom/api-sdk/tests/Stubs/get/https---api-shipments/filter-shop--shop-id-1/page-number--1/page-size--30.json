@@ -67,51 +67,56 @@
             "phone_number": "+31 234 567 890"
           }
         },
+        "items": [
+          {
+            "sku": "123456789",
+            "description": "OnePlus X",
+            "item_value": {
+              "amount": 100,
+              "currency": "GBP"
+            },
+            "quantity": 2,
+            "hs_code": "8517.12.00",
+            "origin_country_code": "GB"
+          },
+          {
+            "sku": "213425",
+            "description": "OnePlus One",
+            "item_value": {
+              "amount": 200,
+              "currency": "GBP"
+            },
+            "quantity": 3,
+            "hs_code": "8517.12.00",
+            "origin_country_code": "GB"
+          },
+          {
+            "sku": "6876",
+            "description": "OnePlus Two",
+            "item_value": {
+              "amount": 300,
+              "currency": "GBP"
+            },
+            "quantity": 1,
+            "hs_code": "8517.12.00",
+            "origin_country_code": "GB"
+          }
+        ],
         "customs": {
           "content_type": "documents",
           "invoice_number": "NO.5",
-          "items": [
-            {
-              "sku": "123456789",
-              "description": "OnePlus X",
-              "item_value": {
-                "amount": 100,
-                "currency": "GBP"
-              },
-              "quantity": 2,
-              "hs_code": "8517.12.00",
-              "origin_country_code": "GB"
-            },
-            {
-              "sku": "213425",
-              "description": "OnePlus One",
-              "item_value": {
-                "amount": 200,
-                "currency": "GBP"
-              },
-              "quantity": 3,
-              "hs_code": "8517.12.00",
-              "origin_country_code": "GB"
-            },
-            {
-              "sku": "6876",
-              "description": "OnePlus Two",
-              "item_value": {
-                "amount": 300,
-                "currency": "GBP"
-              },
-              "quantity": 1,
-              "hs_code": "8517.12.00",
-              "origin_country_code": "GB"
-            }
-          ],
           "non_delivery": "return",
           "incoterm": "DDU"
         },
-        "description": "order #8008135",
+        "description": "Fidget spinners",
+        "customer_reference": "#8008135",
         "price": {
           "amount": 100,
           "currency": "EUR"
+        },
+        "total_value": {
+          "amount": 600,
+          "currency": "GBP"
         },
         "barcode": "3SABCD0123456789",
         "tracking_code": "TR4CK1NGC0D3",
@@ -121,15 +126,10 @@
           "width": 50,
           "length": 50,
           "volume": 0.06,
-          "weight": 24
+          "weight": 24,
+          "volumetric_weight": 12
         },
-        "physical_properties_verified": {
-          "height": 240,
-          "width": 500,
-          "length": 500,
-          "volume": 60,
-          "weight": 240
-        },
+        "register_at": 1526913941,
         "created_at": 1504801719,
         "updated_at": 1504801719,
         "synced_at": 1504801719
@@ -142,15 +142,6 @@
               "id": "service-option-id-1"
             }
           ]
-        },
-        "parent": {
-          "data": {
-            "type": "shipments",
-            "id": "shipment-id-0"
-          },
-          "links": {
-            "related": "https://api/shipments/shipment-id-0"
-          }
         },
         "shop": {
           "data": {

@@ -46,7 +46,7 @@ class PriceCalculatorTest extends TestCase
     }
 
     /** @test */
-    public function testItTotalPriceIsNullWhenOptionPriceIsNull()
+    public function testTheTotalPriceIsNullWhenOptionPriceIsNull()
     {
         $serviceOptionMocks = [
             $this->getMockedServiceOption('service-option-id-uno', 250),

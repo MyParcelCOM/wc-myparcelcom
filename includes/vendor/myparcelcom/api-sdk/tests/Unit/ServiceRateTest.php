@@ -75,8 +75,6 @@ class ServiceRateTest extends TestCase
             'volume_max' => ['setVolumeMax', 321, 'getVolumeMax'],
             'currency'   => ['setCurrency', 'GBP', 'getCurrency'],
             'price'      => ['setPrice', 500, 'getPrice'],
-            'step_price' => ['setStepPrice', 880, 'getStepPrice'],
-            'step_size'  => ['setStepSize', 1234, 'getStepSize'],
         ];
     }
 
@@ -153,8 +151,6 @@ class ServiceRateTest extends TestCase
             ->setVolumeMax(321)
             ->setCurrency('GBP')
             ->setPrice(741)
-            ->setStepSize(10)
-            ->setStepPrice(10)
             ->setService($serviceMock)
             ->setContract($contractMock)
             ->setServiceOptions([
@@ -171,11 +167,6 @@ class ServiceRateTest extends TestCase
                     'amount'   => 741,
                     'currency' => 'GBP',
                 ],
-                'step_price' => [
-                    'amount'   => 10,
-                    'currency' => 'GBP',
-                ],
-                'step_size'  => 10,
                 'weight_min' => 123,
                 'weight_max' => 456,
                 'length_max' => 789,

@@ -120,7 +120,7 @@ class ServiceOptionProxy implements ServiceOptionInterface, ResourceProxyInterfa
      */
     public function setPrice($price)
     {
-        $this->meta[self::META_PRICE][self::META_PRICE_AMOUNT] = $price !== null ? (int)$price : null;
+        $this->meta[self::META_PRICE][self::META_PRICE_AMOUNT] = $price !== null ? (int) $price : null;
 
         return $this;
     }

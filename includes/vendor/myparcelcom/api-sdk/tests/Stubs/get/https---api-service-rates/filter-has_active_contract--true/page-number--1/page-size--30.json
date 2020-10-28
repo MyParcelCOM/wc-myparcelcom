@@ -10,7 +10,6 @@
         "height_max": 560,
         "volume_max": 126,
         "length_max": 750,
-        "step_size": 1000,
         "price": {
           "amount": 400,
           "currency": "EUR"
@@ -142,7 +141,6 @@
         "height_max": 300,
         "volume_max": 24,
         "length_max": 200,
-        "step_size": 1000,
         "price": {
           "amount": 500,
           "currency": "GBP"
@@ -194,7 +192,6 @@
         "weight_min": 3333,
         "weight_max": 7777,
         "length_max": 1200,
-        "step_size": 1000,
         "price": {
           "amount": 5000,
           "currency": "GBP"
@@ -257,7 +254,6 @@
         "weight_min": 400,
         "weight_max": 1000,
         "length_max": 200,
-        "step_size": 1000,
         "price": {
           "amount": 589,
           "currency": "GBP"
@@ -320,7 +316,6 @@
         "weight_min": 2000,
         "weight_max": 5678,
         "length_max": 1234,
-        "step_size": 1000,
         "price": {
           "amount": 980,
           "currency": "GBP"

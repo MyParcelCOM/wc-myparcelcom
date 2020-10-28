@@ -96,7 +96,7 @@ class ShipmentItem implements ShipmentItemInterface
      */
     public function setQuantity($quantity)
     {
-        $this->quantity = (int)$quantity;
+        $this->quantity = (int) $quantity;
 
         return $this;
     }
@@ -115,7 +115,7 @@ class ShipmentItem implements ShipmentItemInterface
      */
     public function setItemValue($value)
     {
-        $this->itemValue[self::AMOUNT] = (int)$value;
+        $this->itemValue[self::AMOUNT] = (int) $value;
 
         return $this;
     }

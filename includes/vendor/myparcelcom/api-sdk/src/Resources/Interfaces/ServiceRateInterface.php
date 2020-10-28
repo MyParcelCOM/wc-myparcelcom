@@ -93,28 +93,6 @@ interface ServiceRateInterface extends ResourceInterface
     public function getPrice();
 
     /**
-     * @param int $stepPrice
-     * @return $this
-     */
-    public function setStepPrice($stepPrice);
-
-    /**
-     * @return int
-     */
-    public function getStepPrice();
-
-    /**
-     * @param int $stepSize
-     * @return $this
-     */
-    public function setStepSize($stepSize);
-
-    /**
-     * @return int
-     */
-    public function getStepSize();
-
-    /**
      * @param ServiceInterface $service
      * @return $this
      */

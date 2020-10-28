@@ -20,7 +20,7 @@ class Position implements PositionInterface
      */
     public function setLatitude($latitude)
     {
-        $this->latitude = (float)$latitude;
+        $this->latitude = (float) $latitude;
 
         return $this;
     }
@@ -38,7 +38,7 @@ class Position implements PositionInterface
      */
     public function setLongitude($longitude)
     {
-        $this->longitude = (float)$longitude;
+        $this->longitude = (float) $longitude;
 
         return $this;
     }

@@ -20,8 +20,8 @@ interface AuthenticatorInterface
      * cached header is ignored and a new request is done to the auth server.
      *
      * @param bool $forceRefresh
-     * @throws AuthenticationException
      * @return array
+     * @throws AuthenticationException
      */
     public function getAuthorizationHeader($forceRefresh = false);
 }

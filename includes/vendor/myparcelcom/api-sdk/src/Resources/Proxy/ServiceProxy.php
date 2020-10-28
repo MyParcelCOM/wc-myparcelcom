@@ -3,7 +3,6 @@
 namespace MyParcelCom\ApiSdk\Resources\Proxy;
 
 use MyParcelCom\ApiSdk\Resources\Interfaces\CarrierInterface;
-use MyParcelCom\ApiSdk\Resources\Interfaces\RegionInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ResourceInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ResourceProxyInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ServiceInterface;
@@ -66,6 +65,25 @@ class ServiceProxy implements ServiceInterface, ResourceProxyInterface
     public function getName()
     {
         return $this->getResource()->getName();
+    }
+
+    /**
+     * @param string $code
+     * @return $this
+     */
+    public function setCode($code)
+    {
+        $this->getResource()->setCode($code);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCode()
+    {
+        return $this->getResource()->getCode();
     }
 
     /**
@@ -145,44 +163,6 @@ class ServiceProxy implements ServiceInterface, ResourceProxyInterface
     }
 
     /**
-     * @param RegionInterface $region
-     * @return $this
-     */
-    public function setRegionFrom(RegionInterface $region)
-    {
-        $this->getResource()->setRegionFrom($region);
-
-        return $this;
-    }
-
-    /**
-     * @return RegionInterface
-     */
-    public function getRegionFrom()
-    {
-        return $this->getResource()->getRegionFrom();
-    }
-
-    /**
-     * @param RegionInterface $region
-     * @return $this
-     */
-    public function setRegionTo(RegionInterface $region)
-    {
-        $this->getResource()->setRegionTo($region);
-
-        return $this;
-    }
-
-    /**
-     * @return RegionInterface
-     */
-    public function getRegionTo()
-    {
-        return $this->getResource()->getRegionTo();
-    }
-
-    /**
      * @param string $handoverMethod
      * @return $this
      */
@@ -251,6 +231,25 @@ class ServiceProxy implements ServiceInterface, ResourceProxyInterface
     }
 
     /**
+     * @param bool $usesVolumetricWeight
+     * @return $this
+     */
+    public function setUsesVolumetricWeight($usesVolumetricWeight)
+    {
+        $this->getResource()->setUsesVolumetricWeight($usesVolumetricWeight);
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function usesVolumetricWeight()
+    {
+        return $this->getResource()->usesVolumetricWeight();
+    }
+
+    /**
      * @param ServiceRateInterface[] $serviceRates
      * @return $this
      */
@@ -276,7 +275,7 @@ class ServiceProxy implements ServiceInterface, ResourceProxyInterface
      * @param array $filters
      * @return ServiceRateInterface[]
      */
-    public function getServiceRates(array $filters = [])
+    public function getServiceRates(array $filters = ['has_active_contract' => 'true'])
     {
         return $this->getResource()->getServiceRates($filters);
     }

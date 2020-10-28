@@ -18,7 +18,20 @@
           "max": 1
         },
         "handover_method": "drop-off",
-        "delivery_method": "pick-up"
+        "delivery_method": "pick-up",
+        "regions_from": [
+          {
+            "country_code": "GB",
+            "region_code": "NIR"
+          }
+        ],
+        "regions_to": [
+          {
+            "country_code": "GB",
+            "region_code": "NIR"
+          }
+        ],
+        "uses_volumetric_weight": false
       },
       "links": {
         "self": "https://api/services/372c961e-006d-4351-b4e6-4dc9036e939b",
@@ -32,24 +45,6 @@
           },
           "links": {
             "related": "https://api/carriers/eef00b32-177e-43d3-9b26-715365e4ce46"
-          }
-        },
-        "region_from": {
-          "data": {
-            "id": "a554259d-0e94-4cd2-9ea0-096c24be4c74",
-            "type": "regions"
-          },
-          "links": {
-            "related": "https://api/regions/a554259d-0e94-4cd2-9ea0-096c24be4c74"
-          }
-        },
-        "region_to": {
-          "data": {
-            "id": "6668a9b6-e097-4176-8393-aeaebfd0d32b",
-            "type": "regions"
-          },
-          "links": {
-            "related": "https://api/regions/6668a9b6-e097-4176-8393-aeaebfd0d32b"
           }
         }
       }

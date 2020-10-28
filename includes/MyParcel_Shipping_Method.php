@@ -4,8 +4,8 @@ use MyParcelCom\ApiSdk\Resources\Address;
 use MyParcelCom\ApiSdk\Shipments\PriceCalculator;
 use MyParcelCom\ApiSdk\Resources\Shipment;
 
-if ( ! defined( 'WPINC' ) ) { 
-    die; 
+if (!defined('WPINC')) {
+    die;
 } 
  
     
