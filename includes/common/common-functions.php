@@ -92,7 +92,7 @@ function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr, $sen
                 ->setQuantity($quantity)
                 ->setItemValue($itemValue)
                 ->setOriginCountryCode($senderCountry)
-                ->setHsCode('0000')
+                ->setHsCode('999999')
                 ->setCurrency($currency);
 
             $shipAddItems[] = $shipItems;
@@ -113,7 +113,7 @@ function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr, $sen
                 ->setQuantity($quantity)
                 ->setItemValue($itemValue)
                 ->setOriginCountryCode($senderCountry)
-                ->setHsCode('0000')
+                ->setHsCode('999999')
                 ->setCurrency($currency);
 
             $shipAddItems[] = $shipItems;
@@ -425,7 +425,7 @@ function prepareHtmlForSettingPage()
       <table cellpadding="5" cellspacing="5" class="form-table">
         <tr valign="top">
           <th scope="row"><label><?php echo MYPARCEL_API_CURRENT_VERSION; ?></label></th>
-          <td>2.0.1</td>
+          <td><?php echo MYPARCEL_PLUGIN_VERSION; ?></td>
         </tr>
         <tr valign="top">
           <th scope="row"><label><?php echo MYPARCEL_API_SUPPORT_TEXT; ?></label></th>

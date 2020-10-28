@@ -143,7 +143,7 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
                     }
 
                     $orderShippedCount++;
-                    // Update the shipment key 
+                    // Update the shipment key
                     if (!empty($shipKey)) {
                         update_post_meta(
                             $postId,
@@ -287,7 +287,7 @@ function getPartialShippingQuantity($orderId): array
 }
 
 /**
- * Logic for exporting order to Myparcel.com
+ * Logic for exporting order to MyParcel.com
  *
  * @param array $orderId
  *
@@ -322,7 +322,7 @@ function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
         $customs = new Customs();
         $customs->setContentType(Customs::CONTENT_TYPE_MERCHANDISE);
         $customs->setNonDelivery(Customs::NON_DELIVERY_RETURN);
-        $customs->setIncoterm(Customs::INCOTERM_DDP);
+        $customs->setIncoterm('DAP'); // TODO: change to Customs::INCOTERM_DAP after updating the SDK package.
         $customs->setInvoiceNumber('N/A');
         $shipment->setCustoms($customs);
     } else {

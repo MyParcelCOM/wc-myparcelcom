@@ -3,7 +3,7 @@
  * Plugin Name: MyParcel.com
  * Plugin URI:  https://www.myparcel.com
  * Description: This plugin enables you to choose MyParcel.com shipping methods on WooCommerce.
- * Version: 2.0.1
+ * Version: 2.0.2
  * Author: MyParcel.com
  * Requires at least:
  * Tested up to:
