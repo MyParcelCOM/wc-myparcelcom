@@ -3,7 +3,7 @@
  * Plugin Name: MyParcel.com
  * Plugin URI:  https://www.myparcel.com
  * Description: This plugin enables you to choose MyParcel.com shipping methods on WooCommerce.
- * Version: 2.0.2
+ * Version: 2.0.3
  * Author: MyParcel.com
  * Requires at least:
  * Tested up to:
@@ -28,7 +28,7 @@ if (!defined('MY_PARCEL_PLUGIN_NAME')) {
 $errorMessage = '';
 $ver = (float)phpversion();
 $errorVersionMessage ='<div class="notice notice-error is-dismissible">
-            <p>'.MY_PARCEL_PLUGIN_NAME.' Supports php 7.1 and higher vesion .</p>
+            <p>'.MY_PARCEL_PLUGIN_NAME.' Supports php 7.1 and higher.</p>
         </div>';
 
 if (!(in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins'))))) {

@@ -2,7 +2,6 @@ jQuery(function($){
 
     $("form#api-setting-form").validate({
         rules: {
-
             api_url: {
                 required: true
             },
@@ -36,13 +35,11 @@ jQuery(function($){
             company_name: {
                 required: true
             },
-            myparcel_shopid : {
+            myparcel_shopid: {
                 required: true
             }
-             
        },
        messages: {
-        
             api_url: {
                 required: "Required"
             },
@@ -75,13 +72,12 @@ jQuery(function($){
             },
             company_name: {
                 required: "Required"
-            }
+            },
             myparcel_shopid: {
                 required: "Required"
             }
-            
        },
-           
+
        // the errorPlacement has to take the table layout into account
         errorPlacement: function(error, element) {
             error.css('color','red');
@@ -92,7 +88,6 @@ jQuery(function($){
             else
                 error.appendTo( element.parent() );
         },
-    
     });
 
     setTimeout(function() {
@@ -100,5 +95,5 @@ jQuery(function($){
     }, 15000); // <-- time in milliseconds
     setTimeout(function() {
         $('#message').fadeOut('fast');
-    }, 15000); // <-- time in milliseconds    
+    }, 15000); // <-- time in milliseconds
 });

@@ -6,7 +6,6 @@ use MyParcelCom\ApiSdk\Resources\Shipment;
 use MyParcelCom\ApiSdk\Resources\ShipmentItem;
 use MyParcelCom\ApiSdk\Resources\File;
 use MyParcelCom\ApiSdk\LabelCombiner;
-use MyParcelCom\ApiSdk\Resources\Interfaces\FileInterface;
 use MyParcelCom\ApiSdk\LabelCombinerInterface;
 
 /**
@@ -621,7 +620,6 @@ function registerMyParcelWebHook($accessToken)
                         ],
                     ],
                 ],
-
             ],
     ];
     $dataString      = json_encode($data);

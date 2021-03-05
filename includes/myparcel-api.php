@@ -37,6 +37,7 @@ class MyParcelApi
                 );
                 $authenticator->getAuthorizationHeader(true);
                 $api->authenticate($authenticator);
+                $api->clearCache(); // Fix issue caused by the MyParcel.com SDK caching resources like shops for a week.
 
                 return $api;
             } catch (AuthenticationException $e) {

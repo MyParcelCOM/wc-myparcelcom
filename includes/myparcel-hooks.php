@@ -6,7 +6,6 @@ use MyParcelCom\ApiSdk\Resources\Address;
 use MyParcelCom\ApiSdk\Resources\Customs;
 use MyParcelCom\ApiSdk\Resources\Shipment;
 use MyParcelCom\ApiSdk\Resources\Interfaces\PhysicalPropertiesInterface;
-use MyParcelCom\ApiSdk\Http\Exceptions\RequestException;
 
 function myparcelExceptionRedirection()
 {
@@ -17,7 +16,6 @@ function myparcelExceptionRedirection()
 }
 
 /**
- *
  * @return void
  */
 function addFrontEndJs()
@@ -288,10 +286,6 @@ function getPartialShippingQuantity($orderId): array
 
 /**
  * Logic for exporting order to MyParcel.com
- *
- * @param array $orderId
- *
- * @return $shipmentId
  **/
 function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
 {
@@ -351,7 +345,6 @@ function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
 
     $getAuth  = new MyParcelApi();
     $api      = $getAuth->apiAuthentication();
-    $services = $api->getServices($shipment);
     // Have the SDK determine the cheapest service and post the shipment to the MyParcel.com API.
     $createdShipment = $api->createShipment($shipment);
     $shipmentId      = $createdShipment->getId();
@@ -360,11 +353,7 @@ function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
     return $shipmentId;
 }
 
-
 /**
- * @param Shipment $shipment
- * @param string   $when
- *
  * @return mixed
  **/
 function setShipmentRegister($shipmentId)
@@ -375,22 +364,7 @@ function setShipmentRegister($shipmentId)
     $shipment->setRegisterAt(new \DateTime());
     $updateShipmentResp = $api->updateShipment($shipment);
 
-    return;
-}
-
-
-/**
- * @param Shipment $shipment
- * @param string   $when
- *
- * @return mixed
- **/
-function setRegisterAt($shipment, $when = 'now')
-{
-    $api = MyParcelComApi::getSingleton();
-    $shipment->setRegisterAt($when);
-
-    return $api->updateShipment($shipment);
+    return $updateShipmentResp;
 }
 
 /**
