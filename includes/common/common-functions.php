@@ -80,20 +80,26 @@ function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr, $sen
             $item_id   = $getShippedItem["item_id"];
             $shipItems = new ShipmentItem();
             $product   = wc_get_product($items[$item_id]['product_id']);
+            $productID = $product->get_id();
             // Now you have access to (see above)...
             $quantity    = $getShippedItem["shipped"]; // get quantity
             $productName = $product->get_name();
             $sku         = ($product->get_sku()) ? $product->get_sku() : MYPARCEL_NA_TEXT;    // Get the product SKU
             $price       = $product->get_price(); // Get the product price
             $itemValue   = ($price * 1) * 100;
+            $HSCode      = get_post_meta($productID, 'myparcel_hs_code', true);
+            $CountryOfOrigin = get_post_meta($productID, 'myparcel_product_country', true);
+            $itemWeight = $product->get_weight();
+            $itemWeight = $itemWeight*1000;
             $shipItems
                 ->setSku($sku)
                 ->setDescription($productName)
                 ->setQuantity($quantity)
                 ->setItemValue($itemValue)
-                ->setOriginCountryCode($senderCountry)
-                ->setHsCode('0000')
-                ->setCurrency($currency);
+                ->setOriginCountryCode($CountryOfOrigin)
+                ->setHsCode($HSCode)
+                ->setCurrency($currency)
+                ->setItemWeight($itemWeight);
 
             $shipAddItems[] = $shipItems;
         }
@@ -104,17 +110,25 @@ function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr, $sen
             $quantity    = $item->get_quantity(); // get quantity
             $product     = $item->get_product(); // get the WC_Product object
             $productName = $product->get_name();
+            $productID   = $product->get_id();
             $sku         = ($product->get_sku()) ? $product->get_sku() : MYPARCEL_NA_TEXT;    // Get the product SKU
             $price       = $product->get_price(); // Get the product price
             $itemValue   = ($price * 1) * 100;
+
+
+            $HSCode      = get_post_meta($productID, 'myparcel_hs_code', true);
+            $CountryOfOrigin = get_post_meta($productID, 'myparcel_product_country', true);
+            $itemWeight = $product->get_weight();
+            $itemWeight = $itemWeight*1000;
             $shipItems
                 ->setSku($sku)
                 ->setDescription($productName)
                 ->setQuantity($quantity)
                 ->setItemValue($itemValue)
-                ->setOriginCountryCode($senderCountry)
-                ->setHsCode('0000')
-                ->setCurrency($currency);
+                ->setOriginCountryCode($CountryOfOrigin)
+                ->setHsCode($HSCode)
+                ->setCurrency($currency)
+                ->setItemWeight($itemWeight);
 
             $shipAddItems[] = $shipItems;
         }
@@ -136,9 +150,25 @@ function setItemForEuCountries($orderId, $shippedItemsNewArr)
             $product     = wc_get_product($items[$item_id]['product_id']);
             $quantity    = $getShippedItem["shipped"]; // get quantity
             $productName = $product->get_name();
+            $productID   = $product->get_id();
+            $HSCode      = get_post_meta($productID, 'myparcel_hs_code', true);
+            $CountryOfOrigin = get_post_meta($productID, 'myparcel_product_country', true);
+            $sku         = ($product->get_sku()) ? $product->get_sku() : MYPARCEL_NA_TEXT;    // Get the product SKU
+            $price       = $product->get_price(); // Get the product price
+            $itemValue   = ($price * 1) * 100;
+            $Currency = get_woocommerce_currency();
+            $itemWeight = $product->get_weight();
+            $itemWeight = $itemWeight*1000;
             $shipItems
+                ->setSku($sku)
                 ->setDescription($productName)
-                ->setQuantity($quantity);
+                ->setItemValue($itemValue)
+                ->setCurrency($Currency)
+                ->setQuantity($quantity)
+                ->setOriginCountryCode($CountryOfOrigin)
+                ->setHsCode($HSCode)
+                ->setItemWeight($itemWeight);
+                
             $shipAddItems[] = $shipItems;
         }
     } else {
@@ -147,9 +177,25 @@ function setItemForEuCountries($orderId, $shippedItemsNewArr)
             $product     = wc_get_product($item['product_id']);
             $quantity    = $item->get_quantity(); // get quantity
             $productName = $product->get_name();
+            $productID   = $product->get_id();
+            $HSCode      = get_post_meta($productID, 'myparcel_hs_code', true);
+            $CountryOfOrigin = get_post_meta($productID, 'myparcel_product_country', true);
+            $sku         = ($product->get_sku()) ? $product->get_sku() : MYPARCEL_NA_TEXT;    // Get the product SKU
+            $price       = $product->get_price(); // Get the product price
+            $itemValue   = ($price * 1) * 100;
+            $Currency = get_woocommerce_currency();
+            $itemWeight = $product->get_weight();
+            $itemWeight = $itemWeight*1000;
+
             $shipItems
+                ->setSku($sku)
                 ->setDescription($productName)
-                ->setQuantity($quantity);
+                ->setQuantity($quantity)
+                ->setOriginCountryCode($CountryOfOrigin)
+                ->setItemValue($itemValue)
+                ->setCurrency($Currency)
+                ->setHsCode($HSCode)
+                ->setItemWeight($itemWeight);
             $shipAddItems[] = $shipItems;
         }
     }

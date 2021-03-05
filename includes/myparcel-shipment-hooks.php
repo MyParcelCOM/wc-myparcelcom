@@ -63,59 +63,69 @@ add_action('woocommerce_admin_order_item_headers', 'orderItemHeaders', 10, 1);
  */
 function orderItemValues($product, $item, $itemId)
 {
-    if (isMyParcelOrder($item->get_order_id())) {
-        if ($product) {
-            $itemQuantity = $item->get_quantity();
-            $orderId      = $item->get_order_id();
-            $itemId       = $item->get_id();
-            $shipped      = get_post_meta($orderId, GET_META_MYPARCEL_ORDER_SHIPMENT_TEXT, true);
-            $shipped      = (!empty($shipped)) ? json_decode($shipped, true) : '';
+   
+   $className = get_class($item);
+    if( null == $product && 'Automattic\WooCommerce\Admin\Overrides\OrderRefund' == $className ){
 
-            $myParcelShipmentNormalOrder = get_post_meta($orderId, '_my_parcel_shipment_for_normal_order', true);
+    } 
+    else 
+    {
+        if ( isMyParcelOrder( $item->get_order_id() ) ) {
+            if ($product) {
+                $itemQuantity = $item->get_quantity();
+                $orderId      = $item->get_order_id();
+                $itemId       = $item->get_id();
+                $shipped      = get_post_meta($orderId, GET_META_MYPARCEL_ORDER_SHIPMENT_TEXT, true);
+                $shipped      = (!empty($shipped)) ? json_decode($shipped, true) : '';
 
-            $tdHtml = '<a href="javascript:void(0);" class="partial-anchor-top partial-anchor-top-'.$itemId.'" title="Not Shipped">';
-            $tdHtml .= '<span class="not-shipped-color ship-status" title="Not Shipped"> Not Shipped - '.$itemQuantity.'</span>';
-            $tdHtml .= '</a>';
+                $myParcelShipmentNormalOrder = get_post_meta($orderId, '_my_parcel_shipment_for_normal_order', true);
 
-            $qtyHtml = '<input type="text" name="ship_qty" class="ship_qty ship_qty_'.$itemId.'" value="'.$itemQuantity.'" data-qty="'.$itemQuantity.'" data-old-qty="0" data-flag-id="0" data-rqty="'.$itemQuantity.'" data-item-id="'.$itemId.'" data-order-id="'.$orderId.'" style="width: 43px;"/>';
-
-            $remainHtml = '<a href="javascript:void(0);" class="partial-anchor-remain-'.$itemId.'"><span class="remain-qty">'.$itemQuantity.'</span></a>';
-
-            if ($myParcelShipmentNormalOrder) {
                 $tdHtml = '<a href="javascript:void(0);" class="partial-anchor-top partial-anchor-top-'.$itemId.'" title="Not Shipped">';
-                $tdHtml .= '<span class="shipped-color ship-status" title="Not Shipped"> Shipped </span>';
+                $tdHtml .= '<span class="not-shipped-color ship-status" title="Not Shipped"> Not Shipped - '.$itemQuantity.'</span>';
                 $tdHtml .= '</a>';
 
                 $qtyHtml = '<input type="text" name="ship_qty" class="ship_qty ship_qty_'.$itemId.'" value="'.$itemQuantity.'" data-qty="'.$itemQuantity.'" data-old-qty="0" data-flag-id="0" data-rqty="'.$itemQuantity.'" data-item-id="'.$itemId.'" data-order-id="'.$orderId.'" style="width: 43px;"/>';
 
-                echo '<td class="partital-td-item"><span class="text-span">'.$qtyHtml.' <i class="fa fa-truck fa-sm" aria-hidden="true"></i></span> <input type="button" class="btn btn-success btn-quanity-update" id="update-quantity-'.$itemId.'" value="Update Quantity"></td>';
-                echo '<td class="partial-status-td" width="1%">'.$tdHtml.'</td>';
-                echo '<td class="remain-status-td" width="1%"> 0 </td>';
+                $remainHtml = '<a href="javascript:void(0);" class="partial-anchor-remain-'.$itemId.'"><span class="remain-qty">'.$itemQuantity.'</span></a>';
 
-            } else {
-                if (!empty($orderId)) {
-                    if (!empty($shipped)) {
-                        $key = array_search($itemId, array_column($shipped, 'item_id'));
-                        prepareHtmlForUpdateQuantity(
-                            $shipped,
-                            $key,
-                            $itemQuantity,
-                            $orderId,
-                            $itemId,
-                            $qtyHtml,
-                            $tdHtml,
-                            $remainHtml
-                        );
-                    }
+                if ($myParcelShipmentNormalOrder) {
+                    $tdHtml = '<a href="javascript:void(0);" class="partial-anchor-top partial-anchor-top-'.$itemId.'" title="Not Shipped">';
+                    $tdHtml .= '<span class="shipped-color ship-status" title="Not Shipped"> Shipped </span>';
+                    $tdHtml .= '</a>';
+
+                    $qtyHtml = '<input type="text" name="ship_qty" class="ship_qty ship_qty_'.$itemId.'" value="'.$itemQuantity.'" data-qty="'.$itemQuantity.'" data-old-qty="0" data-flag-id="0" data-rqty="'.$itemQuantity.'" data-item-id="'.$itemId.'" data-order-id="'.$orderId.'" style="width: 43px;"/>';
+
                     echo '<td class="partital-td-item"><span class="text-span">'.$qtyHtml.' <i class="fa fa-truck fa-sm" aria-hidden="true"></i></span> <input type="button" class="btn btn-success btn-quanity-update" id="update-quantity-'.$itemId.'" value="Update Quantity"></td>';
                     echo '<td class="partial-status-td" width="1%">'.$tdHtml.'</td>';
-                    echo '<td class="remain-status-td" width="1%">'.$remainHtml.'</td>';
+                    echo '<td class="remain-status-td" width="1%"> 0 </td>';
+
+                } else {
+                    if (!empty($orderId)) {
+                        if (!empty($shipped)) {
+                            $key = array_search($itemId, array_column($shipped, 'item_id'));
+                            prepareHtmlForUpdateQuantity(
+                                $shipped,
+                                $key,
+                                $itemQuantity,
+                                $orderId,
+                                $itemId,
+                                $qtyHtml,
+                                $tdHtml,
+                                $remainHtml
+                            );
+                        }
+                        echo '<td class="partital-td-item"><span class="text-span">'.$qtyHtml.' <i class="fa fa-truck fa-sm" aria-hidden="true"></i></span> <input type="button" class="btn btn-success btn-quanity-update" id="update-quantity-'.$itemId.'" value="Update Quantity"></td>';
+                        echo '<td class="partial-status-td" width="1%">'.$tdHtml.'</td>';
+                        echo '<td class="remain-status-td" width="1%">'.$remainHtml.'</td>';
+                    }
                 }
+            } else {
+                echo '<td colspan="3"></td>';
             }
-        } else {
-            echo '<td colspan="3"></td>';
         }
+
     }
+    
 }
 
 add_action('woocommerce_admin_order_item_values', 'orderItemValues', 10, 3);
