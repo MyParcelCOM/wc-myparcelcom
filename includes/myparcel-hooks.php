@@ -128,6 +128,7 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
                 if ($shippedData) {
                     $shippedItems        = (!empty($shippedData)) ? json_decode($shippedData, true) : '';
                     $totalWeight         = 0;
+                    
                     $extractShippedItems = extractShipmentItemArr($shippedItems, $ifShipmentTrue, $totalWeight);
                     $shippedItemArray    = $extractShippedItems["shippedItemeArray"];
                     $shippedItemsNewArr  = $extractShippedItems["shippedItemsNewArr"];
@@ -143,7 +144,7 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
                     }
 
                     $orderShippedCount++;
-                    // Update the shipment key
+                    // Update the shipment key 
                     if (!empty($shipKey)) {
                         update_post_meta(
                             $postId,
@@ -164,6 +165,7 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
                 } else {
                     if (empty($shipKey) || $shipKey === '') {
                         $totalWeight      = getTotalWeightByPostID($postId);
+                        
                         $packages         = WC()->shipping->get_packages();
                         $shipmentTrackKey = createPartialOrderShipment($postId, $totalWeight);
                         $orderShippedCount++;
@@ -287,7 +289,7 @@ function getPartialShippingQuantity($orderId): array
 }
 
 /**
- * Logic for exporting order to MyParcel.com
+ * Logic for exporting order to Myparcel.com
  *
  * @param array $orderId
  *
@@ -295,10 +297,16 @@ function getPartialShippingQuantity($orderId): array
  **/
 function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
 {
+
     global $woocommerce;
+    $totalWeight    = $totalWeight * 1000;
     $currency       = get_woocommerce_currency();
-    $countAllWeight = $totalWeight > 1 ? $totalWeight : ceil($totalWeight);
+    $countAllWeight = $totalWeight > 1000 ? $totalWeight : 1000;
+    
     $orderData      = getOrderData($orderId);
+    $order = wc_get_order($orderId);
+    $methodName = $order->get_shipping_method();
+    
     $shipment       = new Shipment();
 
     // SHIPPING INFORMATION:
@@ -322,7 +330,7 @@ function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
         $customs = new Customs();
         $customs->setContentType(Customs::CONTENT_TYPE_MERCHANDISE);
         $customs->setNonDelivery(Customs::NON_DELIVERY_RETURN);
-        $customs->setIncoterm('DAP'); // TODO: change to Customs::INCOTERM_DAP after updating the SDK package.
+        $customs->setIncoterm(Customs::INCOTERM_DDU);
         $customs->setInvoiceNumber('N/A');
         $shipment->setCustoms($customs);
     } else {
@@ -345,6 +353,7 @@ function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
         ->setRecipientAddress($recipient)
         ->setWeight($countAllWeight, PhysicalPropertiesInterface::WEIGHT_GRAM)
         ->setDescription('Order id: '.(string)($orderId))
+        ->setTags("Flat Rate")
         ->setItems($shipAddItems)
         ->setShop($selectedShop)
         ->setChannel($woocommerceVersion);
@@ -508,3 +517,35 @@ function register_session()
 }
 
 add_action('init', 'register_session');
+
+function extra_fields_for_myparcel() {
+    $screens = [ 'product' ];
+    foreach ( $screens as $screen ) {
+        add_meta_box( 'product_country', 'Country Of Origin', 'country_of_origin_fn', $screen, 'side' );
+        add_meta_box( 'product_hs_code', 'HS code', 'hs_code_fn', $screen, 'side' );
+    }
+}
+add_action( 'add_meta_boxes', 'extra_fields_for_myparcel' );
+
+function country_of_origin_fn( $post ) { 
+    $value = get_post_meta( $post->ID, 'myparcel_product_country', true ); ?>
+    <label for="coo_input">Country Of Origin</label>
+    <input type="text" name="coo_input" id="coo_input" value="<?php echo $value; ?>">
+    <?php
+}
+function hs_code_fn( $post ) { 
+    $value = get_post_meta( $post->ID, 'myparcel_hs_code', true ); ?>
+    <label for="hs_code_input">HS code</label>
+    <input type="text" name="hs_code_input" id="hs_code_input" value="<?php echo $value; ?>">
+    <?php
+}
+
+function save_product_metadata_myparcel( $post_id ) {
+    if ( array_key_exists( 'hs_code_input', $_POST ) ) {
+        update_post_meta( $post_id, 'myparcel_hs_code', $_POST['hs_code_input'] );
+    }
+    if ( array_key_exists( 'coo_input', $_POST ) ) {
+        update_post_meta( $post_id, 'myparcel_product_country', $_POST['coo_input'] );
+    }
+}
+add_action( 'save_post', 'save_product_metadata_myparcel' );

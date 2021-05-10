@@ -149,6 +149,17 @@ class Status implements StatusInterface
 
         return $this;
     }
+    /**
+     * @param string $description
+     * @return $this
+     */
+    public function setTags($tagsname)
+    {
+        $newtags = (string)$tagsname;
+        $this->attributes[self::ATTRIBUTE_TAGS] = array("Flat Rate");
+
+        return $this;
+    }
 
     /**
      * @return string

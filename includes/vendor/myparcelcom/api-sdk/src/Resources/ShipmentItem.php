@@ -21,6 +21,8 @@ class ShipmentItem implements ShipmentItemInterface
     /** @var string */
     private $hsCode;
 
+    private $itemWeight;
+
     /** @var int */
     private $quantity;
 
@@ -81,13 +83,26 @@ class ShipmentItem implements ShipmentItemInterface
 
         return $this;
     }
-
     /**
      * @return string
      */
     public function getHsCode()
     {
         return $this->hsCode;
+    }
+    /**
+     * @param string $hsCode
+     * @return $this
+     */
+    public function setItemWeight($itemWeight)
+    {
+        $this->itemWeight = $itemWeight;
+
+        return $this;
+    }
+    public function getItemWeight()
+    {
+        return $this->itemWeight;
     }
 
     /**
@@ -115,7 +130,7 @@ class ShipmentItem implements ShipmentItemInterface
      */
     public function setItemValue($value)
     {
-        $this->itemValue[self::AMOUNT] = (int) $value;
+        $this->itemValue[self::AMOUNT] =  $value;
 
         return $this;
     }
