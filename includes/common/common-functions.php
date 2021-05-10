@@ -80,21 +80,64 @@ function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr, $sen
             $item_id   = $getShippedItem["item_id"];
             $shipItems = new ShipmentItem();
             $product   = wc_get_product($items[$item_id]['product_id']);
+            $productID = $product->get_id();
             // Now you have access to (see above)...
             $quantity    = $getShippedItem["shipped"]; // get quantity
             $productName = $product->get_name();
             $sku         = ($product->get_sku()) ? $product->get_sku() : MYPARCEL_NA_TEXT;    // Get the product SKU
             $price       = $product->get_price(); // Get the product price
             $itemValue   = ($price * 1) * 100;
-            $shipItems
+            $HSCode      = get_post_meta($productID, 'myparcel_hs_code', true);
+            $CountryOfOrigin = get_post_meta($productID, 'myparcel_product_country', true);
+            $itemWeight = $product->get_weight();
+            $itemWeight = $itemWeight*1000;
+
+            if( $HSCode == '' && $CountryOfOrigin == '' ){
+                /*$HSCode = '0000';
+                $CountryOfOrigin = '';*/
+                $shipItems
+                    ->setSku($sku)
+                    ->setDescription($productName)
+                    ->setQuantity($quantity)
+                    ->setItemValue($itemValue)
+                    ->setCurrency($currency)
+                    ->setItemWeight($itemWeight);
+
+            } else if($HSCode == ''){
+                $shipItems
                 ->setSku($sku)
                 ->setDescription($productName)
                 ->setQuantity($quantity)
                 ->setItemValue($itemValue)
-                ->setOriginCountryCode($senderCountry)
-                ->setHsCode('999999')
-                ->setCurrency($currency);
+                ->setOriginCountryCode($CountryOfOrigin)
+                ->setCurrency($currency)
+                ->setItemWeight($itemWeight);
 
+                $HSCode = '0000';
+            } else if($CountryOfOrigin == ''){
+                $shipItems
+                    ->setSku($sku)
+                    ->setDescription($productName)
+                    ->setQuantity($quantity)
+                    ->setItemValue($itemValue)
+                    ->setHsCode($HSCode)
+                    ->setCurrency($currency)
+                    ->setItemWeight($itemWeight);
+                $CountryOfOrigin = '';
+            } else {
+                $shipItems
+                    ->setSku($sku)
+                    ->setDescription($productName)
+                    ->setQuantity($quantity)
+                    ->setItemValue($itemValue)
+                    ->setHsCode($HSCode)
+                    ->setOriginCountryCode($CountryOfOrigin)
+                    ->setCurrency($currency)
+                    ->setItemWeight($itemWeight);
+
+            }
+
+            
             $shipAddItems[] = $shipItems;
         }
     } else {
@@ -104,17 +147,61 @@ function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr, $sen
             $quantity    = $item->get_quantity(); // get quantity
             $product     = $item->get_product(); // get the WC_Product object
             $productName = $product->get_name();
+            $productID   = $product->get_id();
             $sku         = ($product->get_sku()) ? $product->get_sku() : MYPARCEL_NA_TEXT;    // Get the product SKU
             $price       = $product->get_price(); // Get the product price
             $itemValue   = ($price * 1) * 100;
-            $shipItems
+
+
+            $HSCode      = get_post_meta($productID, 'myparcel_hs_code', true);
+            $CountryOfOrigin = get_post_meta($productID, 'myparcel_product_country', true);
+            $itemWeight = $product->get_weight();
+            $itemWeight = $itemWeight*1000;
+
+            if( $HSCode == '' && $CountryOfOrigin == '' ){
+                $HSCode = '0000';
+                $CountryOfOrigin = '';
+                 $shipItems
                 ->setSku($sku)
                 ->setDescription($productName)
                 ->setQuantity($quantity)
                 ->setItemValue($itemValue)
-                ->setOriginCountryCode($senderCountry)
-                ->setHsCode('999999')
-                ->setCurrency($currency);
+                ->setCurrency($currency)
+                ->setItemWeight($itemWeight);
+            } else if($HSCode == ''){
+                 $shipItems
+                ->setSku($sku)
+                ->setDescription($productName)
+                ->setQuantity($quantity)
+                ->setItemValue($itemValue)
+                ->setOriginCountryCode($CountryOfOrigin)
+                ->setCurrency($currency)
+                ->setItemWeight($itemWeight);
+                $HSCode = '0000';
+            } else if($CountryOfOrigin == ''){
+                 $shipItems
+                ->setSku($sku)
+                ->setDescription($productName)
+                ->setQuantity($quantity)
+                ->setItemValue($itemValue)
+                ->setHsCode($HSCode)
+                ->setCurrency($currency)
+                ->setItemWeight($itemWeight);
+                $CountryOfOrigin = '';
+            }  else {
+                $shipItems
+                    ->setSku($sku)
+                    ->setDescription($productName)
+                    ->setQuantity($quantity)
+                    ->setItemValue($itemValue)
+                    ->setHsCode($HSCode)
+                    ->setOriginCountryCode($CountryOfOrigin)
+                    ->setCurrency($currency)
+                    ->setItemWeight($itemWeight);
+
+            }
+
+            
 
             $shipAddItems[] = $shipItems;
         }
@@ -136,9 +223,61 @@ function setItemForEuCountries($orderId, $shippedItemsNewArr)
             $product     = wc_get_product($items[$item_id]['product_id']);
             $quantity    = $getShippedItem["shipped"]; // get quantity
             $productName = $product->get_name();
-            $shipItems
+            $productID   = $product->get_id();
+            $HSCode      = get_post_meta($productID, 'myparcel_hs_code', true);
+            $CountryOfOrigin = get_post_meta($productID, 'myparcel_product_country', true);
+            $sku         = ($product->get_sku()) ? $product->get_sku() : MYPARCEL_NA_TEXT;    // Get the product SKU
+            $price       = $product->get_price(); // Get the product price
+            $itemValue   = ($price * 1) * 100;
+            $Currency = get_woocommerce_currency();
+            $itemWeight = $product->get_weight();
+            $itemWeight = $itemWeight*1000;
+
+            if( $HSCode == '' && $CountryOfOrigin == '' ){
+                $HSCode = '0000';
+                $CountryOfOrigin = '';
+                $shipItems
+                ->setSku($sku)
                 ->setDescription($productName)
-                ->setQuantity($quantity);
+                ->setItemValue($itemValue)
+                ->setCurrency($Currency)
+                ->setQuantity($quantity)
+                ->setItemWeight($itemWeight);
+            } else if($HSCode == ''){
+                $shipItems
+                ->setSku($sku)
+                ->setDescription($productName)
+                ->setItemValue($itemValue)
+                ->setCurrency($Currency)
+                ->setQuantity($quantity)
+                ->setOriginCountryCode($CountryOfOrigin)
+                ->setItemWeight($itemWeight);
+                $HSCode = '0000';
+            } else if($CountryOfOrigin == ''){
+                $shipItems
+                ->setSku($sku)
+                ->setDescription($productName)
+                ->setItemValue($itemValue)
+                ->setCurrency($Currency)
+                ->setQuantity($quantity)
+                ->setHsCode($HSCode)
+                ->setItemWeight($itemWeight);
+                $CountryOfOrigin = '';
+            }  else {
+                $shipItems
+                    ->setSku($sku)
+                    ->setDescription($productName)
+                    ->setQuantity($quantity)
+                    ->setItemValue($itemValue)
+                    ->setHsCode($HSCode)
+                    ->setOriginCountryCode($CountryOfOrigin)
+                    ->setCurrency($currency)
+                    ->setItemWeight($itemWeight);
+
+            }
+
+            
+                
             $shipAddItems[] = $shipItems;
         }
     } else {
@@ -147,9 +286,60 @@ function setItemForEuCountries($orderId, $shippedItemsNewArr)
             $product     = wc_get_product($item['product_id']);
             $quantity    = $item->get_quantity(); // get quantity
             $productName = $product->get_name();
-            $shipItems
+            $productID   = $product->get_id();
+            $HSCode      = get_post_meta($productID, 'myparcel_hs_code', true);
+            $CountryOfOrigin = get_post_meta($productID, 'myparcel_product_country', true);
+            $sku         = ($product->get_sku()) ? $product->get_sku() : MYPARCEL_NA_TEXT;    // Get the product SKU
+            $price       = $product->get_price(); // Get the product price
+            $itemValue   = ($price * 1) * 100;
+            $Currency = get_woocommerce_currency();
+            $itemWeight = $product->get_weight();
+            $itemWeight = $itemWeight*1000;
+
+            if( $HSCode == '' && $CountryOfOrigin == '' ){
+                $shipItems
+                ->setSku($sku)
                 ->setDescription($productName)
-                ->setQuantity($quantity);
+                ->setQuantity($quantity)
+                ->setItemValue($itemValue)
+                ->setCurrency($Currency)
+                ->setItemWeight($itemWeight);
+                $HSCode = '0000';
+                $CountryOfOrigin = '';
+            } else if($HSCode == ''){
+                $shipItems
+                ->setSku($sku)
+                ->setDescription($productName)
+                ->setQuantity($quantity)
+                ->setOriginCountryCode($CountryOfOrigin)
+                ->setItemValue($itemValue)
+                ->setCurrency($Currency)
+                ->setItemWeight($itemWeight);
+                $HSCode = '0000';
+            } else if($CountryOfOrigin == ''){
+                $shipItems
+                ->setSku($sku)
+                ->setDescription($productName)
+                ->setQuantity($quantity)
+                ->setItemValue($itemValue)
+                ->setCurrency($Currency)
+                ->setHsCode($HSCode)
+                ->setItemWeight($itemWeight);
+                $CountryOfOrigin = '';
+            }  else {
+                $shipItems
+                    ->setSku($sku)
+                    ->setDescription($productName)
+                    ->setQuantity($quantity)
+                    ->setItemValue($itemValue)
+                    ->setHsCode($HSCode)
+                    ->setOriginCountryCode($CountryOfOrigin)
+                    ->setCurrency($currency)
+                    ->setItemWeight($itemWeight);
+
+            }
+
+            
             $shipAddItems[] = $shipItems;
         }
     }
@@ -425,7 +615,7 @@ function prepareHtmlForSettingPage()
       <table cellpadding="5" cellspacing="5" class="form-table">
         <tr valign="top">
           <th scope="row"><label><?php echo MYPARCEL_API_CURRENT_VERSION; ?></label></th>
-          <td><?php echo MYPARCEL_PLUGIN_VERSION; ?></td>
+          <td>2.0.1</td>
         </tr>
         <tr valign="top">
           <th scope="row"><label><?php echo MYPARCEL_API_SUPPORT_TEXT; ?></label></th>
