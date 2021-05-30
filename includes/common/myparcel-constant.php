@@ -1,5 +1,6 @@
 <?php
-define('MYPARCEL_PLUGIN_VERSION', '2.0.2');
+
+define('MYPARCEL_PLUGIN_VERSION', '2.1.0');
 define('ERROR_MESSAGE_CREDENTIAL', 'Incorrect client id or secret.');
 define('MYPARCEL_METHOD', 'myparcel');
 define('EXPORT_MYPARCEL_ORDER_TEXT', 'export_myparcel_order');
@@ -22,7 +23,7 @@ define('SHIPPED_TEXT', 'shipped');
 define('GET_META_MYPARCEL_ORDER_META', 'myparcel_order_meta');
 define('GET_META_MYPARCEL_ORDER_SHIPMENT_TEXT', '_my_parcel_order_shipment');
 define('MYPARCEL_SUPPORT_TEXT_AND_URL', 'https://myparcel-com.odoo.com/en/woocommerce');
-define('MYPARCEL_API_SETTING_TEXT', 'MyParcel.com');
+define('MYPARCEL_API_SETTING_TEXT', 'MyParcel.com API');
 define('MYPARCEL_API_CLIENTID_LABEL_TEXT', '* Client ID');
 define('MYPARCEL_API_CLIENTSECRET_LABEL_TEXT', '* Client secret');
 define('MYPARCEL_API_ACT_TESTMODE_TEXT', 'Activate testmode');

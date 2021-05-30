@@ -78,7 +78,7 @@ function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr, $sen
             $productName = $product->get_name();
             $sku         = ($product->get_sku()) ? $product->get_sku() : MYPARCEL_NA_TEXT;    // Get the product SKU
             $price       = $product->get_price(); // Get the product price
-            $itemValue   = ($price * 1) * 100;
+            $itemValue   = (int) round($price * 100);
             $HSCode      = get_post_meta($productID, 'myparcel_hs_code', true);
             $CountryOfOrigin = get_post_meta($productID, 'myparcel_product_country', true);
             $itemWeight = $product->get_weight();
@@ -140,8 +140,7 @@ function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr, $sen
             $productID   = $product->get_id();
             $sku         = ($product->get_sku()) ? $product->get_sku() : MYPARCEL_NA_TEXT;    // Get the product SKU
             $price       = $product->get_price(); // Get the product price
-            $itemValue   = ($price * 1) * 100;
-
+            $itemValue   = (int) round($price * 100);
             $HSCode      = get_post_meta($productID, 'myparcel_hs_code', true);
             $CountryOfOrigin = get_post_meta($productID, 'myparcel_product_country', true);
             $itemWeight = $product->get_weight();
@@ -214,8 +213,8 @@ function setItemForEuCountries($orderId, $shippedItemsNewArr)
             $CountryOfOrigin = get_post_meta($productID, 'myparcel_product_country', true);
             $sku         = ($product->get_sku()) ? $product->get_sku() : MYPARCEL_NA_TEXT;    // Get the product SKU
             $price       = $product->get_price(); // Get the product price
-            $itemValue   = ($price * 1) * 100;
-            $Currency = get_woocommerce_currency();
+            $itemValue   = (int) round($price * 100);
+            $currency = get_woocommerce_currency();
             $itemWeight = $product->get_weight();
             $itemWeight = $itemWeight*1000;
 
@@ -226,7 +225,7 @@ function setItemForEuCountries($orderId, $shippedItemsNewArr)
                 ->setSku($sku)
                 ->setDescription($productName)
                 ->setItemValue($itemValue)
-                ->setCurrency($Currency)
+                ->setCurrency($currency)
                 ->setQuantity($quantity)
                 ->setItemWeight($itemWeight);
             } else if($HSCode == ''){
@@ -234,7 +233,7 @@ function setItemForEuCountries($orderId, $shippedItemsNewArr)
                 ->setSku($sku)
                 ->setDescription($productName)
                 ->setItemValue($itemValue)
-                ->setCurrency($Currency)
+                ->setCurrency($currency)
                 ->setQuantity($quantity)
                 ->setOriginCountryCode($CountryOfOrigin)
                 ->setItemWeight($itemWeight);
@@ -244,7 +243,7 @@ function setItemForEuCountries($orderId, $shippedItemsNewArr)
                 ->setSku($sku)
                 ->setDescription($productName)
                 ->setItemValue($itemValue)
-                ->setCurrency($Currency)
+                ->setCurrency($currency)
                 ->setQuantity($quantity)
                 ->setHsCode($HSCode)
                 ->setItemWeight($itemWeight);
@@ -274,8 +273,8 @@ function setItemForEuCountries($orderId, $shippedItemsNewArr)
             $CountryOfOrigin = get_post_meta($productID, 'myparcel_product_country', true);
             $sku         = ($product->get_sku()) ? $product->get_sku() : MYPARCEL_NA_TEXT;    // Get the product SKU
             $price       = $product->get_price(); // Get the product price
-            $itemValue   = ($price * 1) * 100;
-            $Currency = get_woocommerce_currency();
+            $itemValue   = (int) round($price * 100);
+            $currency = get_woocommerce_currency();
             $itemWeight = $product->get_weight();
             $itemWeight = $itemWeight*1000;
 
@@ -285,7 +284,7 @@ function setItemForEuCountries($orderId, $shippedItemsNewArr)
                 ->setDescription($productName)
                 ->setQuantity($quantity)
                 ->setItemValue($itemValue)
-                ->setCurrency($Currency)
+                ->setCurrency($currency)
                 ->setItemWeight($itemWeight);
                 $HSCode = '0000';
                 $CountryOfOrigin = '';
@@ -296,7 +295,7 @@ function setItemForEuCountries($orderId, $shippedItemsNewArr)
                 ->setQuantity($quantity)
                 ->setOriginCountryCode($CountryOfOrigin)
                 ->setItemValue($itemValue)
-                ->setCurrency($Currency)
+                ->setCurrency($currency)
                 ->setItemWeight($itemWeight);
                 $HSCode = '0000';
             } else if($CountryOfOrigin == ''){
@@ -305,7 +304,7 @@ function setItemForEuCountries($orderId, $shippedItemsNewArr)
                 ->setDescription($productName)
                 ->setQuantity($quantity)
                 ->setItemValue($itemValue)
-                ->setCurrency($Currency)
+                ->setCurrency($currency)
                 ->setHsCode($HSCode)
                 ->setItemWeight($itemWeight);
                 $CountryOfOrigin = '';
@@ -1218,9 +1217,7 @@ function wpbo_get_woo_version_number()
     // If the plugin version number is set, return it
     if (isset($plugin_folder[$plugin_file]['Version'])) {
         return $plugin_folder[$plugin_file]['Version'];
-
     } else {
-        // Otherwise return null
         return null;
     }
 }

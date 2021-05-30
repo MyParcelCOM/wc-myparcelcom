@@ -311,11 +311,11 @@ function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
     $orderBillingPhone      = $orderData['billing']['phone'];
     $isEU                   = isEUCountry($orderShippingCountry);
     $selectedShop           = getSelectedShop();
-    $senderCountry = $selectedShop->getSenderAddress()->getCountryCode();
+    $senderAddress          = $selectedShop->getSenderAddress();
     $woocommerceVersion     = 'WooCommerce_'.MYPARCEL_PLUGIN_VERSION;
 
     if ($isEU == false) {
-        $shipAddItems = setItemForNonEuCountries($orderId, $currency, $shippedItems, $senderCountry);
+        $shipAddItems = setItemForNonEuCountries($orderId, $currency, $shippedItems, $senderAddress->getCountryCode());
         $customs = new Customs();
         $customs->setContentType(Customs::CONTENT_TYPE_MERCHANDISE);
         $customs->setNonDelivery(Customs::NON_DELIVERY_RETURN);
@@ -339,6 +339,8 @@ function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
         ->setPhoneNumber($orderBillingPhone);
     // Create the shipment and set required parameters.
     $shipment
+        ->setSenderAddress($senderAddress)
+        ->setReturnAddress($selectedShop->getReturnAddress())
         ->setRecipientAddress($recipient)
         ->setWeight($countAllWeight, PhysicalPropertiesInterface::WEIGHT_GRAM)
         ->setDescription('Order id: '.(string)($orderId))
@@ -349,7 +351,6 @@ function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
 
     $getAuth  = new MyParcelApi();
     $api      = $getAuth->apiAuthentication();
-    $services = $api->getServices($shipment);
     // Have the SDK determine the cheapest service and post the shipment to the MyParcel.com API.
     $createdShipment = $api->createShipment($shipment);
     $shipmentId      = $createdShipment->getId();
@@ -446,7 +447,6 @@ function isEUCountry($countryCode)
         'ES',
         'FI',
         'FR',
-        'GB',
         'HU',
         'IE',
         'IT',
@@ -513,6 +513,7 @@ function country_of_origin_fn( $post ) {
     <input type="text" name="coo_input" id="coo_input" value="<?php echo $value; ?>">
     <?php
 }
+
 function hs_code_fn( $post ) {
     $value = get_post_meta( $post->ID, 'myparcel_hs_code', true ); ?>
     <label for="hs_code_input">HS code</label>
