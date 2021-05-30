@@ -138,17 +138,17 @@
     },
     {
         "name": "myparcelcom/api-sdk",
-        "version": "v2.10.0",
-        "version_normalized": "2.10.0.0",
+        "version": "dev-feature/increase-collection-max-limit",
+        "version_normalized": "dev-feature/increase-collection-max-limit",
         "source": {
             "type": "git",
             "url": "https://github.com/MyParcelCOM/api-sdk-php.git",
-            "reference": "fc29cb116c25b5ee499af09c09a565434067801b"
+            "reference": "6f17115144cdf35f449055cacde810e2ff002813"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/MyParcelCOM/api-sdk-php/zipball/fc29cb116c25b5ee499af09c09a565434067801b",
-            "reference": "fc29cb116c25b5ee499af09c09a565434067801b",
+            "url": "https://api.github.com/repos/MyParcelCOM/api-sdk-php/zipball/6f17115144cdf35f449055cacde810e2ff002813",
+            "reference": "6f17115144cdf35f449055cacde810e2ff002813",
             "shasum": ""
         },
         "require": {
@@ -171,7 +171,7 @@
             "php-http/curl-client": "Install this package if Guzzle is not available in the application, but curl is.",
             "php-http/guzzle7-adapter": "Install this package if Guzzle 7 is available in the application."
         },
-        "time": "2021-03-25T10:44:46+00:00",
+        "time": "2021-05-30T15:32:50+00:00",
         "type": "library",
         "installation-source": "source",
         "autoload": {

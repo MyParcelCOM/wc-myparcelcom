@@ -35,7 +35,7 @@ jQuery(function($){
                 required: true
             },
             myparcel_shopid : {
-                required: true
+                required: false
             }
        },
        messages: {

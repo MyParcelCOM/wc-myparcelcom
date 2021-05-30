@@ -53,9 +53,9 @@ function orderItemHeaders($order)
 add_action('woocommerce_admin_order_item_headers', 'orderItemHeaders', 10, 1);
 
 /**
- * @param object  $product
- * @param object  $item
- * @param integer $itemId
+ * @param object $product
+ * @param object $item
+ * @param int    $itemId
  * @return void
  */
 function orderItemValues($product, $item, $itemId)
@@ -134,6 +134,7 @@ function orderSetShipped(): object
     $shipments    = (!empty($shipments)) ? json_decode($shipments, true) : [];
     $itemIds      = (!empty($shipments)) ? array_column($shipments, 'item_id') : [];
     $totalShipQty = 0;
+    $remainQty    = $qty;
 
     if (!empty($shipments)) {
         foreach ($shipments as $key => $shipment) {
@@ -174,17 +175,15 @@ function orderSetShipped(): object
         }
     }
 
-    echo json_encode(
-        [
-            'order_id'   => $orderId,
-            'item_id'    => $itemId,
-            'shipped'    => $totalShipQty,
-            'qty'        => $qty,
-            'weight'     => $weight,
-            'remain_qty' => $remainQty,
-            'flagStatus' => $flagStatus,
-        ]
-    );
+    echo json_encode([
+        'order_id'   => $orderId,
+        'item_id'    => $itemId,
+        'shipped'    => $totalShipQty,
+        'qty'        => $qty,
+        'weight'     => $weight,
+        'remain_qty' => $remainQty,
+        'flagStatus' => $flagStatus,
+    ]);
     exit;
 }
 

@@ -40,7 +40,7 @@ class ArrayCollection implements CollectionInterface
 
     /**
      * Retrieves the resources based on limit and offset.
-     * Max (and default) limit is 30.
+     * Default limit is 30, max limit is 100.
      *
      * @return ResourceInterface[]
      */
@@ -67,14 +67,14 @@ class ArrayCollection implements CollectionInterface
 
     /**
      * Sets the amount of resources to be retrieved by get().
-     * Max and default limit is 30.
+     * Default limit is 30, max limit is 100.
      *
      * @param int $limit
      * @return $this
      */
     public function limit($limit = 30)
     {
-        $this->limit = min(30, max(1, $limit));
+        $this->limit = min(100, max(1, $limit));
 
         return $this;
     }

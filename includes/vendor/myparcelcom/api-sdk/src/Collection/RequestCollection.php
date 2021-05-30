@@ -55,7 +55,7 @@ class RequestCollection implements CollectionInterface
 
     /**
      * Retrieves the resources based on limit and offset.
-     * Max (and default) limit is 30.
+     * Default limit is 30, max limit is 100.
      *
      * @return ResourceInterface[]
      */
@@ -66,11 +66,11 @@ class RequestCollection implements CollectionInterface
         }
 
         // Retrieving the resources from the api is done by page.
-        // A maximum of 30 resources per page can be retrieved at once.
+        // A maximum of 100 resources per page can be retrieved at once.
         // We need to specify which page should be retrieved from the api,
         // or which pages if the set offset and limit overlaps two pages.
-        $firstPage = ceil(($this->offset + 1) / 30);
-        $secondPage = ceil(($this->offset + $this->limit) / 30);
+        $firstPage = ceil(($this->offset + 1) / $this->limit);
+        $secondPage = ceil(($this->offset + $this->limit) / $this->limit);
 
         if (!isset($this->resources[$this->offset])) {
             $this->retrieveResources($firstPage);
@@ -79,7 +79,7 @@ class RequestCollection implements CollectionInterface
         if (
             $firstPage !== $secondPage
             && !isset($this->resources[$this->offset + $this->limit - 1])
-            && (($secondPage - 1) * 30) < $this->count
+            && (($secondPage - 1) * $this->limit) < $this->count
         ) {
             $this->retrieveResources($secondPage);
         }
@@ -98,14 +98,14 @@ class RequestCollection implements CollectionInterface
      */
     private function retrieveResources($pageNumber)
     {
-        $response = call_user_func_array($this->promiseCreator, [$pageNumber, 30]);
+        $response = call_user_func_array($this->promiseCreator, [$pageNumber, $this->limit]);
 
         $body = json_decode($response->getBody(), true);
 
         $this->count = $body['meta']['total_records'];
         $resources = call_user_func($this->resourceCreator, $body['data']);
 
-        $resourceNumber = ($pageNumber - 1) * 30;
+        $resourceNumber = ($pageNumber - 1) * $this->limit;
 
         array_walk($resources, function ($resource) use ($pageNumber, &$resourceNumber) {
             $this->resources[$resourceNumber] = $resource;
@@ -129,14 +129,14 @@ class RequestCollection implements CollectionInterface
 
     /**
      * Sets the amount of resources to be retrieved by get().
-     * Max and default limit is 30.
+     * Default limit is 30, max limit is 100.
      *
      * @param int $limit
      * @return $this
      */
     public function limit($limit = 30)
     {
-        $this->limit = min(30, max(1, $limit));
+        $this->limit = min(100, max(1, $limit));
 
         return $this;
     }
