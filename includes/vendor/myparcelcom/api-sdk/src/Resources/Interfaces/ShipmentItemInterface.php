@@ -15,7 +15,6 @@ interface ShipmentItemInterface extends \JsonSerializable
      */
     public function getSku();
 
-
     /**
      * @param string $description
      * @return $this
@@ -37,9 +36,6 @@ interface ShipmentItemInterface extends \JsonSerializable
      * @return string
      */
     public function getHsCode();
-
-    public function setItemWeight($itemWeight);
-    public function getItemWeight();
 
     /**
      * @param int $quantity

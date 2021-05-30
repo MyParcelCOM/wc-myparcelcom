@@ -469,7 +469,7 @@ class MyParcelComApi implements MyParcelComApiInterface
 
             throw $exception;
         }
-        
+
         return $this->postResource($shipment);
     }
 

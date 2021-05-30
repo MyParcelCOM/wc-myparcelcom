@@ -27,7 +27,6 @@ class Shipment implements ShipmentInterface
     const ATTRIBUTE_TRACKING_URL = 'tracking_url';
     const ATTRIBUTE_CHANNEL = 'channel';
     const ATTRIBUTE_DESCRIPTION = 'description';
-    const ATTRIBUTE_TAGS = 'tags';
     const ATTRIBUTE_CUSTOMER_REFERENCE= 'customer_reference';
     const ATTRIBUTE_AMOUNT = 'amount';
     const ATTRIBUTE_PRICE = 'price';
@@ -73,7 +72,6 @@ class Shipment implements ShipmentInterface
         self::ATTRIBUTE_TRACKING_URL        => null,
         self::ATTRIBUTE_CHANNEL             => null,
         self::ATTRIBUTE_DESCRIPTION         => null,
-        self::ATTRIBUTE_TAGS                => null,
         self::ATTRIBUTE_CUSTOMER_REFERENCE  => null,
         self::ATTRIBUTE_PRICE               => null,
         self::ATTRIBUTE_PHYSICAL_PROPERTIES => null,
@@ -262,16 +260,6 @@ class Shipment implements ShipmentInterface
     public function setDescription($description)
     {
         $this->attributes[self::ATTRIBUTE_DESCRIPTION] = $description;
-
-        return $this;
-    }
-    /**
-     * {@inheritdoc}
-     */
-    public function setTags($tagsname)
-    {
-        //$newtags = (string)$tagsname;
-        $this->attributes[self::ATTRIBUTE_TAGS] = array("Flat Rate");
 
         return $this;
     }
