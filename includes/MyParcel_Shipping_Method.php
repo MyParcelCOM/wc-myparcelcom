@@ -6,11 +6,4 @@ use MyParcelCom\ApiSdk\Resources\Shipment;
 
 if (!defined('WPINC')) {
     die;
-} 
- 
-    
- 
-    
- 
- 
- 
+}

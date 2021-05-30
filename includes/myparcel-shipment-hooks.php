@@ -1,7 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- *
  * @return void
  */
 function adminLoadJsCss()
@@ -39,7 +38,6 @@ add_action('admin_enqueue_scripts', 'adminLoadJsCss', 999);
 
 /**
  * @param object $order
- *
  * @return void
  */
 function orderItemHeaders($order)
@@ -58,7 +56,6 @@ add_action('woocommerce_admin_order_item_headers', 'orderItemHeaders', 10, 1);
  * @param object  $product
  * @param object  $item
  * @param integer $itemId
- *
  * @return void
  */
 function orderItemValues($product, $item, $itemId)
@@ -121,7 +118,6 @@ function orderItemValues($product, $item, $itemId)
 add_action('woocommerce_admin_order_item_values', 'orderItemValues', 10, 3);
 
 /**
- *
  * @return object
  */
 function orderSetShipped(): object
@@ -159,7 +155,6 @@ function orderSetShipped(): object
         }
         update_post_meta($orderId, GET_META_MYPARCEL_ORDER_SHIPMENT_TEXT, json_encode($shipments));
     } else {
-
         if (!empty($itemIds) && !in_array($itemId, $itemIds)) {
             $totalShipQty = $shipQty;
             $remainQty    = $qty - $totalShipQty;

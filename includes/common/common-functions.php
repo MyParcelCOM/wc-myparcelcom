@@ -2,55 +2,47 @@
 
 declare(strict_types=1);
 
+use MyParcelCom\ApiSdk\LabelCombiner;
+use MyParcelCom\ApiSdk\LabelCombinerInterface;
+use MyParcelCom\ApiSdk\Resources\File;
 use MyParcelCom\ApiSdk\Resources\Shipment;
 use MyParcelCom\ApiSdk\Resources\ShipmentItem;
-use MyParcelCom\ApiSdk\Resources\File;
-use MyParcelCom\ApiSdk\LabelCombiner;
-use MyParcelCom\ApiSdk\Resources\Interfaces\FileInterface;
-use MyParcelCom\ApiSdk\LabelCombinerInterface;
 
 /**
  * @param $orderId
- *
  * @return mixed
  */
 function getOrderData($orderId)
 {
-    $order      = wc_get_order($orderId);
-    $order_data = $order->get_data();
+    $order = wc_get_order($orderId);
 
-    return $order_data;
+    return $order->get_data();
 }
 
 /**
  * @param $orderId
- *
  * @return mixed
  */
 function getOrderItems($orderId)
 {
     $order = wc_get_order($orderId);
-    $items = $order->get_items();
 
-    return $items;
+    return $order->get_items();
 }
 
 /**
  * @param $productId
- *
  * @return mixed
  */
 function getWeightByProductId($productId)
 {
     $product = wc_get_product($productId);
-    $weight  = $product->get_weight();
 
-    return $weight;
+    return $product->get_weight();
 }
 
 /**
  * @param $postId
- *
  * @return float|int
  */
 function getTotalWeightByPostID($postId)
@@ -134,10 +126,8 @@ function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr, $sen
                     ->setOriginCountryCode($CountryOfOrigin)
                     ->setCurrency($currency)
                     ->setItemWeight($itemWeight);
-
             }
 
-            
             $shipAddItems[] = $shipItems;
         }
     } else {
@@ -151,7 +141,6 @@ function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr, $sen
             $sku         = ($product->get_sku()) ? $product->get_sku() : MYPARCEL_NA_TEXT;    // Get the product SKU
             $price       = $product->get_price(); // Get the product price
             $itemValue   = ($price * 1) * 100;
-
 
             $HSCode      = get_post_meta($productID, 'myparcel_hs_code', true);
             $CountryOfOrigin = get_post_meta($productID, 'myparcel_product_country', true);
@@ -198,10 +187,7 @@ function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr, $sen
                     ->setOriginCountryCode($CountryOfOrigin)
                     ->setCurrency($currency)
                     ->setItemWeight($itemWeight);
-
             }
-
-            
 
             $shipAddItems[] = $shipItems;
         }
@@ -273,11 +259,8 @@ function setItemForEuCountries($orderId, $shippedItemsNewArr)
                     ->setOriginCountryCode($CountryOfOrigin)
                     ->setCurrency($currency)
                     ->setItemWeight($itemWeight);
-
             }
 
-            
-                
             $shipAddItems[] = $shipItems;
         }
     } else {
@@ -336,10 +319,8 @@ function setItemForEuCountries($orderId, $shippedItemsNewArr)
                     ->setOriginCountryCode($CountryOfOrigin)
                     ->setCurrency($currency)
                     ->setItemWeight($itemWeight);
-
             }
 
-            
             $shipAddItems[] = $shipItems;
         }
     }
@@ -357,7 +338,6 @@ function setItemForEuCountries($orderId, $shippedItemsNewArr)
  * @param string $weight
  * @param string $remainQty
  * @param string $flagStatus
- *
  * @return array
  */
 function setOrderShipment(
@@ -389,7 +369,6 @@ function setOrderShipment(
  * @param $shippedItems
  * @param $ifShipmentTrue
  * @param $totalWeight
- *
  * @return array
  */
 function extractShipmentItemArr($shippedItems, $ifShipmentTrue, &$totalWeight)
@@ -397,7 +376,7 @@ function extractShipmentItemArr($shippedItems, $ifShipmentTrue, &$totalWeight)
     $shippedItemArray   = [];
     $shippedItemsNewArr = [];
     $shippedCount       = 0;
-    foreach ($shippedItems as $key => $shippedItem) {
+    foreach ($shippedItems as $shippedItem) {
         $type               = $shippedItem['type'];
         $shippedQtyNew      = $shippedItem['shipped'];
         $totalShippedQtyNew = $shippedItem['total_shipped'];
@@ -431,13 +410,12 @@ function extractShipmentItemArr($shippedItems, $ifShipmentTrue, &$totalWeight)
         }
         array_push($shippedItemsNewArr, $shippedItem);
     }
-    $response = [
+
+    return [
         "shippedItemArray"   => $shippedItemArray,
         "shippedItemsNewArr" => $shippedItemsNewArr,
         "shippedCount"       => $shippedCount,
     ];
-
-    return $response;
 }
 
 /**
@@ -515,7 +493,6 @@ function prepareHtmlForUpdateQuantity(
 }
 
 /**
- *
  * @return array
  */
 function getMyParcelShopList()
@@ -533,12 +510,10 @@ function getMyParcelShopList()
                 }
             );
         }
-
     }
 
     return $shops;
 }
-
 
 /**
  * @desc setting page html
@@ -546,83 +521,79 @@ function getMyParcelShopList()
 function prepareHtmlForSettingPage()
 {
     ?>
-  <div>
-    <h2><?php echo MYPARCEL_API_SETTING_TEXT; ?></h2>
+  <div class="wrap">
+    <h1><?php echo MYPARCEL_API_SETTING_TEXT; ?></h1>
+    <table class="form-table">
+      <tr valign="top">
+        <th scope="row"><label><?php echo MYPARCEL_API_CURRENT_VERSION; ?></label></th>
+        <td><?php echo MYPARCEL_PLUGIN_VERSION; ?></td>
+      </tr>
+      <tr valign="top">
+        <th scope="row"><label><?php echo MYPARCEL_API_SUPPORT_TEXT; ?></label></th>
+        <td>
+          <a href="<?php echo MYPARCEL_SUPPORT_TEXT_AND_URL; ?>" target="_blank"><?php echo MYPARCEL_SUPPORT_TEXT_AND_URL; ?></a>
+        </td>
+      </tr>
+    </table>
     <form method="post" action="options.php" id="api-setting-form">
-        <?php
-        settings_fields('myplugin_options_group');
-        ?>
+        <?php settings_fields('myplugin_options_group'); ?>
       <table class="form-table">
         <tbody>
-        <tr valign="top">
-          <th scope="row"><label for="client_key"><?php echo MYPARCEL_API_CLIENTID_LABEL_TEXT; ?> </label></th>
-          <td>
-            <input type="text" id="client_key" class="regular-text" name="client_key"
-                   value="<?php echo get_option('client_key'); ?>"/>
-          </td>
-        </tr>
-        <tr valign="top">
-          <th scope="row"><label for="client_secret_key"><?php echo MYPARCEL_API_CLIENTSECRET_LABEL_TEXT; ?> </label>
-          </th>
-          <td>
-            <input type="password" id="client_secret_key" class="regular-text" name="client_secret_key"
-                   value="<?php echo get_option('client_secret_key'); ?>"/>
-          </td>
-        </tr>
-        <tr valign="top">
-          <th scope="row"><label for="myparcel_shopid"><?php echo MYPARCEL_SHOPID; ?> </label>
-          </th>
-          <td>
-            <select class="regular-text" id="myparcel_shopid" name="myparcel_shopid">
-                <?php
-                $shops = getMyParcelShopList();
+          <tr>
+            <th scope="row"><?php echo MYPARCEL_API_ACT_TESTMODE_TEXT; ?></th>
+            <td>
+              <fieldset>
+                <legend class="screen-reader-text"><span></span></legend>
+                <label for="users_can_register">
+                  <input type="checkbox" name="act_test_mode"
+                         value="1" <?php checked(1, (int) get_option('act_test_mode')); ?>>
+                </label>
+              </fieldset>
+              <p class="description">
+                If enabled, the plugin wil communicate with the MyParcel.com Sandbox environment.<br>
+                Make sure to use your sandbox client ID and secret.
+              </p>
+            </td>
+          </tr>
+          <tr valign="top">
+            <th scope="row"><label for="client_key"><?php echo MYPARCEL_API_CLIENTID_LABEL_TEXT; ?> </label></th>
+            <td>
+              <input type="text" id="client_key" class="regular-text" name="client_key"
+                     value="<?php echo get_option('client_key'); ?>"/>
+            </td>
+          </tr>
+          <tr valign="top">
+            <th scope="row"><label for="client_secret_key"><?php echo MYPARCEL_API_CLIENTSECRET_LABEL_TEXT; ?> </label>
+            </th>
+            <td>
+              <input type="password" id="client_secret_key" class="regular-text" name="client_secret_key"
+                     value="<?php echo get_option('client_secret_key'); ?>"/>
+            </td>
+          </tr>
+          <tr valign="top">
+            <th scope="row"><label for="myparcel_shopid"><?php echo MYPARCEL_SHOPID; ?> </label></th>
+            <td>
+              <select class="regular-text" id="myparcel_shopid" name="myparcel_shopid">
+                  <?php
+                  $shops = getMyParcelShopList();
 
-                if (!empty($shops)) {
-                    foreach ($shops as $shop) {
-                        if (!empty(get_option('myparcel_shopid'))) {
-                            echo "<option value='".$shop->getId()."' ".($shop->getId() == get_option(
-                                    'myparcel_shopid'
-                                ) ? 'selected' : '').">".$shop->getName()."</option>";
-                        } else {
-                            echo "<option value='".$shop->getId()."' ".($shop->getId(
-                                ) == MYPARCEL_DEFAULT_SHOP_ID ? 'selected' : '').">".$shop->getName()."</option>";
-                        }
-                    }
-                }
-                ?>
-            </select>
-            <p><?php echo MYPARCEL_SHOPID_HELPTEXT; ?></p>
-
-          </td>
-        </tr>
-        <tr>
-          <th scope="row"><?php echo MYPARCEL_API_ACT_TESTMODE_TEXT; ?></th>
-          <td>
-            <fieldset>
-              <legend class="screen-reader-text"><span></span></legend>
-              <label for="users_can_register">
-                <input type="checkbox" name="act_test_mode"
-                       value="1" <?php checked(1, (int)get_option('act_test_mode')); ?>>
-              </label>
-            </fieldset>
-          </td>
-        </tr>
-
-
+                  if (!empty($shops)) {
+                      foreach ($shops as $shop) {
+                          if (!empty(get_option('myparcel_shopid'))) {
+                              echo "<option value='" . $shop->getId() . "' " . ($shop->getId() == get_option(
+                                      'myparcel_shopid'
+                                  ) ? 'selected' : '') . ">" . $shop->getName() . "</option>";
+                          } else {
+                              echo "<option value='" . $shop->getId() . "' " . ($shop->getId() == MYPARCEL_DEFAULT_SHOP_ID ? 'selected' : '') . ">" . $shop->getName() . "</option>";
+                          }
+                      }
+                  }
+                  ?>
+              </select>
+              <p class="description"><?php echo MYPARCEL_SHOPID_HELPTEXT; ?></p>
+            </td>
+          </tr>
         </tbody>
-      </table>
-      <h2><?php echo MYPARCEL_API_TEXT; ?></h2>
-      <table cellpadding="5" cellspacing="5" class="form-table">
-        <tr valign="top">
-          <th scope="row"><label><?php echo MYPARCEL_API_CURRENT_VERSION; ?></label></th>
-          <td>2.0.1</td>
-        </tr>
-        <tr valign="top">
-          <th scope="row"><label><?php echo MYPARCEL_API_SUPPORT_TEXT; ?></label></th>
-          <td>
-            <a href="<?php echo MYPARCEL_SUPPORT_TEXT_AND_URL; ?>" target="_blank"><?php echo MYPARCEL_SUPPORT_TEXT_AND_URL; ?></a>
-          </td>
-        </tr>
       </table>
         <?php submit_button('Save changes'); ?>
     </form>
@@ -911,7 +882,7 @@ function getShipmentFiles($post_id)
             <?php }
         } else {
             $shipment->setRegisterAt(new \DateTime());
-            $updateShipmentResp = $api->updateShipment($shipment);
+            $api->updateShipment($shipment);
         }
     }
 }
@@ -920,7 +891,6 @@ function getShipmentFiles($post_id)
  * @param      $url
  * @param      $dataString
  * @param null $authorization
- *
  * @return bool|string
  */
 function createWebHookCurlRequest($url, $dataString, $authorization = null)
@@ -953,10 +923,8 @@ function createWebHookCurlRequest($url, $dataString, $authorization = null)
     return $result;
 }
 
-
 /**
  * @param $post_id
- *
  * @return array|false|string|void
  */
 function getShipmentCurrentStatus($post_id)
@@ -968,7 +936,6 @@ function getShipmentCurrentStatus($post_id)
         return;
     } // Exit
     $getAuth  = new MyParcelApi();
-    $shipment = new Shipment();
     $api      = $getAuth->apiAuthentication();
     if (!empty($getOrderMeta->trackingKey)) {
         try {
@@ -984,7 +951,6 @@ function getShipmentCurrentStatus($post_id)
         return $shipmentData;
     }
 }
-
 
 add_action('manage_posts_extra_tablenav', 'admin_order_list_top_bar_button', 20, 1);
 function admin_order_list_top_bar_button($which)
@@ -1122,7 +1088,6 @@ function admin_order_list_top_bar_button($which)
                   })
                   $('#loadingmessage').hide() // hide the loading message
                 } else {
-
                   const linkSource = 'data:application/pdf;base64,' + response
                   const downloadLink = document.createElement('a')
                   const fileName = "myparcelcom-<?php echo date('Ymdhis');?>-label.pdf"
@@ -1189,7 +1154,6 @@ function my_action()
 
 /**
  * @param $selectOrientation
- *
  * @return mixed
  */
 function getOrientation($selectOrientation)
@@ -1197,40 +1161,32 @@ function getOrientation($selectOrientation)
     switch ($selectOrientation) {
         case 1:
             return LOCATION_TOP_LEFT;
-            break;
         case 2:
             return LOCATION_TOP_RIGHT;
-            break;
         case 3:
             return LOCATION_BOTTOM_LEFT;
-            break;
         default:
             return LOCATION_BOTTOM_RIGHT;
-            break;
     }
 }
 
 /**
  * @param $labelPrinter
- *
  * @return string
  */
 function labelPrinter($labelPrinter)
 {
     if (!empty($labelPrinter) && ($labelPrinter === 1)) {
-
         return LabelCombinerInterface::PAGE_SIZE_A4;
     } else {
-
         return LabelCombinerInterface::PAGE_SIZE_A6;
     }
 }
 
 /**
  * Get selected Shop
- *
  * @return array
- **/
+ */
 function getSelectedShop()
 {
     $getAuth = new MyParcelApi();
@@ -1245,12 +1201,9 @@ function getSelectedShop()
     }
 }
 
-
 /**
  * Get installed woocommerce version
- *
- * @string
- **/
+ */
 function wpbo_get_woo_version_number()
 {
     // If get_plugins() isn't available, require it

@@ -1,18 +1,20 @@
-<?php //declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /**
  * Plugin Name: MyParcel.com
- * Plugin URI:  https://www.myparcel.com
- * Description: This plugin enables you to choose MyParcel.com shipping methods on WooCommerce.
+ * Plugin URI: https://myparcel-com.odoo.com/en/woocommerce
+ * Description: This plugin enables you to export WooCommerce orders to MyParcel.com.
  * Version: 2.0.2
  * Author: MyParcel.com
+ * Author URI: https://www.myparcel.com
  * Requires at least:
  * Tested up to:
  *
  * @package WooCommerceConnectMyParcel
  */
-/**
- *  checking if direct access of the file.
- */
+
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
@@ -28,7 +30,7 @@ if (!defined('MY_PARCEL_PLUGIN_NAME')) {
 $errorMessage = '';
 $ver = (float)phpversion();
 $errorVersionMessage ='<div class="notice notice-error is-dismissible">
-            <p>'.MY_PARCEL_PLUGIN_NAME.' Supports php 7.1 and higher vesion .</p>
+            <p>'.MY_PARCEL_PLUGIN_NAME.' needs PHP 7.1 or higher.</p>
         </div>';
 
 if (!(in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins'))))) {

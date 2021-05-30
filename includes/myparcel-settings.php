@@ -1,7 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- *
  * @return void
  */
 function settingPageJsCss()
@@ -50,7 +49,6 @@ function registerSettings()
 add_action('admin_init', 'registerSettings');
 
 /**
- *
  * @return bool
  */
 function validationCallBack(): bool
@@ -74,7 +72,6 @@ function validationCallBack(): bool
 
         return false;
     } else {
-
         add_settings_error(
             'show_message',
             esc_attr('settings_updated'),
@@ -88,7 +85,6 @@ function validationCallBack(): bool
 }
 
 /**
- *
  * Action called to register webhook token
  */
 add_action(
@@ -105,7 +101,6 @@ add_action(
 );
 
 /**
- *
  * @return void
  */
 function printErrors()
@@ -114,7 +109,6 @@ function printErrors()
 }
 
 /**
- *
  * @return void
  */
 function updateOption()
@@ -126,7 +120,6 @@ function updateOption()
 }
 
 /**
- *
  * @return void
  */
 function addSettingMenu()
@@ -143,7 +136,6 @@ function addSettingMenu()
 add_action('admin_menu', 'addSettingMenu');
 
 /**
- *
  * @return void
  */
 function settingPage()
@@ -151,5 +143,3 @@ function settingPage()
     global $woocommerce;
     prepareHtmlForSettingPage();
 }
-
-

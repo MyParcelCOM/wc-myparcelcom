@@ -6,7 +6,6 @@ use MyParcelCom\ApiSdk\Resources\Address;
 use MyParcelCom\ApiSdk\Resources\Customs;
 use MyParcelCom\ApiSdk\Resources\Shipment;
 use MyParcelCom\ApiSdk\Resources\Interfaces\PhysicalPropertiesInterface;
-use MyParcelCom\ApiSdk\Http\Exceptions\RequestException;
 
 function myparcelExceptionRedirection()
 {
@@ -17,7 +16,6 @@ function myparcelExceptionRedirection()
 }
 
 /**
- *
  * @return void
  */
 function addFrontEndJs()
@@ -43,7 +41,6 @@ add_action('wp_enqueue_scripts', 'addFrontEndJs');
 
 /**
  * @param array $columns
- *
  * @return array
  */
 function customShopOrderColumn($columns): array
@@ -68,7 +65,6 @@ add_filter('manage_edit-shop_order_columns', 'customShopOrderColumn', 11);
 
 /**
  * @param string $column
- *
  * @return void
  */
 function customOrdersListColumnContent($column)
@@ -83,7 +79,6 @@ add_action('manage_shop_order_posts_custom_column', 'customOrdersListColumnConte
 
 /**
  * @param array $actions
- *
  * @return array
  */
 function bulkActionsEditProduct($actions): array
@@ -100,7 +95,6 @@ add_filter('bulk_actions-edit-shop_order', 'bulkActionsEditProduct', 20, 1);
  * @param string $redirectTo
  * @param string $action
  * @param array  $postIds
- *
  * @return string
  */
 function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): string
@@ -128,7 +122,7 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
                 if ($shippedData) {
                     $shippedItems        = (!empty($shippedData)) ? json_decode($shippedData, true) : '';
                     $totalWeight         = 0;
-                    
+
                     $extractShippedItems = extractShipmentItemArr($shippedItems, $ifShipmentTrue, $totalWeight);
                     $shippedItemArray    = $extractShippedItems["shippedItemeArray"];
                     $shippedItemsNewArr  = $extractShippedItems["shippedItemsNewArr"];
@@ -144,7 +138,7 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
                     }
 
                     $orderShippedCount++;
-                    // Update the shipment key 
+                    // Update the shipment key
                     if (!empty($shipKey)) {
                         update_post_meta(
                             $postId,
@@ -165,7 +159,7 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
                 } else {
                     if (empty($shipKey) || $shipKey === '') {
                         $totalWeight      = getTotalWeightByPostID($postId);
-                        
+
                         $packages         = WC()->shipping->get_packages();
                         $shipmentTrackKey = createPartialOrderShipment($postId, $totalWeight);
                         $orderShippedCount++;
@@ -204,7 +198,6 @@ add_filter('handle_bulk_actions-edit-shop_order', 'exportPrintLabelBulkActionHan
 set_transient("shipment-plugin-notice", SHIPMENT_PLUGIN_NOTICE, 3);
 
 /**
- *
  * @return void
  */
 function exportPrintBulkActionAdminNotice()
@@ -241,7 +234,6 @@ add_action('admin_notices', 'exportPrintBulkActionAdminNotice');
 
 /**
  * @param integer $orderId
- *
  * @return bool
  */
 function isMyParcelOrder($orderId): bool
@@ -276,9 +268,8 @@ add_action('wp_head', 'incAdminAjaxUrl');
 
 /**
  * @param array $orderId
- *
  * @return array
- **/
+ */
 function getPartialShippingQuantity($orderId): array
 {
     $orderId    = isset($orderId) ? $orderId : 0;
@@ -292,21 +283,19 @@ function getPartialShippingQuantity($orderId): array
  * Logic for exporting order to Myparcel.com
  *
  * @param array $orderId
- *
- * @return $shipmentId
- **/
+ * @return string
+ */
 function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
 {
-
     global $woocommerce;
     $totalWeight    = $totalWeight * 1000;
     $currency       = get_woocommerce_currency();
     $countAllWeight = $totalWeight > 1000 ? $totalWeight : 1000;
-    
+
     $orderData      = getOrderData($orderId);
     $order = wc_get_order($orderId);
     $methodName = $order->get_shipping_method();
-    
+
     $shipment       = new Shipment();
 
     // SHIPPING INFORMATION:
@@ -336,7 +325,7 @@ function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
     } else {
         $shipAddItems = setItemForEuCountries($orderId, $shippedItems);
     }
-    $recipient = new Address();    // Creating address object
+    $recipient = new Address();
     $recipient
         ->setStreet1($orderShippingAddress1)
         ->setStreet2($orderShippingAddress2)
@@ -369,31 +358,25 @@ function createPartialOrderShipment($orderId, $totalWeight, $shippedItems = [])
     return $shipmentId;
 }
 
-
 /**
  * @param Shipment $shipment
  * @param string   $when
- *
  * @return mixed
- **/
+ */
 function setShipmentRegister($shipmentId)
 {
     $getAuth  = new MyParcelApi();
     $api      = $getAuth->apiAuthentication();
     $shipment = $api->getShipment($shipmentId);
     $shipment->setRegisterAt(new \DateTime());
-    $updateShipmentResp = $api->updateShipment($shipment);
-
-    return;
+    $api->updateShipment($shipment);
 }
-
 
 /**
  * @param Shipment $shipment
  * @param string   $when
- *
  * @return mixed
- **/
+ */
 function setRegisterAt($shipment, $when = 'now')
 {
     $api = MyParcelComApi::getSingleton();
@@ -405,9 +388,8 @@ function setRegisterAt($shipment, $when = 'now')
 /**
  * @param Order  $order_id
  * @param string $when
- *
  * @return mixed
- **/
+ */
 add_action('woocommerce_thankyou', 'express_shipping_update_order_status', 10, 1);
 function express_shipping_update_order_status($order_id)
 {
@@ -429,9 +411,8 @@ function express_shipping_update_order_status($order_id)
 
 /**
  * @param Orderid $order_id
- *
  * @return bool
- **/
+ */
 add_action('save_post', 'notify_shop_owner_new_order', 1, 2);
 function notify_shop_owner_new_order($order_id)
 {
@@ -447,9 +428,8 @@ function notify_shop_owner_new_order($order_id)
 
 /**
  * @param CountryCode $countryCode
- *
  * @return bool
- **/
+ */
 function isEUCountry($countryCode)
 {
     $euCountryCodes = [
@@ -527,13 +507,13 @@ function extra_fields_for_myparcel() {
 }
 add_action( 'add_meta_boxes', 'extra_fields_for_myparcel' );
 
-function country_of_origin_fn( $post ) { 
+function country_of_origin_fn( $post ) {
     $value = get_post_meta( $post->ID, 'myparcel_product_country', true ); ?>
     <label for="coo_input">Country Of Origin</label>
     <input type="text" name="coo_input" id="coo_input" value="<?php echo $value; ?>">
     <?php
 }
-function hs_code_fn( $post ) { 
+function hs_code_fn( $post ) {
     $value = get_post_meta( $post->ID, 'myparcel_hs_code', true ); ?>
     <label for="hs_code_input">HS code</label>
     <input type="text" name="hs_code_input" id="hs_code_input" value="<?php echo $value; ?>">

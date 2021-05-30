@@ -1,5 +1,5 @@
 <?php
-define('MYPARCEL_PLUGIN_VERSION', '2.0.1');
+define('MYPARCEL_PLUGIN_VERSION', '2.0.2');
 define('ERROR_MESSAGE_CREDENTIAL', 'Incorrect client id or secret.');
 define('MYPARCEL_METHOD', 'myparcel');
 define('EXPORT_MYPARCEL_ORDER_TEXT', 'export_myparcel_order');
@@ -21,10 +21,10 @@ define('KEY_TEXT', 'api-sdk');
 define('SHIPPED_TEXT', 'shipped');
 define('GET_META_MYPARCEL_ORDER_META', 'myparcel_order_meta');
 define('GET_META_MYPARCEL_ORDER_SHIPMENT_TEXT', '_my_parcel_order_shipment');
-define('MYPARCEL_SUPPORT_TEXT_AND_URL', 'https://myparcelcom.freshdesk.com/support/solutions/folders/16000093106');
-define('MYPARCEL_API_SETTING_TEXT', 'MyParcel.com API setting');
+define('MYPARCEL_SUPPORT_TEXT_AND_URL', 'https://myparcel-com.odoo.com/en/woocommerce');
+define('MYPARCEL_API_SETTING_TEXT', 'MyParcel.com');
 define('MYPARCEL_API_CLIENTID_LABEL_TEXT', '* Client ID');
-define('MYPARCEL_API_CLIENTSECRET_LABEL_TEXT', '* Client secret key');
+define('MYPARCEL_API_CLIENTSECRET_LABEL_TEXT', '* Client secret');
 define('MYPARCEL_API_ACT_TESTMODE_TEXT', 'Activate testmode');
 define('MYPARCEL_API_TEXT', 'MyParcel.com');
 define('MYPARCEL_API_CURRENT_VERSION', 'Current version');
@@ -42,6 +42,6 @@ define('MYPARCEL_DEFAULT_SHOP_ID', 'd90c6e53-8d05-49bf-b9cc-42400ed3f09f');
 define('MYPARCEL_RESPONSE_META', 'webhook_response_meta');
 define('MYPARCEL_FAILED_TEXT', 'Failed');
 define('MYPARCEL_WEBHOOK_RESPONSE', 'webhook_response_option');
-define('MYPARCEL_SHOPID', 'MyParcel.com Shop');
+define('MYPARCEL_SHOPID', 'Default Shop');
 define('MYPARCEL_SHOPID_HELPTEXT', 'Please select the related MyParcel.com shop for this Wordpress Shop.');
 define('MYPARCEL_CHOOSESHOPID', 'Choose Shop ID');

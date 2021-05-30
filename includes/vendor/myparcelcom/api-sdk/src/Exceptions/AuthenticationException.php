@@ -7,5 +7,4 @@ namespace MyParcelCom\ApiSdk\Exceptions;
  */
 class AuthenticationException extends MyParcelComException
 {
-
 }
