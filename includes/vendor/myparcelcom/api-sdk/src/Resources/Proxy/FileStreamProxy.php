@@ -44,8 +44,7 @@ class FileStreamProxy implements StreamInterface
             str_replace('{file_id}', $this->id, MyParcelComApiInterface::PATH_FILES_ID),
             'get',
             [],
-            ['Accept' => $this->mimeType],
-            MyParcelComApiInterface::TTL_MONTH
+            ['Accept' => $this->mimeType]
         );
 
         $response->getBody()->rewind();

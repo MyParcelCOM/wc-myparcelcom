@@ -11,7 +11,6 @@ use MyParcelCom\ApiSdk\Resources\Interfaces\ResourceInterface;
 use MyParcelCom\ApiSdk\Resources\Proxy\RegionProxy;
 use MyParcelCom\ApiSdk\Tests\Traits\MocksApiCommunication;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Cache\Simple\NullCache;
 
 class RegionProxyTest extends TestCase
 {
@@ -36,7 +35,7 @@ class RegionProxyTest extends TestCase
         $this->client = $this->getClientMock();
         $this->authenticator = $this->getAuthenticatorMock();
         $this->api = (new MyParcelComApi('https://api', $this->client))
-            ->setCache(new NullCache())
+            ->setCache($this->getNullCache())
             ->authenticate($this->authenticator);
 
         $this->regionProxy = (new RegionProxy())

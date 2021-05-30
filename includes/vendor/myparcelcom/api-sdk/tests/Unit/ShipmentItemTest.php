@@ -2,6 +2,7 @@
 
 namespace MyParcelCom\ApiSdk\Tests\Unit;
 
+use MyParcelCom\ApiSdk\Resources\Interfaces\PhysicalPropertiesInterface;
 use MyParcelCom\ApiSdk\Resources\ShipmentItem;
 use PHPUnit\Framework\TestCase;
 
@@ -19,6 +20,13 @@ class ShipmentItemTest extends TestCase
     {
         $item = new ShipmentItem();
         $this->assertEquals('Tea cup', $item->setDescription('Tea cup')->getDescription());
+    }
+
+    /** @test */
+    public function testImageUrl()
+    {
+        $item = new ShipmentItem();
+        $this->assertEquals('//tea.cup', $item->setImageUrl('//tea.cup')->getImageUrl());
     }
 
     /** @test */
@@ -57,26 +65,39 @@ class ShipmentItemTest extends TestCase
     }
 
     /** @test */
+    public function testItemWeight()
+    {
+        $item = new ShipmentItem();
+        $this->assertEquals(3000, $item->setItemWeight(3000)->getItemWeight());
+        $this->assertEquals(3000, $item->setItemWeight(3, PhysicalPropertiesInterface::WEIGHT_KILOGRAM)->getItemWeight());
+        $this->assertEquals(3, $item->setItemWeight(3000)->getItemWeight(PhysicalPropertiesInterface::WEIGHT_KILOGRAM));
+    }
+
+    /** @test */
     public function testJsonSerialize()
     {
         $item = (new ShipmentItem())
             ->setSku('CM01-W')
             ->setDescription('Tea cup')
+            ->setImageUrl('//tea.cup')
             ->setHsCode('8321.21.28')
             ->setQuantity(12)
             ->setItemValue(349)
+            ->setItemWeight(128)
             ->setCurrency('GBP')
             ->setOriginCountryCode('GB');
         $this->assertEquals(
             [
                 'sku'                 => 'CM01-W',
                 'description'         => 'Tea cup',
+                'image_url'           => '//tea.cup',
                 'hs_code'             => '8321.21.28',
                 'quantity'            => 12,
                 'item_value'          => [
                     'amount'   => 349,
                     'currency' => 'GBP',
                 ],
+                'item_weight'         => 128,
                 'origin_country_code' => 'GB',
 
             ],

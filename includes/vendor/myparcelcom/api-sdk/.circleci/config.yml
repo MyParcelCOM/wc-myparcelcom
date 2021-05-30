@@ -2,32 +2,27 @@ version: 2
 jobs:
   build:
     machine:
-      image: circleci/classic:edge
-
+      image: ubuntu-1604:202007-01
     steps:
       - checkout
-
-      - run:
-          name: Setup dependencies
-          command: |
-            ./mp.sh composer install
-
       - run:
           name: Run tests on default PHP version (5.6)
           command: |
+            ./mp.sh composer install
             ./mp.sh test --no-coverage --stop-on-failure
-
       - run:
           name: Run tests on PHP 7.0
           command: |
-            ./mp.sh test --no-coverage --stop-on-failure
-
+            ./mp.sh php70 composer install
+            ./mp.sh php70 test --no-coverage --stop-on-failure
       - run:
           name: Run tests on PHP 7.1
           command: |
-            ./mp.sh test --no-coverage --stop-on-failure
-
+            ./mp.sh php71 composer install
+            ./mp.sh php71 test --no-coverage --stop-on-failure
       - run:
-          name: Run tests on PHP 7.2
+          name: Run tests on PHP 7.2 with symfony/cache ^5.0
           command: |
-            ./mp.sh test --no-coverage --stop-on-failure
+            ./mp.sh php72 composer install
+            ./mp.sh php72 composer require symfony/cache:^5.0
+            ./mp.sh php72 test --no-coverage --stop-on-failure

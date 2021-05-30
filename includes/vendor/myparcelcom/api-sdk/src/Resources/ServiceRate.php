@@ -14,6 +14,7 @@ class ServiceRate implements ServiceRateInterface
     use JsonSerializable;
 
     const ATTRIBUTE_PRICE = 'price';
+    const ATTRIBUTE_FUEL_SURCHARGE = 'fuel_surcharge';
     const ATTRIBUTE_CURRENCY = 'currency';
     const ATTRIBUTE_AMOUNT = 'amount';
     const ATTRIBUTE_WEIGHT_MIN = 'weight_min';
@@ -34,16 +35,20 @@ class ServiceRate implements ServiceRateInterface
     private $type = ResourceInterface::TYPE_SERVICE_RATE;
 
     private $attributes = [
-        self::ATTRIBUTE_PRICE      => [
+        self::ATTRIBUTE_PRICE          => [
             self::ATTRIBUTE_CURRENCY => null,
             self::ATTRIBUTE_AMOUNT   => null,
         ],
-        self::ATTRIBUTE_WEIGHT_MIN => null,
-        self::ATTRIBUTE_WEIGHT_MAX => null,
-        self::ATTRIBUTE_WIDTH_MAX  => null,
-        self::ATTRIBUTE_LENGTH_MAX => null,
-        self::ATTRIBUTE_HEIGHT_MAX => null,
-        self::ATTRIBUTE_VOLUME_MAX => null,
+        self::ATTRIBUTE_FUEL_SURCHARGE => [
+            self::ATTRIBUTE_CURRENCY => null,
+            self::ATTRIBUTE_AMOUNT   => null,
+        ],
+        self::ATTRIBUTE_WEIGHT_MIN     => null,
+        self::ATTRIBUTE_WEIGHT_MAX     => null,
+        self::ATTRIBUTE_WIDTH_MAX      => null,
+        self::ATTRIBUTE_LENGTH_MAX     => null,
+        self::ATTRIBUTE_HEIGHT_MAX     => null,
+        self::ATTRIBUTE_VOLUME_MAX     => null,
     ];
 
     private $relationships = [
@@ -236,6 +241,42 @@ class ServiceRate implements ServiceRateInterface
     public function getPrice()
     {
         return $this->attributes[self::ATTRIBUTE_PRICE][self::ATTRIBUTE_AMOUNT];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setFuelSurchargeAmount($amount)
+    {
+        $this->attributes[self::ATTRIBUTE_FUEL_SURCHARGE][self::ATTRIBUTE_AMOUNT] = $amount;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFuelSurchargeAmount()
+    {
+        return $this->attributes[self::ATTRIBUTE_FUEL_SURCHARGE][self::ATTRIBUTE_AMOUNT];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setFuelSurchargeCurrency($currency)
+    {
+        $this->attributes[self::ATTRIBUTE_FUEL_SURCHARGE][self::ATTRIBUTE_CURRENCY] = $currency;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFuelSurchargeCurrency()
+    {
+        return $this->attributes[self::ATTRIBUTE_FUEL_SURCHARGE][self::ATTRIBUTE_CURRENCY];
     }
 
     /**

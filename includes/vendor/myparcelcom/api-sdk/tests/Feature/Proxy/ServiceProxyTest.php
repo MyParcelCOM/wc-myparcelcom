@@ -13,7 +13,6 @@ use MyParcelCom\ApiSdk\Resources\Interfaces\ServiceRateInterface;
 use MyParcelCom\ApiSdk\Resources\Proxy\ServiceProxy;
 use MyParcelCom\ApiSdk\Tests\Traits\MocksApiCommunication;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Cache\Simple\NullCache;
 
 class ServiceProxyTest extends TestCase
 {
@@ -35,7 +34,7 @@ class ServiceProxyTest extends TestCase
         $this->client = $this->getClientMock();
         $this->authenticator = $this->getAuthenticatorMock();
         $this->api = (new MyParcelComApi('https://api', $this->client))
-            ->setCache(new NullCache())
+            ->setCache($this->getNullCache())
             ->authenticate($this->authenticator);
 
         $this->serviceProxy = (new ServiceProxy())

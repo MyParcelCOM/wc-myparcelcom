@@ -49,19 +49,19 @@ interface MyParcelComApiInterface
      * @see https://docs.myparcel.com/api/resources/regions/#parameters
      *
      * @param array $filters
-     * @param int   $ttl            Cache time to live (in seconds)
+     * @param int   $ttl Cache time to live (in seconds)
      * @return CollectionInterface
      */
-    public function getRegions($filters = [], $ttl = self::TTL_WEEK);
+    public function getRegions($filters = [], $ttl = self::TTL_10MIN);
 
     /**
      * Get all the carriers from the API.
      *
-     * @param int   $ttl            Cache time to live (in seconds)
+     * @param int $ttl Cache time to live (in seconds)
      * @return CollectionInterface
      * @throws MyParcelComException
      */
-    public function getCarriers($ttl = self::TTL_WEEK);
+    public function getCarriers($ttl = self::TTL_10MIN);
 
     /**
      * Get the pick up/drop off locations around a given location. If no carrier
@@ -73,7 +73,7 @@ interface MyParcelComApiInterface
      * @param string|null           $streetNumber
      * @param CarrierInterface|null $specificCarrier
      * @param bool                  $onlyActiveContracts
-     * @param int                   $ttl                    Cache time to live (in seconds)
+     * @param int                   $ttl Cache time to live (in seconds)
      * @return CollectionInterface
      */
     public function getPickUpDropOffLocations(
@@ -83,27 +83,27 @@ interface MyParcelComApiInterface
         $streetNumber = null,
         CarrierInterface $specificCarrier = null,
         $onlyActiveContracts = true,
-        $ttl = self::TTL_WEEK
+        $ttl = self::TTL_10MIN
     );
 
     /**
      * Get the shops from the API.
      *
-     * @param int $ttl              Cache time to live (in seconds)
+     * @param int $ttl Cache time to live (in seconds)
      * @return CollectionInterface
      * @throws MyParcelComException
      */
-    public function getShops($ttl = self::TTL_WEEK);
+    public function getShops($ttl = self::TTL_10MIN);
 
     /**
      * Get the default shop that will be used when interacting with the API and
      * no specific shop has been set.
      *
-     * @param int $ttl              Cache time to live (in seconds)
+     * @param int $ttl Cache time to live (in seconds)
      * @return ShopInterface
      * @throws MyParcelComException
      */
-    public function getDefaultShop($ttl = self::TTL_WEEK);
+    public function getDefaultShop($ttl = self::TTL_10MIN);
 
     /**
      * Get all services that can be used for given shipment. If no shipment is
@@ -111,56 +111,56 @@ interface MyParcelComApiInterface
      *
      * @param ShipmentInterface|null $shipment
      * @param array                  $filters
-     * @param int                    $ttl       Cache time to live (in seconds)
+     * @param int                    $ttl Cache time to live (in seconds)
      * @return CollectionInterface
      * @throws MyParcelComException
      */
     public function getServices(
         ShipmentInterface $shipment = null,
         array $filters = ['has_active_contract' => 'true'],
-        $ttl = self::TTL_WEEK
+        $ttl = self::TTL_10MIN
     );
 
     /**
      * Get all the services that are available for the given carrier.
      *
      * @param CarrierInterface $carrier
-     * @param int              $ttl     Cache time to live (in seconds)
+     * @param int              $ttl Cache time to live (in seconds)
      * @return CollectionInterface
      * @throws MyParcelComException
      */
-    public function getServicesForCarrier(CarrierInterface $carrier, $ttl = self::TTL_WEEK);
+    public function getServicesForCarrier(CarrierInterface $carrier, $ttl = self::TTL_10MIN);
 
     /**
      * Retrieves service rates based on the set filters.
      * Available filters are: service, contract and weight.
      *
      * @param array $filters
-     * @param int   $ttl           Cache time to live (in seconds)
+     * @param int   $ttl Cache time to live (in seconds)
      * @return CollectionInterface
      */
-    public function getServiceRates(array $filters = ['has_active_contract' => 'true'], $ttl = self::TTL_WEEK);
+    public function getServiceRates(array $filters = ['has_active_contract' => 'true'], $ttl = self::TTL_10MIN);
 
     /**
      * Retrieves service rates based on the shipment.
      * The shipment needs to have a recipient/sender_address and a weight set.
      *
      * @param ShipmentInterface $shipment
-     * @param int               $ttl      Cache time to live (in seconds)
+     * @param int               $ttl Cache time to live (in seconds)
      * @return CollectionInterface
      */
-    public function getServiceRatesForShipment(ShipmentInterface $shipment, $ttl = self::TTL_WEEK);
+    public function getServiceRatesForShipment(ShipmentInterface $shipment, $ttl = self::TTL_10MIN);
 
     /**
      * Get shipments for a given shop. If no shop is given the default shop is
      * used.
      *
      * @param ShopInterface|null $shop
-     * @param int                $ttl  Cache time to live (in seconds)
+     * @param int                $ttl Cache time to live (in seconds)
      * @return CollectionInterface
      * @throws MyParcelComException
      */
-    public function getShipments(ShopInterface $shop = null, $ttl = self::TTL_WEEK);
+    public function getShipments(ShopInterface $shop = null, $ttl = self::TTL_NO_CACHE);
 
     /**
      * Get a specific shipment from the API.
@@ -213,7 +213,7 @@ interface MyParcelComApiInterface
      * @return ResourceInterface
      * @throws MyParcelComException
      */
-    public function getResourceById($resourceType, $id, $ttl = self::TTL_10MIN);
+    public function getResourceById($resourceType, $id, $ttl = self::TTL_NO_CACHE);
 
     /**
      * Get an array of all the resources from given uri.
@@ -234,5 +234,5 @@ interface MyParcelComApiInterface
      * @return ResponseInterface
      * @throws RequestException
      */
-    public function doRequest($uri, $method = 'get', array $body = [], array $headers = [], $ttl = self::TTL_10MIN);
+    public function doRequest($uri, $method = 'get', array $body = [], array $headers = [], $ttl = self::TTL_NO_CACHE);
 }

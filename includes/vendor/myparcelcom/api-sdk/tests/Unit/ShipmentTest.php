@@ -44,6 +44,13 @@ class ShipmentTest extends TestCase
     }
 
     /** @test */
+    public function testRecipientTaxNumber()
+    {
+        $shipment = new Shipment();
+        $this->assertEquals('H111111-11', $shipment->setRecipientTaxNumber('H111111-11')->getRecipientTaxNumber());
+    }
+
+    /** @test */
     public function testSenderAddress()
     {
         $shipment = new Shipment();
@@ -52,6 +59,13 @@ class ShipmentTest extends TestCase
         $address = new $mock();
 
         $this->assertEquals($address, $shipment->setSenderAddress($address)->getSenderAddress());
+    }
+
+    /** @test */
+    public function testSenderTaxNumber()
+    {
+        $shipment = new Shipment();
+        $this->assertEquals('G666666-66', $shipment->setSenderTaxNumber('G666666-66')->getSenderTaxNumber());
     }
 
     /** @test */
@@ -409,6 +423,36 @@ class ShipmentTest extends TestCase
     }
 
     /** @test */
+    public function testTags()
+    {
+        $shipment = new Shipment();
+
+        $shipment->setTags(['you', 'are']);
+        $this->assertEquals(['you', 'are'], $shipment->getTags());
+
+        $shipment->addTag('it');
+        $this->assertEquals(['you', 'are', 'it'], $shipment->getTags());
+
+        $shipment->setTags(['overwritten', 'tags']);
+        $this->assertEquals(['overwritten', 'tags'], $shipment->getTags());
+
+        $shipment->clearTags();
+        $this->assertNull($shipment->getTags());
+    }
+
+    /** @test */
+    public function testLabelMimeType()
+    {
+        $shipment = new Shipment();
+
+        $this->assertEquals(FileInterface::MIME_TYPE_PDF, $shipment->jsonSerialize()['meta']['label_mime_type']);
+
+        $shipment->setLabelMimeType(FileInterface::MIME_TYPE_ZPL);
+
+        $this->assertEquals(FileInterface::MIME_TYPE_ZPL, $shipment->jsonSerialize()['meta']['label_mime_type']);
+    }
+
+    /** @test */
     public function testJsonSerialize()
     {
         $recipientAddress = $this->getMockBuilder(AddressInterface::class)
@@ -598,10 +642,16 @@ class ShipmentTest extends TestCase
             ->getMock();
         $customs->method('jsonSerialize')
             ->willReturn([
-                'content_type'   => 'documents',
-                'invoice_number' => 'NO.5',
-                'non_delivery'   => 'return',
-                'incoterm'       => 'DDU',
+                'content_type'       => 'documents',
+                'invoice_number'     => 'NO.5',
+                'non_delivery'       => 'return',
+                'incoterm'           => 'DAP',
+                'shipping_value'     => [
+                    'amount'   => 3232,
+                    'currency' => 'EUR',
+                ],
+                'license_number'     => '512842382',
+                'certificate_number' => '2112211',
             ]);
 
         $item = $this->getMockBuilder(ShipmentItemInterface::class)
@@ -644,39 +694,42 @@ class ShipmentTest extends TestCase
             ->setContract($contract)
             ->setShipmentStatus($status)
             ->setRecipientAddress($recipientAddress)
+            ->setRecipientTaxNumber('H111111-11')
             ->setSenderAddress($senderAddress)
+            ->setSenderTaxNumber('G666666-66')
             ->setReturnAddress($returnAddress)
             ->setPickupLocationAddress($pudoAddress)
             ->setCustoms($customs)
             ->setItems([$item])
-            ->setRegisterAt(9001);
+            ->setRegisterAt(9001)
+            ->setTags(['you', 'are', 'it']);
 
         $this->assertEquals([
             'id'            => 'shipment-id',
             'type'          => 'shipments',
             'attributes'    => [
-                'barcode'             => 'S3BARCODE',
-                'tracking_code'       => 'ATRACKINGCODE',
-                'tracking_url'        => 'https://tra.ck/ATRACKINGCODE',
-                'channel'             => 'Cartoon Network',
-                'description'         => 'Fidget spinners',
-                'customer_reference'  => '#012ASD',
-                'price'               => [
+                'barcode'              => 'S3BARCODE',
+                'tracking_code'        => 'ATRACKINGCODE',
+                'tracking_url'         => 'https://tra.ck/ATRACKINGCODE',
+                'channel'              => 'Cartoon Network',
+                'description'          => 'Fidget spinners',
+                'customer_reference'   => '#012ASD',
+                'price'                => [
                     'amount'   => 99,
                     'currency' => 'USD',
                 ],
-                'total_value'         => [
+                'total_value'          => [
                     'amount'   => 100,
                     'currency' => 'EUR',
                 ],
-                'physical_properties' => [
+                'physical_properties'  => [
                     'weight' => 1000,
                     'length' => 1100,
                     'volume' => 1200,
                     'height' => 1300,
                     'width'  => 1400,
                 ],
-                'recipient_address'   => [
+                'recipient_address'    => [
                     'street_1'             => 'Diagonally',
                     'street_2'             => 'Apartment 4',
                     'street_number'        => '1',
@@ -691,7 +744,8 @@ class ShipmentTest extends TestCase
                     'email'                => 'rob@tables.com',
                     'phone_number'         => '+31 (0)234 567 890',
                 ],
-                'sender_address'      => [
+                'recipient_tax_number' => 'H111111-11',
+                'sender_address'       => [
                     'street_1'             => 'Diagonally',
                     'street_2'             => 'Apartment 4',
                     'street_number'        => '2',
@@ -706,7 +760,8 @@ class ShipmentTest extends TestCase
                     'email'                => 'rob@tables.com',
                     'phone_number'         => '+31 (0)234 567 890',
                 ],
-                'return_address'      => [
+                'sender_tax_number'    => 'G666666-66',
+                'return_address'       => [
                     'street_1'             => 'Diagonally',
                     'street_2'             => 'Apartment 4',
                     'street_number'        => '2',
@@ -721,7 +776,7 @@ class ShipmentTest extends TestCase
                     'email'                => 'rob@tables.com',
                     'phone_number'         => '+31 (0)234 567 890',
                 ],
-                'pickup_location'     => [
+                'pickup_location'      => [
                     'code'    => 'CODE123',
                     'address' => [
                         'street_1'             => 'Diagonally',
@@ -739,7 +794,7 @@ class ShipmentTest extends TestCase
                         'phone_number'         => '+31 (0)234 567 890',
                     ],
                 ],
-                'items'               => [
+                'items'                => [
                     [
                         'sku'                 => '123456789',
                         'description'         => 'OnePlus X',
@@ -752,13 +807,20 @@ class ShipmentTest extends TestCase
                         'origin_country_code' => 'GB',
                     ],
                 ],
-                'customs'             => [
-                    'content_type'   => 'documents',
-                    'invoice_number' => 'NO.5',
-                    'non_delivery'   => 'return',
-                    'incoterm'       => 'DDU',
+                'customs'              => [
+                    'content_type'       => 'documents',
+                    'invoice_number'     => 'NO.5',
+                    'non_delivery'       => 'return',
+                    'incoterm'           => 'DAP',
+                    'shipping_value'     => [
+                        'amount'   => 3232,
+                        'currency' => 'EUR',
+                    ],
+                    'license_number'     => '512842382',
+                    'certificate_number' => '2112211',
                 ],
-                'register_at'         => 9001,
+                'register_at'          => 9001,
+                'tags'                 => ['you', 'are', 'it'],
             ],
             'relationships' => [
                 'shop'            => ['data' => ['id' => 'shop-id-1', 'type' => 'shops']],

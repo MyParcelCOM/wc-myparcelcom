@@ -106,6 +106,25 @@ class CarrierProxy implements CarrierInterface, ResourceProxyInterface
     }
 
     /**
+     * @param array $labelMimeTypes
+     * @return $this
+     */
+    public function setLabelMimeTypes(array $labelMimeTypes)
+    {
+        $this->getResource()->setLabelMimeTypes($labelMimeTypes);
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLabelMimeTypes()
+    {
+        return $this->getResource()->getLabelMimeTypes();
+    }
+
+    /**
      * This function puts all object properties in an array and returns it.
      *
      * @return array

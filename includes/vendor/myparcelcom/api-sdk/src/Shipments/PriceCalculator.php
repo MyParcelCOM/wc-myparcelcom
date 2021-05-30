@@ -33,13 +33,14 @@ class PriceCalculator
         }
 
         $serviceRatePrice = $serviceRate->getPrice();
+        $fuelSurchargePrice = $serviceRate->getFuelSurchargeAmount() ?: 0;
         $serviceOptionPrice = $this->calculateOptionsPrice($shipment, $serviceRate);
 
         if ($serviceRatePrice === null || $serviceOptionPrice === null) {
             return null;
         }
 
-        return $serviceOptionPrice + $serviceRatePrice;
+        return $serviceOptionPrice + $fuelSurchargePrice + $serviceRatePrice;
     }
 
     /**

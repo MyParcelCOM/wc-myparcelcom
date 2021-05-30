@@ -14,7 +14,6 @@ use MyParcelCom\ApiSdk\Resources\Proxy\ShipmentProxy;
 use MyParcelCom\ApiSdk\Resources\Proxy\ShipmentStatusProxy;
 use MyParcelCom\ApiSdk\Tests\Traits\MocksApiCommunication;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Cache\Simple\NullCache;
 
 class ShipmentStatusProxyTest extends TestCase
 {
@@ -36,7 +35,7 @@ class ShipmentStatusProxyTest extends TestCase
         $this->client = $this->getClientMock();
         $this->authenticator = $this->getAuthenticatorMock();
         $this->api = (new MyParcelComApi('https://api', $this->client))
-            ->setCache(new NullCache())
+            ->setCache($this->getNullCache())
             ->authenticate($this->authenticator);
 
         $this->shipmentStatusProxy = (new ShipmentProxy())

@@ -3,8 +3,7 @@
 namespace MyParcelCom\ApiSdk\Resources\Interfaces;
 
 /**
- * Interface that should be implemented by each class that represents a resource
- * af the API.
+ * Interface that should be implemented by each class that represents a resource af the API.
  */
 interface ResourceInterface extends \JsonSerializable
 {

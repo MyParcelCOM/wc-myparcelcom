@@ -10,7 +10,6 @@ use MyParcelCom\ApiSdk\Resources\Proxy\FileStreamProxy;
 use MyParcelCom\ApiSdk\Tests\Traits\MocksApiCommunication;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use Symfony\Component\Cache\Simple\NullCache;
 
 class FileStreamProxyTest extends TestCase
 {
@@ -32,7 +31,7 @@ class FileStreamProxyTest extends TestCase
         $this->client = $this->getClientMock();
         $this->authenticator = $this->getAuthenticatorMock();
         $this->api = (new MyParcelComApi('https://api', $this->client))
-            ->setCache(new NullCache())
+            ->setCache($this->getNullCache())
             ->authenticate($this->authenticator);
 
         $this->fileStreamProxy = new FileStreamProxy(

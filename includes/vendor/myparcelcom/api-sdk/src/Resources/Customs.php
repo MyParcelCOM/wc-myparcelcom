@@ -9,6 +9,9 @@ class Customs implements CustomsInterface
 {
     use JsonSerializable;
 
+    const AMOUNT = 'amount';
+    const CURRENCY = 'currency';
+
     /** @var string */
     private $contentType;
 
@@ -20,6 +23,18 @@ class Customs implements CustomsInterface
 
     /** @var string */
     private $incoterm;
+
+    /** @var string|null */
+    private $licenseNumber;
+
+    /** @var string|null */
+    private $certificateNumber;
+
+    /** @var array */
+    private $shippingValue = [
+        self::AMOUNT   => null,
+        self::CURRENCY => null,
+    ];
 
     /**
      * {@inheritdoc}
@@ -89,6 +104,80 @@ class Customs implements CustomsInterface
     public function setIncoterm($incoterm)
     {
         $this->incoterm = $incoterm;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLicenseNumber()
+    {
+        return $this->licenseNumber;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setLicenseNumber($licenseNumber)
+    {
+        $this->licenseNumber = $licenseNumber;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCertificateNumber()
+    {
+        return $this->certificateNumber;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setCertificateNumber($certificateNumber)
+    {
+        $this->certificateNumber = $certificateNumber;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getShippingValueCurrency()
+    {
+        return $this->shippingValue[self::CURRENCY];
+    }
+
+    /**
+     * @param string|null $shippingValueCurrency
+     * @return $this
+     */
+    public function setShippingValueCurrency($shippingValueCurrency)
+    {
+        $this->shippingValue[self::CURRENCY] = $shippingValueCurrency;
+
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getShippingValueAmount()
+    {
+        return $this->shippingValue[self::AMOUNT];
+    }
+
+    /**
+     * @param int|null $shippingValueAmount
+     * @return $this
+     */
+    public function setShippingValueAmount($shippingValueAmount)
+    {
+        $this->shippingValue[self::AMOUNT] = (int) $shippingValueAmount;
 
         return $this;
     }

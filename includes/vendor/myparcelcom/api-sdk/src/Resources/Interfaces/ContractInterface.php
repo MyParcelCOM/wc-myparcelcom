@@ -11,6 +11,17 @@ interface ContractInterface extends ResourceInterface
     public function setId($id);
 
     /**
+     * @param string $name
+     * @return $this
+     */
+    public function setName($name);
+
+    /**
+     * @return string
+     */
+    public function getName();
+
+    /**
      * @param string $currency
      * @return $this
      */

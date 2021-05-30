@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 # Install locales for terminal and php.
 RUN apt-get update \
@@ -13,12 +13,11 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 RUN apt-get update \
-    && apt-get install -y curl zip unzip software-properties-common gettext-base iproute \
+    && apt-get install -y curl zip unzip software-properties-common gettext-base iproute2 \
     && add-apt-repository -y ppa:ondrej/php \
     && apt-get update \
     && apt-get install -y php7.1-cli php7.1-xdebug php7.1-dom php7.1-mbstring php7.1-curl \
     && php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer \
-    && composer global require hirak/prestissimo \
     && mkdir /run/php \
     && apt-get remove -y --purge software-properties-common \
     && apt-get -y autoremove \

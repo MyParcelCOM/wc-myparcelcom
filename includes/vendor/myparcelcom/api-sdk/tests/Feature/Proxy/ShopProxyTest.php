@@ -12,7 +12,6 @@ use MyParcelCom\ApiSdk\Resources\Interfaces\ResourceInterface;
 use MyParcelCom\ApiSdk\Resources\Proxy\ShopProxy;
 use MyParcelCom\ApiSdk\Tests\Traits\MocksApiCommunication;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Cache\Simple\NullCache;
 
 class ShopProxyTest extends TestCase
 {
@@ -34,7 +33,7 @@ class ShopProxyTest extends TestCase
         $this->client = $this->getClientMock();
         $this->authenticator = $this->getAuthenticatorMock();
         $this->api = (new MyParcelComApi('https://api', $this->client))
-            ->setCache(new NullCache())
+            ->setCache($this->getNullCache())
             ->authenticate($this->authenticator);
 
         $this->shopProxy = (new ShopProxy())
@@ -52,10 +51,6 @@ class ShopProxyTest extends TestCase
         $this->assertEquals('an-id-for-a-shop', $this->shopProxy->setId('an-id-for-a-shop')->getId());
 
         $addressBuilder = $this->getMockBuilder(AddressInterface::class);
-        /** @var AddressInterface $billingAddress */
-        $billingAddress = $addressBuilder->getMock();
-        $this->assertEquals($billingAddress, $this->shopProxy->setBillingAddress($billingAddress)->getBillingAddress());
-
         /** @var AddressInterface $returnAddress */
         $returnAddress = $addressBuilder->getMock();
         $this->assertEquals($returnAddress, $this->shopProxy->setReturnAddress($returnAddress)->getReturnAddress());
@@ -73,11 +68,11 @@ class ShopProxyTest extends TestCase
         $this->assertEquals('Testshop', $this->shopProxy->getName());
         $this->assertEquals('https://test.shop', $this->shopProxy->getWebsite());
 
-        $billingAddress = $this->shopProxy->getBillingAddress();
-        $this->assertInstanceOf(AddressInterface::class, $billingAddress);
-        $this->assertEquals('1AA BB2', $billingAddress->getPostalCode());
-        $this->assertEquals('London', $billingAddress->getCity());
-        $this->assertEquals('Mister', $billingAddress->getFirstName());
+        $senderAddress = $this->shopProxy->getSenderAddress();
+        $this->assertInstanceOf(AddressInterface::class, $senderAddress);
+        $this->assertEquals('1AA BB2', $senderAddress->getPostalCode());
+        $this->assertEquals('London', $senderAddress->getCity());
+        $this->assertEquals('Mister', $senderAddress->getFirstName());
 
         $returnAddress = $this->shopProxy->getReturnAddress();
         $this->assertInstanceOf(AddressInterface::class, $returnAddress);
@@ -99,7 +94,6 @@ class ShopProxyTest extends TestCase
             ->setMyParcelComApi($this->api)
             ->setId('shop-id-1');
         $firstProxy->getCreatedAt();
-        $firstProxy->getBillingAddress();
         $firstProxy->getName();
 
         $this->assertEquals(1, $this->clientCalls['https://api/shops/shop-id-1']);

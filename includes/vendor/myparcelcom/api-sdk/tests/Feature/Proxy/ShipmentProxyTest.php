@@ -20,7 +20,6 @@ use MyParcelCom\ApiSdk\Resources\Interfaces\ShopInterface;
 use MyParcelCom\ApiSdk\Resources\Proxy\ShipmentProxy;
 use MyParcelCom\ApiSdk\Tests\Traits\MocksApiCommunication;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Cache\Simple\NullCache;
 
 class ShipmentProxyTest extends TestCase
 {
@@ -42,7 +41,7 @@ class ShipmentProxyTest extends TestCase
         $this->client = $this->getClientMock();
         $this->authenticator = $this->getAuthenticatorMock();
         $this->api = (new MyParcelComApi('https://api', $this->client))
-            ->setCache(new NullCache())
+            ->setCache($this->getNullCache())
             ->authenticate($this->authenticator);
 
         $this->shipmentProxy = (new ShipmentProxy())
@@ -153,9 +152,13 @@ class ShipmentProxyTest extends TestCase
         $this->assertEquals('Some road', $this->shipmentProxy->getRecipientAddress()->getStreet1());
         $this->assertEquals('1GL HF1', $this->shipmentProxy->getRecipientAddress()->getPostalCode());
 
+        $this->assertEquals('H111111-11', $this->shipmentProxy->getRecipientTaxNumber());
+
         $this->assertInstanceOf(AddressInterface::class, $this->shipmentProxy->getSenderAddress());
         $this->assertEquals(17, $this->shipmentProxy->getSenderAddress()->getStreetNumber());
         $this->assertEquals('Cardiff', $this->shipmentProxy->getSenderAddress()->getCity());
+
+        $this->assertEquals('G666666-66', $this->shipmentProxy->getSenderTaxNumber());
 
         $this->assertEquals('123456', $this->shipmentProxy->getPickupLocationCode());
         $this->assertInstanceOf(AddressInterface::class, $this->shipmentProxy->getPickupLocationAddress());

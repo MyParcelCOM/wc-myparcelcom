@@ -8,6 +8,8 @@ use Http\Discovery\HttpClientDiscovery;
 use MyParcelCom\ApiSdk\Exceptions\AuthenticationException;
 use MyParcelCom\ApiSdk\Http\Exceptions\RequestException;
 use Psr\SimpleCache\CacheInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Psr16Cache;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 
 class ClientCredentials implements AuthenticatorInterface
@@ -54,7 +56,18 @@ class ClientCredentials implements AuthenticatorInterface
         $this->clientSecret = $clientSecret;
         $this->clientId = $clientId;
         $this->authUri = $authUri;
-        $this->cache = $cache ?: new FilesystemCache('myparcelcom');
+
+        // Either use the given cache or instantiate a new one that uses the filesystem temp directory as a cache.
+        if (!$cache) {
+            // Symfony 5.0.0 removed their PSR-16 cache classes. Their PSR-6 cache classes can be wrapped in Psr16Cache.
+            if (class_exists('\Symfony\Component\Cache\Psr16Cache')) {
+                $psr6Cache = new FilesystemAdapter('myparcelcom');
+                $cache = new Psr16Cache($psr6Cache);
+            } else {
+                $cache = new FilesystemCache('myparcelcom');
+            }
+        }
+        $this->cache = $cache;
 
         if ($httpClient !== null) {
             $this->setHttpClient($httpClient);

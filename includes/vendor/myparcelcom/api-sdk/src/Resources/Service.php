@@ -42,6 +42,7 @@ class Service implements ServiceInterface
     /** @var array */
     private $attributes = [
         self::ATTRIBUTE_NAME            => null,
+        self::ATTRIBUTE_CODE            => null,
         self::ATTRIBUTE_PACKAGE_TYPE    => null,
         self::ATTRIBUTE_REGIONS_FROM    => null,
         self::ATTRIBUTE_REGIONS_TO      => null,

@@ -19,6 +19,7 @@ interface FileInterface extends ResourceInterface
     const MIME_TYPE_PNG = 'image/png';
     const MIME_TYPE_JPG = 'image/jpeg';
     const MIME_TYPE_PDF = 'application/pdf';
+    const MIME_TYPE_ZPL = 'application/zpl';
 
     const FORMAT_MIME_TYPE = 'mime_type';
     const FORMAT_EXTENSION = 'extension';
