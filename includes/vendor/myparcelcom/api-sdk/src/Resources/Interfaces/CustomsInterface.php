@@ -13,7 +13,7 @@ interface CustomsInterface extends \JsonSerializable
     const NON_DELIVERY_RETURN = 'return';
     const NON_DELIVERY_ABANDON = 'abandon';
 
-    const INCOTERM_DDU = 'DDU';
+    const INCOTERM_DAP = 'DAP';
     const INCOTERM_DDP = 'DDP';
 
     /**
@@ -59,4 +59,26 @@ interface CustomsInterface extends \JsonSerializable
      * @return string
      */
     public function getIncoterm();
+
+    /**
+     * @param string $licenseNumber
+     * @return $this
+     */
+    public function setLicenseNumber($licenseNumber);
+
+    /**
+     * @return string|null
+     */
+    public function getLicenseNumber();
+
+    /**
+     * @param string $certificateNumber
+     * @return $this
+     */
+    public function setCertificateNumber($certificateNumber);
+
+    /**
+     * @return string|null
+     */
+    public function getCertificateNumber();
 }

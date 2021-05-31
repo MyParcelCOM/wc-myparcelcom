@@ -2,349 +2,100 @@
 
 declare(strict_types=1);
 
+use MyParcelCom\ApiSdk\LabelCombiner;
+use MyParcelCom\ApiSdk\LabelCombinerInterface;
+use MyParcelCom\ApiSdk\Resources\File;
 use MyParcelCom\ApiSdk\Resources\Shipment;
 use MyParcelCom\ApiSdk\Resources\ShipmentItem;
-use MyParcelCom\ApiSdk\Resources\File;
-use MyParcelCom\ApiSdk\LabelCombiner;
-use MyParcelCom\ApiSdk\Resources\Interfaces\FileInterface;
-use MyParcelCom\ApiSdk\LabelCombinerInterface;
+use MyParcelCom\ApiSdk\Resources\Shop;
 
 /**
  * @param $orderId
- *
- * @return mixed
- */
-function getOrderData($orderId)
-{
-    $order      = wc_get_order($orderId);
-    $order_data = $order->get_data();
-
-    return $order_data;
-}
-
-/**
- * @param $orderId
- *
- * @return mixed
+ * @return array
  */
 function getOrderItems($orderId)
 {
     $order = wc_get_order($orderId);
-    $items = $order->get_items();
 
-    return $items;
+    return $order->get_items();
 }
 
 /**
  * @param $productId
- *
- * @return mixed
+ * @return string
  */
 function getWeightByProductId($productId)
 {
     $product = wc_get_product($productId);
-    $weight  = $product->get_weight();
 
-    return $weight;
+    return $product->get_weight();
 }
 
 /**
- * @param $postId
- *
+ * @param int $postId
  * @return float|int
  */
 function getTotalWeightByPostID($postId)
 {
-    $items       = getOrderItems($postId);
+    $items = getOrderItems($postId);
     $totalWeight = 0;
     foreach ($items as $item) {
-        $product = wc_get_product($item['product_id']);
-        // Now you have access to (see above)...
-        $quantity       = $item->get_quantity(); // get quantity
-        $product        = $item->get_product(); // get the WC_Product object
-        $product_weight = $product->get_weight(); // get the product weight
-        $totalWeight    += floatval($product_weight * $quantity);
+        $totalWeight += floatval($item->get_product()->get_weight() * $item->get_quantity());
     }
 
     return $totalWeight;
 }
 
-//set Ship item for non EU country by post id
-function setItemForNonEuCountries($orderId, $currency, $shippedItemsNewArr, $senderCountry='')
+function getShipmentItems($orderId, $currency, $shippedItemsNewArr, $originCountryCode)
 {
-    global $woocommerce;
-    $items        = getOrderItems($orderId);
-    $shipAddItems = [];
+    $items = getOrderItems($orderId);
+    $shipmentItems = [];
     if ($shippedItemsNewArr) {
         foreach ($shippedItemsNewArr as $getShippedItem) {
-            $item_id   = $getShippedItem["item_id"];
-            $shipItems = new ShipmentItem();
-            $product   = wc_get_product($items[$item_id]['product_id']);
-            $productID = $product->get_id();
-            // Now you have access to (see above)...
-            $quantity    = $getShippedItem["shipped"]; // get quantity
-            $productName = $product->get_name();
-            $sku         = ($product->get_sku()) ? $product->get_sku() : MYPARCEL_NA_TEXT;    // Get the product SKU
-            $price       = $product->get_price(); // Get the product price
-            $itemValue   = ($price * 1) * 100;
-            $HSCode      = get_post_meta($productID, 'myparcel_hs_code', true);
-            $CountryOfOrigin = get_post_meta($productID, 'myparcel_product_country', true);
-            $itemWeight = $product->get_weight();
-            $itemWeight = $itemWeight*1000;
+            $itemId = $getShippedItem['item_id'];
+            $product = wc_get_product($items[$itemId]['product_id']);
+            $sku = $product->get_sku() ?: $product->get_id();
+            $imageUrl = $product->get_image_id() ? wp_get_attachment_image_url($product->get_image_id(), 'medium') : null;
+            $itemValue = (int) round($product->get_price() * 100);
+            $itemWeight = $product->get_weight() ? $product->get_weight() * 1000 : null;
+            $hsCode = get_post_meta($product->get_id(), 'myparcel_hs_code', true);
+            $productCountry = get_post_meta($product->get_id(), 'myparcel_product_country', true);
 
-            if( $HSCode == '' && $CountryOfOrigin == '' ){
-                /*$HSCode = '0000';
-                $CountryOfOrigin = '';*/
-                $shipItems
-                    ->setSku($sku)
-                    ->setDescription($productName)
-                    ->setQuantity($quantity)
-                    ->setItemValue($itemValue)
-                    ->setCurrency($currency)
-                    ->setItemWeight($itemWeight);
-
-            } else if($HSCode == ''){
-                $shipItems
+            $shipmentItems[] = (new ShipmentItem())
                 ->setSku($sku)
-                ->setDescription($productName)
-                ->setQuantity($quantity)
+                ->setDescription($product->get_name())
+                ->setImageUrl($imageUrl)
                 ->setItemValue($itemValue)
-                ->setOriginCountryCode($CountryOfOrigin)
                 ->setCurrency($currency)
-                ->setItemWeight($itemWeight);
-
-                $HSCode = '0000';
-            } else if($CountryOfOrigin == ''){
-                $shipItems
-                    ->setSku($sku)
-                    ->setDescription($productName)
-                    ->setQuantity($quantity)
-                    ->setItemValue($itemValue)
-                    ->setHsCode($HSCode)
-                    ->setCurrency($currency)
-                    ->setItemWeight($itemWeight);
-                $CountryOfOrigin = '';
-            } else {
-                $shipItems
-                    ->setSku($sku)
-                    ->setDescription($productName)
-                    ->setQuantity($quantity)
-                    ->setItemValue($itemValue)
-                    ->setHsCode($HSCode)
-                    ->setOriginCountryCode($CountryOfOrigin)
-                    ->setCurrency($currency)
-                    ->setItemWeight($itemWeight);
-
-            }
-
-            
-            $shipAddItems[] = $shipItems;
+                ->setQuantity($getShippedItem['shipped'])
+                ->setHsCode($hsCode ?: null)
+                ->setItemWeight($itemWeight)
+                ->setOriginCountryCode($productCountry ?: $originCountryCode);
         }
     } else {
         foreach ($items as $item) {
-            $shipItems = new ShipmentItem();
-            // Now you have access to (see above)...
-            $quantity    = $item->get_quantity(); // get quantity
-            $product     = $item->get_product(); // get the WC_Product object
-            $productName = $product->get_name();
-            $productID   = $product->get_id();
-            $sku         = ($product->get_sku()) ? $product->get_sku() : MYPARCEL_NA_TEXT;    // Get the product SKU
-            $price       = $product->get_price(); // Get the product price
-            $itemValue   = ($price * 1) * 100;
+            $product = $item->get_product();
+            $sku = $product->get_sku() ?: $product->get_id();
+            $imageUrl = $product->get_image_id() ? wp_get_attachment_image_url($product->get_image_id(), 'medium') : null;
+            $itemValue = (int) round($product->get_price() * 100);
+            $itemWeight = $product->get_weight() ? $product->get_weight() * 1000 : null;
+            $hsCode = get_post_meta($product->get_id(), 'myparcel_hs_code', true);
+            $productCountry = get_post_meta($product->get_id(), 'myparcel_product_country', true);
 
-
-            $HSCode      = get_post_meta($productID, 'myparcel_hs_code', true);
-            $CountryOfOrigin = get_post_meta($productID, 'myparcel_product_country', true);
-            $itemWeight = $product->get_weight();
-            $itemWeight = $itemWeight*1000;
-
-            if( $HSCode == '' && $CountryOfOrigin == '' ){
-                $HSCode = '0000';
-                $CountryOfOrigin = '';
-                 $shipItems
+            $shipmentItems[] = (new ShipmentItem())
                 ->setSku($sku)
-                ->setDescription($productName)
-                ->setQuantity($quantity)
+                ->setDescription($product->get_name())
+                ->setImageUrl($imageUrl)
                 ->setItemValue($itemValue)
                 ->setCurrency($currency)
-                ->setItemWeight($itemWeight);
-            } else if($HSCode == ''){
-                 $shipItems
-                ->setSku($sku)
-                ->setDescription($productName)
-                ->setQuantity($quantity)
-                ->setItemValue($itemValue)
-                ->setOriginCountryCode($CountryOfOrigin)
-                ->setCurrency($currency)
-                ->setItemWeight($itemWeight);
-                $HSCode = '0000';
-            } else if($CountryOfOrigin == ''){
-                 $shipItems
-                ->setSku($sku)
-                ->setDescription($productName)
-                ->setQuantity($quantity)
-                ->setItemValue($itemValue)
-                ->setHsCode($HSCode)
-                ->setCurrency($currency)
-                ->setItemWeight($itemWeight);
-                $CountryOfOrigin = '';
-            }  else {
-                $shipItems
-                    ->setSku($sku)
-                    ->setDescription($productName)
-                    ->setQuantity($quantity)
-                    ->setItemValue($itemValue)
-                    ->setHsCode($HSCode)
-                    ->setOriginCountryCode($CountryOfOrigin)
-                    ->setCurrency($currency)
-                    ->setItemWeight($itemWeight);
-
-            }
-
-            
-
-            $shipAddItems[] = $shipItems;
+                ->setQuantity($item->get_quantity())
+                ->setHsCode($hsCode ?: null)
+                ->setItemWeight($itemWeight)
+                ->setOriginCountryCode($productCountry ?: $originCountryCode);
         }
     }
 
-    return $shipAddItems;
-}
-
-//set Ship item for EU country by post id
-function setItemForEuCountries($orderId, $shippedItemsNewArr)
-{
-    global $woocommerce;
-    $items        = getOrderItems($orderId);
-    $shipAddItems = [];
-    if ($shippedItemsNewArr) {
-        foreach ($shippedItemsNewArr as $getShippedItem) {
-            $item_id     = $getShippedItem["item_id"];
-            $shipItems   = new ShipmentItem();
-            $product     = wc_get_product($items[$item_id]['product_id']);
-            $quantity    = $getShippedItem["shipped"]; // get quantity
-            $productName = $product->get_name();
-            $productID   = $product->get_id();
-            $HSCode      = get_post_meta($productID, 'myparcel_hs_code', true);
-            $CountryOfOrigin = get_post_meta($productID, 'myparcel_product_country', true);
-            $sku         = ($product->get_sku()) ? $product->get_sku() : MYPARCEL_NA_TEXT;    // Get the product SKU
-            $price       = $product->get_price(); // Get the product price
-            $itemValue   = ($price * 1) * 100;
-            $Currency = get_woocommerce_currency();
-            $itemWeight = $product->get_weight();
-            $itemWeight = $itemWeight*1000;
-
-            if( $HSCode == '' && $CountryOfOrigin == '' ){
-                $HSCode = '0000';
-                $CountryOfOrigin = '';
-                $shipItems
-                ->setSku($sku)
-                ->setDescription($productName)
-                ->setItemValue($itemValue)
-                ->setCurrency($Currency)
-                ->setQuantity($quantity)
-                ->setItemWeight($itemWeight);
-            } else if($HSCode == ''){
-                $shipItems
-                ->setSku($sku)
-                ->setDescription($productName)
-                ->setItemValue($itemValue)
-                ->setCurrency($Currency)
-                ->setQuantity($quantity)
-                ->setOriginCountryCode($CountryOfOrigin)
-                ->setItemWeight($itemWeight);
-                $HSCode = '0000';
-            } else if($CountryOfOrigin == ''){
-                $shipItems
-                ->setSku($sku)
-                ->setDescription($productName)
-                ->setItemValue($itemValue)
-                ->setCurrency($Currency)
-                ->setQuantity($quantity)
-                ->setHsCode($HSCode)
-                ->setItemWeight($itemWeight);
-                $CountryOfOrigin = '';
-            }  else {
-                $shipItems
-                    ->setSku($sku)
-                    ->setDescription($productName)
-                    ->setQuantity($quantity)
-                    ->setItemValue($itemValue)
-                    ->setHsCode($HSCode)
-                    ->setOriginCountryCode($CountryOfOrigin)
-                    ->setCurrency($currency)
-                    ->setItemWeight($itemWeight);
-
-            }
-
-            
-                
-            $shipAddItems[] = $shipItems;
-        }
-    } else {
-        foreach ($items as $item) {
-            $shipItems   = new ShipmentItem();
-            $product     = wc_get_product($item['product_id']);
-            $quantity    = $item->get_quantity(); // get quantity
-            $productName = $product->get_name();
-            $productID   = $product->get_id();
-            $HSCode      = get_post_meta($productID, 'myparcel_hs_code', true);
-            $CountryOfOrigin = get_post_meta($productID, 'myparcel_product_country', true);
-            $sku         = ($product->get_sku()) ? $product->get_sku() : MYPARCEL_NA_TEXT;    // Get the product SKU
-            $price       = $product->get_price(); // Get the product price
-            $itemValue   = ($price * 1) * 100;
-            $Currency = get_woocommerce_currency();
-            $itemWeight = $product->get_weight();
-            $itemWeight = $itemWeight*1000;
-
-            if( $HSCode == '' && $CountryOfOrigin == '' ){
-                $shipItems
-                ->setSku($sku)
-                ->setDescription($productName)
-                ->setQuantity($quantity)
-                ->setItemValue($itemValue)
-                ->setCurrency($Currency)
-                ->setItemWeight($itemWeight);
-                $HSCode = '0000';
-                $CountryOfOrigin = '';
-            } else if($HSCode == ''){
-                $shipItems
-                ->setSku($sku)
-                ->setDescription($productName)
-                ->setQuantity($quantity)
-                ->setOriginCountryCode($CountryOfOrigin)
-                ->setItemValue($itemValue)
-                ->setCurrency($Currency)
-                ->setItemWeight($itemWeight);
-                $HSCode = '0000';
-            } else if($CountryOfOrigin == ''){
-                $shipItems
-                ->setSku($sku)
-                ->setDescription($productName)
-                ->setQuantity($quantity)
-                ->setItemValue($itemValue)
-                ->setCurrency($Currency)
-                ->setHsCode($HSCode)
-                ->setItemWeight($itemWeight);
-                $CountryOfOrigin = '';
-            }  else {
-                $shipItems
-                    ->setSku($sku)
-                    ->setDescription($productName)
-                    ->setQuantity($quantity)
-                    ->setItemValue($itemValue)
-                    ->setHsCode($HSCode)
-                    ->setOriginCountryCode($CountryOfOrigin)
-                    ->setCurrency($currency)
-                    ->setItemWeight($itemWeight);
-
-            }
-
-            
-            $shipAddItems[] = $shipItems;
-        }
-    }
-
-    return $shipAddItems;
+    return $shipmentItems;
 }
 
 /**
@@ -357,7 +108,6 @@ function setItemForEuCountries($orderId, $shippedItemsNewArr)
  * @param string $weight
  * @param string $remainQty
  * @param string $flagStatus
- *
  * @return array
  */
 function setOrderShipment(
@@ -389,7 +139,6 @@ function setOrderShipment(
  * @param $shippedItems
  * @param $ifShipmentTrue
  * @param $totalWeight
- *
  * @return array
  */
 function extractShipmentItemArr($shippedItems, $ifShipmentTrue, &$totalWeight)
@@ -397,7 +146,7 @@ function extractShipmentItemArr($shippedItems, $ifShipmentTrue, &$totalWeight)
     $shippedItemArray   = [];
     $shippedItemsNewArr = [];
     $shippedCount       = 0;
-    foreach ($shippedItems as $key => $shippedItem) {
+    foreach ($shippedItems as $shippedItem) {
         $type               = $shippedItem['type'];
         $shippedQtyNew      = $shippedItem['shipped'];
         $totalShippedQtyNew = $shippedItem['total_shipped'];
@@ -405,7 +154,7 @@ function extractShipmentItemArr($shippedItems, $ifShipmentTrue, &$totalWeight)
         $remainQtyNew       = $shippedItem['remain_qty'];
         $weightNew          = $shippedItem['weight'];
         $flagStatus         = $shippedItem['flagStatus'];
-        $item_id            = $shippedItem['item_id'];
+        $itemId             = $shippedItem['item_id'];
         if (1 == $ifShipmentTrue) {
             if ($remainQtyNew == 0) {  //logic for weight > 0
                 $totalWeight += $weightNew * $totalQtyNew;
@@ -420,9 +169,9 @@ function extractShipmentItemArr($shippedItems, $ifShipmentTrue, &$totalWeight)
                 array_push(
                     $shippedItemArray,
                     [
-                        "item_id" => $item_id,
-                        "shipped" => $shippedQtyNew,
-                        "weight"  => $totalWeight,
+                        'item_id' => $itemId,
+                        'shipped' => $shippedQtyNew,
+                        'weight'  => $totalWeight,
                     ]
                 );
             } else {
@@ -431,13 +180,12 @@ function extractShipmentItemArr($shippedItems, $ifShipmentTrue, &$totalWeight)
         }
         array_push($shippedItemsNewArr, $shippedItem);
     }
-    $response = [
-        "shippedItemArray"   => $shippedItemArray,
-        "shippedItemsNewArr" => $shippedItemsNewArr,
-        "shippedCount"       => $shippedCount,
-    ];
 
-    return $response;
+    return [
+        'shippedItemArray'   => $shippedItemArray,
+        'shippedItemsNewArr' => $shippedItemsNewArr,
+        'shippedCount'       => $shippedCount,
+    ];
 }
 
 /**
@@ -449,8 +197,8 @@ function extractShipmentItemArr($shippedItems, $ifShipmentTrue, &$totalWeight)
 function setShipmentTrackingMeta($shippedTrackingArray, $shipmentTrackKey, $shippedItemArray, $postId)
 {
     $shipTrackingArray = [
-        "trackingKey" => $shipmentTrackKey,
-        "items"       => $shippedItemArray,
+        'trackingKey' => $shipmentTrackKey,
+        'items'       => $shippedItemArray,
     ];
     array_push($shippedTrackingArray, $shipTrackingArray);
     $shippedTrackingArray = json_encode($shippedTrackingArray);
@@ -515,30 +263,24 @@ function prepareHtmlForUpdateQuantity(
 }
 
 /**
- *
  * @return array
  */
 function getMyParcelShopList()
 {
     $shops = [];
-    if (!empty(get_option('client_key')) && !empty(get_option('client_secret_key'))) {
+    if (get_option('client_key') && get_option('client_secret_key')) {
         $getAuth = new MyParcelApi();
-        $api     = $getAuth->apiAuthentication();
+        $api = $getAuth->apiAuthentication();
         if ($api) {
-            $shops = $api->getShops()->get();
-            usort(
-                $shops,
-                function ($a, $b) {
-                    return strcmp($a->getName(), $b->getName());
-                }
-            );
+            $shops = $api->getShops()->limit(100)->get();
+            usort($shops, function ($a, $b) {
+                return strcmp(strtolower($a->getName()), strtolower($b->getName()));
+            });
         }
-
     }
 
     return $shops;
 }
-
 
 /**
  * @desc setting page html
@@ -546,83 +288,81 @@ function getMyParcelShopList()
 function prepareHtmlForSettingPage()
 {
     ?>
-  <div>
-    <h2><?php echo MYPARCEL_API_SETTING_TEXT; ?></h2>
+  <div class="wrap">
+    <h1><?php echo MYPARCEL_API_SETTING_TEXT; ?></h1>
+    <table class="form-table">
+      <tr valign="top">
+        <th scope="row"><label><?php echo MYPARCEL_API_CURRENT_VERSION; ?></label></th>
+        <td><?php echo MYPARCEL_PLUGIN_VERSION; ?></td>
+      </tr>
+      <tr valign="top">
+        <th scope="row"><label><?php echo MYPARCEL_API_SUPPORT_TEXT; ?></label></th>
+        <td>
+          <a href="<?php echo MYPARCEL_SUPPORT_TEXT_AND_URL; ?>" target="_blank"><?php echo MYPARCEL_SUPPORT_TEXT_AND_URL; ?></a>
+        </td>
+      </tr>
+    </table>
     <form method="post" action="options.php" id="api-setting-form">
-        <?php
-        settings_fields('myplugin_options_group');
-        ?>
+        <?php settings_fields('myplugin_options_group'); ?>
       <table class="form-table">
         <tbody>
-        <tr valign="top">
-          <th scope="row"><label for="client_key"><?php echo MYPARCEL_API_CLIENTID_LABEL_TEXT; ?> </label></th>
-          <td>
-            <input type="text" id="client_key" class="regular-text" name="client_key"
-                   value="<?php echo get_option('client_key'); ?>"/>
-          </td>
-        </tr>
-        <tr valign="top">
-          <th scope="row"><label for="client_secret_key"><?php echo MYPARCEL_API_CLIENTSECRET_LABEL_TEXT; ?> </label>
-          </th>
-          <td>
-            <input type="password" id="client_secret_key" class="regular-text" name="client_secret_key"
-                   value="<?php echo get_option('client_secret_key'); ?>"/>
-          </td>
-        </tr>
-        <tr valign="top">
-          <th scope="row"><label for="myparcel_shopid"><?php echo MYPARCEL_SHOPID; ?> </label>
-          </th>
-          <td>
-            <select class="regular-text" id="myparcel_shopid" name="myparcel_shopid">
-                <?php
-                $shops = getMyParcelShopList();
+          <tr>
+            <th scope="row"><?php echo MYPARCEL_API_ACT_TESTMODE_TEXT; ?></th>
+            <td>
+              <fieldset>
+                <legend class="screen-reader-text"><span></span></legend>
+                <label for="users_can_register">
+                  <input type="checkbox" name="act_test_mode"
+                         value="1" <?php checked(1, (int) get_option('act_test_mode')); ?>>
+                </label>
+              </fieldset>
+              <p class="description">
+                If enabled, the plugin wil communicate with the MyParcel.com sandbox.<br>
+                Make sure to use the client ID and secret from the correct environment (production / sandbox).
+              </p>
+            </td>
+          </tr>
+          <tr valign="top">
+            <th scope="row"><label for="client_key"><?php echo MYPARCEL_API_CLIENTID_LABEL_TEXT; ?> </label></th>
+            <td>
+              <input type="text" id="client_key" class="regular-text" name="client_key"
+                     value="<?php echo get_option('client_key'); ?>"/>
+            </td>
+          </tr>
+          <tr valign="top">
+            <th scope="row"><label for="client_secret_key"><?php echo MYPARCEL_API_CLIENTSECRET_LABEL_TEXT; ?> </label>
+            </th>
+            <td>
+              <input type="password" id="client_secret_key" class="regular-text" name="client_secret_key"
+                     value="<?php echo get_option('client_secret_key'); ?>"/>
+            </td>
+          </tr>
+          <?php if (get_option('client_key')) { ?>
+          <tr valign="top">
+            <th scope="row"><label for="myparcel_shopid"><?php echo MYPARCEL_SHOPID; ?> </label></th>
+            <td>
+              <select class="regular-text" id="myparcel_shopid" name="myparcel_shopid">
+                  <?php
+                  $shops = getMyParcelShopList();
 
-                if (!empty($shops)) {
-                    foreach ($shops as $shop) {
-                        if (!empty(get_option('myparcel_shopid'))) {
-                            echo "<option value='".$shop->getId()."' ".($shop->getId() == get_option(
-                                    'myparcel_shopid'
-                                ) ? 'selected' : '').">".$shop->getName()."</option>";
-                        } else {
-                            echo "<option value='".$shop->getId()."' ".($shop->getId(
-                                ) == MYPARCEL_DEFAULT_SHOP_ID ? 'selected' : '').">".$shop->getName()."</option>";
-                        }
-                    }
-                }
-                ?>
-            </select>
-            <p><?php echo MYPARCEL_SHOPID_HELPTEXT; ?></p>
-
-          </td>
-        </tr>
-        <tr>
-          <th scope="row"><?php echo MYPARCEL_API_ACT_TESTMODE_TEXT; ?></th>
-          <td>
-            <fieldset>
-              <legend class="screen-reader-text"><span></span></legend>
-              <label for="users_can_register">
-                <input type="checkbox" name="act_test_mode"
-                       value="1" <?php checked(1, (int)get_option('act_test_mode')); ?>>
-              </label>
-            </fieldset>
-          </td>
-        </tr>
-
-
+                  if (!empty($shops)) {
+                      foreach ($shops as $shop) {
+                          if (!empty(get_option('myparcel_shopid'))) {
+                              echo "<option value='" . $shop->getId() . "' " . ($shop->getId() == get_option(
+                                      'myparcel_shopid'
+                                  ) ? 'selected' : '') . ">" . $shop->getName() . "</option>";
+                          } else {
+                              echo "<option value='" . $shop->getId() . "' " . ($shop->getId() == MYPARCEL_DEFAULT_SHOP_ID ? 'selected' : '') . ">" . $shop->getName() . "</option>";
+                          }
+                      }
+                  }
+                  ?>
+              </select>
+              <p class="description"><?php echo MYPARCEL_SHOPID_HELPTEXT; ?></p>
+            </td>
+          </tr>
+          <?php } ?>
         </tbody>
-      </table>
-      <h2><?php echo MYPARCEL_API_TEXT; ?></h2>
-      <table cellpadding="5" cellspacing="5" class="form-table">
-        <tr valign="top">
-          <th scope="row"><label><?php echo MYPARCEL_API_CURRENT_VERSION; ?></label></th>
-          <td>2.0.1</td>
-        </tr>
-        <tr valign="top">
-          <th scope="row"><label><?php echo MYPARCEL_API_SUPPORT_TEXT; ?></label></th>
-          <td>
-            <a href="<?php echo MYPARCEL_SUPPORT_TEXT_AND_URL; ?>" target="_blank"><?php echo MYPARCEL_SUPPORT_TEXT_AND_URL; ?></a>
-          </td>
-        </tr>
       </table>
         <?php submit_button('Save changes'); ?>
     </form>
@@ -910,8 +650,8 @@ function getShipmentFiles($post_id)
               </script>
             <?php }
         } else {
-            $shipment->setRegisterAt(new \DateTime());
-            $updateShipmentResp = $api->updateShipment($shipment);
+            $shipment->setRegisterAt(0);
+            $api->updateShipment($shipment);
         }
     }
 }
@@ -920,7 +660,6 @@ function getShipmentFiles($post_id)
  * @param      $url
  * @param      $dataString
  * @param null $authorization
- *
  * @return bool|string
  */
 function createWebHookCurlRequest($url, $dataString, $authorization = null)
@@ -953,10 +692,8 @@ function createWebHookCurlRequest($url, $dataString, $authorization = null)
     return $result;
 }
 
-
 /**
  * @param $post_id
- *
  * @return array|false|string|void
  */
 function getShipmentCurrentStatus($post_id)
@@ -968,7 +705,6 @@ function getShipmentCurrentStatus($post_id)
         return;
     } // Exit
     $getAuth  = new MyParcelApi();
-    $shipment = new Shipment();
     $api      = $getAuth->apiAuthentication();
     if (!empty($getOrderMeta->trackingKey)) {
         try {
@@ -984,7 +720,6 @@ function getShipmentCurrentStatus($post_id)
         return $shipmentData;
     }
 }
-
 
 add_action('manage_posts_extra_tablenav', 'admin_order_list_top_bar_button', 20, 1);
 function admin_order_list_top_bar_button($which)
@@ -1122,7 +857,6 @@ function admin_order_list_top_bar_button($which)
                   })
                   $('#loadingmessage').hide() // hide the loading message
                 } else {
-
                   const linkSource = 'data:application/pdf;base64,' + response
                   const downloadLink = document.createElement('a')
                   const fileName = "myparcelcom-<?php echo date('Ymdhis');?>-label.pdf"
@@ -1145,14 +879,14 @@ function admin_order_list_top_bar_button($which)
 add_action('wp_ajax_my_action', 'my_action');
 function my_action()
 {
-    define(LOCATION_TOP, 1);
-    define(LOCATION_BOTTOM, 2);
-    define(LOCATION_RIGHT, 4);
-    define(LOCATION_LEFT, 8);
-    define(LOCATION_TOP_LEFT, LOCATION_TOP | LOCATION_LEFT);
-    define(LOCATION_TOP_RIGHT, LOCATION_TOP | LOCATION_RIGHT);
-    define(LOCATION_BOTTOM_LEFT, LOCATION_BOTTOM | LOCATION_LEFT);
-    define(LOCATION_BOTTOM_RIGHT, LOCATION_BOTTOM | LOCATION_RIGHT);
+    define('LOCATION_TOP', 1);
+    define('LOCATION_BOTTOM', 2);
+    define('LOCATION_RIGHT', 4);
+    define('LOCATION_LEFT', 8);
+    define('LOCATION_TOP_LEFT', LOCATION_TOP | LOCATION_LEFT);
+    define('LOCATION_TOP_RIGHT', LOCATION_TOP | LOCATION_RIGHT);
+    define('LOCATION_BOTTOM_LEFT', LOCATION_BOTTOM | LOCATION_LEFT);
+    define('LOCATION_BOTTOM_RIGHT', LOCATION_BOTTOM | LOCATION_RIGHT);
     global $wpdb;
     $selectOrientation = intval($_POST['selectOrientation']);
     $orderIds          = $_POST['orderIds'];
@@ -1189,85 +923,47 @@ function my_action()
 
 /**
  * @param $selectOrientation
- *
- * @return mixed
+ * @return int
  */
 function getOrientation($selectOrientation)
 {
     switch ($selectOrientation) {
         case 1:
             return LOCATION_TOP_LEFT;
-            break;
         case 2:
             return LOCATION_TOP_RIGHT;
-            break;
         case 3:
             return LOCATION_BOTTOM_LEFT;
-            break;
         default:
             return LOCATION_BOTTOM_RIGHT;
-            break;
     }
 }
 
 /**
  * @param $labelPrinter
- *
  * @return string
  */
 function labelPrinter($labelPrinter)
 {
     if (!empty($labelPrinter) && ($labelPrinter === 1)) {
-
         return LabelCombinerInterface::PAGE_SIZE_A4;
     } else {
-
         return LabelCombinerInterface::PAGE_SIZE_A6;
     }
 }
 
 /**
- * Get selected Shop
- *
- * @return array
- **/
+ * @return Shop
+ */
 function getSelectedShop()
 {
     $getAuth = new MyParcelApi();
-    $api     = $getAuth->apiAuthentication();
-    $shops   = $api->getShops()->get();
+    $api = $getAuth->apiAuthentication();
+    $shops = $api->getShops()->limit(100)->get();
     foreach ($shops as $shop) {
         if ($shop->getId() == getRegisteredShopId()) {
-            $shopDetails = $shop;
-
-            return $shopDetails;
+            return $shop;
         }
     }
-}
-
-
-/**
- * Get installed woocommerce version
- *
- * @string
- **/
-function wpbo_get_woo_version_number()
-{
-    // If get_plugins() isn't available, require it
-    if (!function_exists('get_plugins')) {
-        require_once(ABSPATH.'wp-admin/includes/plugin.php');
-    }
-
-    // Create the plugins folder and file variables
-    $plugin_folder = get_plugins('/'.'woocommerce');
-    $plugin_file   = 'woocommerce.php';
-
-    // If the plugin version number is set, return it
-    if (isset($plugin_folder[$plugin_file]['Version'])) {
-        return $plugin_folder[$plugin_file]['Version'];
-
-    } else {
-        // Otherwise return null
-        return null;
-    }
+    return $shops[0];
 }

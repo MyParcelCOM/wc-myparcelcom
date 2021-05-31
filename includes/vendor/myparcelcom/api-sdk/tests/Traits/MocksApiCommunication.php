@@ -8,10 +8,24 @@ use Http\Client\HttpClient;
 use MyParcelCom\ApiSdk\Authentication\AuthenticatorInterface;
 use MyParcelCom\ApiSdk\Http\Exceptions\RequestException;
 use Psr\Http\Message\RequestInterface;
+use Symfony\Component\Cache\Adapter\NullAdapter;
+use Symfony\Component\Cache\Psr16Cache;
+use Symfony\Component\Cache\Simple\NullCache;
 
 trait MocksApiCommunication
 {
     protected $clientCalls = [];
+
+    protected function getNullCache()
+    {
+        // Symfony 5.0.0 removed their PSR-16 cache classes. Their PSR-6 cache classes can be wrapped in Psr16Cache.
+        if (class_exists('\Symfony\Component\Cache\Psr16Cache')) {
+            $psr6Cache = new NullAdapter();
+            return new Psr16Cache($psr6Cache);
+        } else {
+            return new NullCache();
+        }
+    }
 
     protected function getClientMock()
     {

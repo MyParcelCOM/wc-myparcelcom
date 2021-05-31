@@ -3,7 +3,7 @@
  *
  * http://bassistance.de/jquery-plugins/jquery-plugin-validation/
  * http://docs.jquery.com/Plugins/Validation
- * 
+ *
  * Copyright (c) 2006 - 2011 Jörn Zaefferer
  *
  * Dual licensed under the MIT and GPL licenses:
@@ -36,7 +36,6 @@ $.extend($.fn, {
 		$.data(this[0], 'validator', validator);
 
 		if ( validator.settings.onsubmit ) {
-
 			var inputsAndButtons = this.find("input, button");
 
 			// allow suppresing validation by adding a cancel class to the submit button
@@ -202,7 +201,6 @@ $.validator.format = function(source, params) {
 };
 
 $.extend($.validator, {
-
 	defaults: {
 		messages: {},
 		groups: {},
@@ -287,7 +285,6 @@ $.extend($.validator, {
 	autoCreateRanges: false,
 
 	prototype: {
-
 		init: function() {
 			this.labelContainer = $(this.settings.errorLabelContainer);
 			this.errorContext = this.labelContainer.length && this.labelContainer || $(this.currentForm);
@@ -921,7 +918,6 @@ $.extend($.validator, {
 	},
 
 	methods: {
-
 		// http://docs.jquery.com/Plugins/Validation/Methods/required
 		required: function(value, element, param) {
 			// check if dependency is met

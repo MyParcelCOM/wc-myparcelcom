@@ -15,6 +15,7 @@ class Carrier implements CarrierInterface
     const ATTRIBUTE_NAME = 'name';
     const ATTRIBUTE_CODE = 'code';
     const ATTRIBUTE_CREDENTIALS_FORMAT = 'credentials_format';
+    const ATTRIBUTE_LABEL_MIME_TYPES = 'label_mime_types';
 
     /** @var string */
     private $id;
@@ -27,6 +28,7 @@ class Carrier implements CarrierInterface
         self::ATTRIBUTE_NAME               => null,
         self::ATTRIBUTE_CODE               => null,
         self::ATTRIBUTE_CREDENTIALS_FORMAT => [],
+        self::ATTRIBUTE_LABEL_MIME_TYPES   => [],
     ];
 
     /**
@@ -111,6 +113,25 @@ class Carrier implements CarrierInterface
     public function getCredentialsFormat()
     {
         return $this->attributes[self::ATTRIBUTE_CREDENTIALS_FORMAT];
+    }
+
+    /**
+     * @param array $labelMimeTypes
+     * @return $this
+     */
+    public function setLabelMimeTypes(array $labelMimeTypes)
+    {
+        $this->attributes[self::ATTRIBUTE_LABEL_MIME_TYPES] = $labelMimeTypes;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLabelMimeTypes()
+    {
+        return $this->attributes[self::ATTRIBUTE_LABEL_MIME_TYPES];
     }
 
     /**

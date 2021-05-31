@@ -16,10 +16,17 @@ class ContractTest extends TestCase
     }
 
     /** @test */
-    public function testGetType()
+    public function testType()
     {
         $contract = new Contract();
         $this->assertEquals('contracts', $contract->getType());
+    }
+
+    /** @test */
+    public function testName()
+    {
+        $service = new Contract();
+        $this->assertEquals('Test Contract', $service->setName('Test Contract')->getName());
     }
 
     /** @test */

@@ -78,6 +78,18 @@ class PromiseCollectionTest extends TestCase
     }
 
     /** @test */
+    public function testMaxLimit()
+    {
+        $resources = $this->collection->offset(3)->limit(101)->get();
+        $this->assertCount(100, $resources);
+
+        array_walk($resources, function ($resource) {
+            $this->assertGreaterThanOrEqual(3, $resource->id);
+            $this->assertLessThanOrEqual(103, $resource->id);
+        });
+    }
+
+    /** @test */
     public function testCount()
     {
         $this->assertEquals(123, $this->collection->count());

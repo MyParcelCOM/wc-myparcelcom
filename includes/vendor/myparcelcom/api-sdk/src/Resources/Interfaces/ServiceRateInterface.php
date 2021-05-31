@@ -93,6 +93,28 @@ interface ServiceRateInterface extends ResourceInterface
     public function getPrice();
 
     /**
+     * @param int $amount
+     * @return $this
+     */
+    public function setFuelSurchargeAmount($amount);
+
+    /**
+     * @return null|int
+     */
+    public function getFuelSurchargeAmount();
+
+    /**
+     * @param string $currency
+     * @return $this
+     */
+    public function setFuelSurchargeCurrency($currency);
+
+    /**
+     * @return string
+     */
+    public function getFuelSurchargeCurrency();
+
+    /**
      * @param ServiceInterface $service
      * @return $this
      */

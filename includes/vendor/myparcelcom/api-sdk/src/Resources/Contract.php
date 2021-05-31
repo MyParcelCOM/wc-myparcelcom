@@ -12,6 +12,7 @@ class Contract implements ContractInterface
     use JsonSerializable;
 
     const ATTRIBUTE_CURRENCY = 'currency';
+    const ATTRIBUTE_NAME = 'name';
     const ATTRIBUTE_STATUS = 'status';
 
     const RELATIONSHIP_CARRIER = 'carrier';
@@ -25,6 +26,7 @@ class Contract implements ContractInterface
     /** @var array */
     private $attributes = [
         self::ATTRIBUTE_CURRENCY => null,
+        self::ATTRIBUTE_NAME     => null,
         self::ATTRIBUTE_STATUS   => null,
     ];
 
@@ -59,6 +61,24 @@ class Contract implements ContractInterface
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setName($name)
+    {
+        $this->attributes[self::ATTRIBUTE_NAME] = $name;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return $this->attributes[self::ATTRIBUTE_NAME];
     }
 
     /**

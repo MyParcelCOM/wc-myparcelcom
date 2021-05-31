@@ -1,7 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- *
  * @return void
  */
 function adminLoadJsCss()
@@ -39,7 +38,6 @@ add_action('admin_enqueue_scripts', 'adminLoadJsCss', 999);
 
 /**
  * @param object $order
- *
  * @return void
  */
 function orderItemHeaders($order)
@@ -55,10 +53,9 @@ function orderItemHeaders($order)
 add_action('woocommerce_admin_order_item_headers', 'orderItemHeaders', 10, 1);
 
 /**
- * @param object  $product
- * @param object  $item
- * @param integer $itemId
- *
+ * @param object $product
+ * @param object $item
+ * @param int    $itemId
  * @return void
  */
 function orderItemValues($product, $item, $itemId)
@@ -121,7 +118,6 @@ function orderItemValues($product, $item, $itemId)
 add_action('woocommerce_admin_order_item_values', 'orderItemValues', 10, 3);
 
 /**
- *
  * @return object
  */
 function orderSetShipped(): object
@@ -138,6 +134,7 @@ function orderSetShipped(): object
     $shipments    = (!empty($shipments)) ? json_decode($shipments, true) : [];
     $itemIds      = (!empty($shipments)) ? array_column($shipments, 'item_id') : [];
     $totalShipQty = 0;
+    $remainQty    = $qty;
 
     if (!empty($shipments)) {
         foreach ($shipments as $key => $shipment) {
@@ -159,7 +156,6 @@ function orderSetShipped(): object
         }
         update_post_meta($orderId, GET_META_MYPARCEL_ORDER_SHIPMENT_TEXT, json_encode($shipments));
     } else {
-
         if (!empty($itemIds) && !in_array($itemId, $itemIds)) {
             $totalShipQty = $shipQty;
             $remainQty    = $qty - $totalShipQty;
@@ -179,17 +175,15 @@ function orderSetShipped(): object
         }
     }
 
-    echo json_encode(
-        [
-            'order_id'   => $orderId,
-            'item_id'    => $itemId,
-            'shipped'    => $totalShipQty,
-            'qty'        => $qty,
-            'weight'     => $weight,
-            'remain_qty' => $remainQty,
-            'flagStatus' => $flagStatus,
-        ]
-    );
+    echo json_encode([
+        'order_id'   => $orderId,
+        'item_id'    => $itemId,
+        'shipped'    => $totalShipQty,
+        'qty'        => $qty,
+        'weight'     => $weight,
+        'remain_qty' => $remainQty,
+        'flagStatus' => $flagStatus,
+    ]);
     exit;
 }
 

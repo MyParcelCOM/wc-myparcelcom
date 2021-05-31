@@ -5,16 +5,15 @@ namespace MyParcelCom\ApiSdk\Resources\Interfaces;
 interface ShipmentItemInterface extends \JsonSerializable
 {
     /**
-     * @param string $sku
+     * @param string|null $sku
      * @return $this
      */
     public function setSku($sku);
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getSku();
-
 
     /**
      * @param string $description
@@ -28,18 +27,26 @@ interface ShipmentItemInterface extends \JsonSerializable
     public function getDescription();
 
     /**
-     * @param string $hsCode
+     * @param string|null $imageUrl
+     * @return $this
+     */
+    public function setImageUrl($imageUrl);
+
+    /**
+     * @return string|null
+     */
+    public function getImageUrl();
+
+    /**
+     * @param string|null $hsCode
      * @return $this
      */
     public function setHsCode($hsCode);
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getHsCode();
-
-    public function setItemWeight($itemWeight);
-    public function getItemWeight();
 
     /**
      * @param int $quantity
@@ -75,13 +82,13 @@ interface ShipmentItemInterface extends \JsonSerializable
     public function getCurrency();
 
     /**
-     * @param string $countryCode
+     * @param string|null $countryCode
      * @return $this
      */
     public function setOriginCountryCode($countryCode);
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getOriginCountryCode();
 }

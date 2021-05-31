@@ -32,7 +32,7 @@ interface CollectionInterface extends Iterator
 
     /**
      * Sets the amount of resources to be retrieved by get().
-     * Max and default limit is 30.
+     * Default limit is 30, max limit is 100.
      *
      * @param int $limit
      * @return $this

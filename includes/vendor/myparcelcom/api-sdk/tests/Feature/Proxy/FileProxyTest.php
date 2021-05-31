@@ -11,7 +11,6 @@ use MyParcelCom\ApiSdk\Resources\Proxy\FileProxy;
 use MyParcelCom\ApiSdk\Tests\Traits\MocksApiCommunication;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
-use Symfony\Component\Cache\Simple\NullCache;
 
 class FileProxyTest extends TestCase
 {
@@ -31,7 +30,7 @@ class FileProxyTest extends TestCase
         $this->client = $this->getClientMock();
         $this->authenticator = $this->getAuthenticatorMock();
         $this->api = (new MyParcelComApi('https://api', $this->client))
-            ->setCache(new NullCache())
+            ->setCache($this->getNullCache())
             ->authenticate($this->authenticator);
     }
 

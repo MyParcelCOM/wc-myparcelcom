@@ -60,6 +60,14 @@ class ShipmentProxy implements ShipmentInterface, ResourceProxyInterface
     }
 
     /**
+     * @return array
+     */
+    public function getMeta()
+    {
+        return $this->getResource()->getMeta();
+    }
+
+    /**
      * @param AddressInterface $recipientAddress
      * @return $this
      */
@@ -79,6 +87,25 @@ class ShipmentProxy implements ShipmentInterface, ResourceProxyInterface
     }
 
     /**
+     * @param string $recipientTaxNumber
+     * @return $this
+     */
+    public function setRecipientTaxNumber($recipientTaxNumber)
+    {
+        $this->getResource()->setRecipientTaxNumber($recipientTaxNumber);
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getRecipientTaxNumber()
+    {
+        return $this->getResource()->getRecipientTaxNumber();
+    }
+
+    /**
      * @param AddressInterface $senderAddress
      * @return $this
      */
@@ -95,6 +122,25 @@ class ShipmentProxy implements ShipmentInterface, ResourceProxyInterface
     public function getSenderAddress()
     {
         return $this->getResource()->getSenderAddress();
+    }
+
+    /**
+     * @param string|null $senderTaxNumber
+     * @return $this
+     */
+    public function setSenderTaxNumber($senderTaxNumber)
+    {
+        $this->getResource()->setSenderTaxNumber($senderTaxNumber);
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSenderTaxNumber()
+    {
+        return $this->getResource()->getSenderTaxNumber();
     }
 
     /**
@@ -639,6 +685,46 @@ class ShipmentProxy implements ShipmentInterface, ResourceProxyInterface
     public function getServiceCode()
     {
         return $this->getResource()->getServiceCode();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setTags(array $tags)
+    {
+        return $this->getResource()->setTags($tags);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addTag($tag)
+    {
+        return $this->getResource()->addTag($tag);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTags()
+    {
+        return $this->getResource()->getTags();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function clearTags()
+    {
+        return $this->getResource()->clearTags();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setLabelMimeType($labelMimeType)
+    {
+        return $this->getResource()->setLabelMimeType($labelMimeType);
     }
 
     /**

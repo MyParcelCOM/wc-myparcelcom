@@ -2,6 +2,8 @@
 
 namespace MyParcelCom\ApiSdk\Resources;
 
+use MyParcelCom\ApiSdk\Exceptions\MyParcelComException;
+use MyParcelCom\ApiSdk\Resources\Interfaces\PhysicalPropertiesInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ShipmentItemInterface;
 use MyParcelCom\ApiSdk\Resources\Traits\JsonSerializable;
 
@@ -12,16 +14,17 @@ class ShipmentItem implements ShipmentItemInterface
     const AMOUNT = 'amount';
     const CURRENCY = 'currency';
 
-    /** @var string */
+    /** @var string|null */
     private $sku;
 
     /** @var string */
     private $description;
 
-    /** @var string */
-    private $hsCode;
+    /** @var string|null */
+    private $imageUrl;
 
-    private $itemWeight;
+    /** @var string|null */
+    private $hsCode;
 
     /** @var int */
     private $quantity;
@@ -32,11 +35,14 @@ class ShipmentItem implements ShipmentItemInterface
         self::CURRENCY => null,
     ];
 
-    /** @var string */
+    /** @var string|null */
     private $originCountryCode;
 
+    /** @var int|null */
+    private $itemWeight;
+
     /**
-     * @param string $sku
+     * @param string|null $sku
      * @return $this
      */
     public function setSku($sku)
@@ -47,7 +53,7 @@ class ShipmentItem implements ShipmentItemInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getSku()
     {
@@ -74,7 +80,26 @@ class ShipmentItem implements ShipmentItemInterface
     }
 
     /**
-     * @param string $hsCode
+     * @param string|null $imageUrl
+     * @return $this
+     */
+    public function setImageUrl($imageUrl)
+    {
+        $this->imageUrl = $imageUrl;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getImageUrl()
+    {
+        return $this->imageUrl;
+    }
+
+    /**
+     * @param string|null $hsCode
      * @return $this
      */
     public function setHsCode($hsCode)
@@ -83,26 +108,13 @@ class ShipmentItem implements ShipmentItemInterface
 
         return $this;
     }
+
     /**
-     * @return string
+     * @return string|null
      */
     public function getHsCode()
     {
         return $this->hsCode;
-    }
-    /**
-     * @param string $hsCode
-     * @return $this
-     */
-    public function setItemWeight($itemWeight)
-    {
-        $this->itemWeight = $itemWeight;
-
-        return $this;
-    }
-    public function getItemWeight()
-    {
-        return $this->itemWeight;
     }
 
     /**
@@ -130,7 +142,7 @@ class ShipmentItem implements ShipmentItemInterface
      */
     public function setItemValue($value)
     {
-        $this->itemValue[self::AMOUNT] =  $value;
+        $this->itemValue[self::AMOUNT] = (int) $value;
 
         return $this;
     }
@@ -163,7 +175,7 @@ class ShipmentItem implements ShipmentItemInterface
     }
 
     /**
-     * @param string $countryCode
+     * @param string|null $countryCode
      * @return $this
      */
     public function setOriginCountryCode($countryCode)
@@ -174,10 +186,39 @@ class ShipmentItem implements ShipmentItemInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getOriginCountryCode()
     {
         return $this->originCountryCode;
+    }
+
+    /**
+     * @param int|null $weight
+     * @param string   $unit
+     * @return $this
+     */
+    public function setItemWeight($weight, $unit = PhysicalPropertiesInterface::WEIGHT_GRAM)
+    {
+        if (!isset(PhysicalProperties::$unitConversion[$unit])) {
+            throw new MyParcelComException('invalid unit: ' . $unit);
+        }
+
+        $this->itemWeight = (int) round($weight * PhysicalProperties::$unitConversion[$unit]);
+
+        return $this;
+    }
+
+    /**
+     * @param string $unit
+     * @return int|null
+     */
+    public function getItemWeight($unit = PhysicalPropertiesInterface::WEIGHT_GRAM)
+    {
+        if (!isset(PhysicalProperties::$unitConversion[$unit])) {
+            throw new MyParcelComException('invalid unit: ' . $unit);
+        }
+
+        return (int) round($this->itemWeight / PhysicalProperties::$unitConversion[$unit]);
     }
 }

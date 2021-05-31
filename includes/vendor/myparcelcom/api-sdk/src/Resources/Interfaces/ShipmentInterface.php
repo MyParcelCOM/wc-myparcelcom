@@ -24,6 +24,17 @@ interface ShipmentInterface extends ResourceInterface
     public function getRecipientAddress();
 
     /**
+     * @param string|null $recipientTaxNumber
+     * @return $this
+     */
+    public function setRecipientTaxNumber($recipientTaxNumber);
+
+    /**
+     * @return string|null
+     */
+    public function getRecipientTaxNumber();
+
+    /**
      * @param AddressInterface $senderAddress
      * @return $this
      */
@@ -33,6 +44,17 @@ interface ShipmentInterface extends ResourceInterface
      * @return AddressInterface
      */
     public function getSenderAddress();
+
+    /**
+     * @param string|null $senderTaxNumber
+     * @return $this
+     */
+    public function setSenderTaxNumber($senderTaxNumber);
+
+    /**
+     * @return string|null
+     */
+    public function getSenderTaxNumber();
 
     /**
      * @param AddressInterface $returnAddress
@@ -359,4 +381,26 @@ interface ShipmentInterface extends ResourceInterface
      * @return string|null
      */
     public function getServiceCode();
+
+    /**
+     * @param array $tags
+     * @return $this
+     */
+    public function setTags(array $tags);
+
+    /**
+     * @param mixed $tag
+     * @return $this
+     */
+    public function addTag($tag);
+
+    /**
+     * @return array|null
+     */
+    public function getTags();
+
+    /**
+     * @return $this
+     */
+    public function clearTags();
 }

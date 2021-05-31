@@ -40,14 +40,14 @@ class ShopTest extends TestCase
     }
 
     /** @test */
-    public function testBillingAddress()
+    public function testSenderAddress()
     {
         $shop = new Shop();
 
         $mock = $this->getMockClass(AddressInterface::class);
         $address = new $mock();
 
-        $this->assertEquals($address, $shop->setBillingAddress($address)->getBillingAddress());
+        $this->assertEquals($address, $shop->setSenderAddress($address)->getSenderAddress());
     }
 
     /** @test */
@@ -120,36 +120,12 @@ class ShopTest extends TestCase
                 'phone_number'         => '+31 (0)234 567 890',
             ]);
 
-        $billingAddress = $this->getMockBuilder(AddressInterface::class)
-            ->disableOriginalConstructor()
-            ->disableOriginalClone()
-            ->disableArgumentCloning()
-            ->disallowMockingUnknownTypes()
-            ->getMock();
-        $billingAddress->method('jsonSerialize')
-            ->willReturn([
-                'street_1'             => 'Diagonally',
-                'street_2'             => 'Apartment 4',
-                'street_number'        => '4',
-                'street_number_suffix' => 'A',
-                'postal_code'          => '1AR BR2',
-                'city'                 => 'London',
-                'region_code'          => 'NH',
-                'country_code'         => 'AF',
-                'first_name'           => 'Robert',
-                'last_name'            => 'Drop Tables',
-                'company'              => 'ACME co.',
-                'email'                => 'rob@tables.com',
-                'phone_number'         => '+31 (0)234 567 890',
-            ]);
-
         $shop = (new Shop())
             ->setId('shop-id')
             ->setName('MyParcel.com Test Shop')
             ->setWebsite('https://test.shop')
             ->setReturnAddress($returnAddress)
             ->setSenderAddress($senderAddress)
-            ->setBillingAddress($billingAddress)
             ->setCreatedAt(1509001337);
 
         $this->assertEquals([
@@ -158,21 +134,6 @@ class ShopTest extends TestCase
             'attributes' => [
                 'name'            => 'MyParcel.com Test Shop',
                 'website'         => 'https://test.shop',
-                'billing_address' => [
-                    'street_1'             => 'Diagonally',
-                    'street_2'             => 'Apartment 4',
-                    'street_number'        => '4',
-                    'street_number_suffix' => 'A',
-                    'postal_code'          => '1AR BR2',
-                    'city'                 => 'London',
-                    'region_code'          => 'NH',
-                    'country_code'         => 'AF',
-                    'first_name'           => 'Robert',
-                    'last_name'            => 'Drop Tables',
-                    'company'              => 'ACME co.',
-                    'email'                => 'rob@tables.com',
-                    'phone_number'         => '+31 (0)234 567 890',
-                ],
                 'sender_address'  => [
                     'street_1'             => 'Diagonally',
                     'street_2'             => 'Apartment 4',

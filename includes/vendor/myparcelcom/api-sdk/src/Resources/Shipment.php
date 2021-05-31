@@ -27,14 +27,15 @@ class Shipment implements ShipmentInterface
     const ATTRIBUTE_TRACKING_URL = 'tracking_url';
     const ATTRIBUTE_CHANNEL = 'channel';
     const ATTRIBUTE_DESCRIPTION = 'description';
-    const ATTRIBUTE_TAGS = 'tags';
-    const ATTRIBUTE_CUSTOMER_REFERENCE= 'customer_reference';
+    const ATTRIBUTE_CUSTOMER_REFERENCE = 'customer_reference';
     const ATTRIBUTE_AMOUNT = 'amount';
     const ATTRIBUTE_PRICE = 'price';
     const ATTRIBUTE_CURRENCY = 'currency';
     const ATTRIBUTE_PHYSICAL_PROPERTIES = 'physical_properties';
     const ATTRIBUTE_RECIPIENT_ADDRESS = 'recipient_address';
+    const ATTRIBUTE_RECIPIENT_TAX_NUMBER = 'recipient_tax_number';
     const ATTRIBUTE_SENDER_ADDRESS = 'sender_address';
+    const ATTRIBUTE_SENDER_TAX_NUMBER = 'sender_tax_number';
     const ATTRIBUTE_RETURN_ADDRESS = 'return_address';
     const ATTRIBUTE_PICKUP = 'pickup_location';
     const ATTRIBUTE_PICKUP_CODE = 'code';
@@ -43,6 +44,7 @@ class Shipment implements ShipmentInterface
     const ATTRIBUTE_ITEMS = 'items';
     const ATTRIBUTE_REGISTER_AT = 'register_at';
     const ATTRIBUTE_TOTAL_VALUE = 'total_value';
+    const ATTRIBUTE_TAGS = 'tags';
 
     const RELATIONSHIP_CONTRACT = 'contract';
     const RELATIONSHIP_FILES = 'files';
@@ -68,26 +70,28 @@ class Shipment implements ShipmentInterface
 
     /** @var array */
     private $attributes = [
-        self::ATTRIBUTE_BARCODE             => null,
-        self::ATTRIBUTE_TRACKING_CODE       => null,
-        self::ATTRIBUTE_TRACKING_URL        => null,
-        self::ATTRIBUTE_CHANNEL             => null,
-        self::ATTRIBUTE_DESCRIPTION         => null,
-        self::ATTRIBUTE_TAGS                => null,
-        self::ATTRIBUTE_CUSTOMER_REFERENCE  => null,
-        self::ATTRIBUTE_PRICE               => null,
-        self::ATTRIBUTE_PHYSICAL_PROPERTIES => null,
-        self::ATTRIBUTE_RECIPIENT_ADDRESS   => null,
-        self::ATTRIBUTE_SENDER_ADDRESS      => null,
-        self::ATTRIBUTE_RETURN_ADDRESS      => null,
-        self::ATTRIBUTE_PICKUP              => null,
-        self::ATTRIBUTE_CUSTOMS             => null,
-        self::ATTRIBUTE_ITEMS               => null,
-        self::ATTRIBUTE_REGISTER_AT         => null,
-        self::ATTRIBUTE_TOTAL_VALUE         => [
+        self::ATTRIBUTE_BARCODE              => null,
+        self::ATTRIBUTE_TRACKING_CODE        => null,
+        self::ATTRIBUTE_TRACKING_URL         => null,
+        self::ATTRIBUTE_CHANNEL              => null,
+        self::ATTRIBUTE_DESCRIPTION          => null,
+        self::ATTRIBUTE_CUSTOMER_REFERENCE   => null,
+        self::ATTRIBUTE_PRICE                => null,
+        self::ATTRIBUTE_PHYSICAL_PROPERTIES  => null,
+        self::ATTRIBUTE_RECIPIENT_ADDRESS    => null,
+        self::ATTRIBUTE_RECIPIENT_TAX_NUMBER => null,
+        self::ATTRIBUTE_SENDER_ADDRESS       => null,
+        self::ATTRIBUTE_SENDER_TAX_NUMBER    => null,
+        self::ATTRIBUTE_RETURN_ADDRESS       => null,
+        self::ATTRIBUTE_PICKUP               => null,
+        self::ATTRIBUTE_CUSTOMS              => null,
+        self::ATTRIBUTE_ITEMS                => null,
+        self::ATTRIBUTE_REGISTER_AT          => null,
+        self::ATTRIBUTE_TOTAL_VALUE          => [
             'amount'   => null,
             'currency' => null,
         ],
+        self::ATTRIBUTE_TAGS                 => null,
     ];
 
     /** @var array */
@@ -114,7 +118,7 @@ class Shipment implements ShipmentInterface
 
     /** @var array */
     private $meta = [
-        self::META_LABEL_MIME_TYPE => 'application/pdf',
+        self::META_LABEL_MIME_TYPE => FileInterface::MIME_TYPE_PDF,
         self::META_SERVICE_CODE    => null,
     ];
 
@@ -145,6 +149,14 @@ class Shipment implements ShipmentInterface
     }
 
     /**
+     * @return array
+     */
+    public function getMeta()
+    {
+        return $this->meta;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function setRecipientAddress(AddressInterface $recipientAddress)
@@ -165,6 +177,24 @@ class Shipment implements ShipmentInterface
     /**
      * {@inheritdoc}
      */
+    public function setRecipientTaxNumber($recipientTaxNumber)
+    {
+        $this->attributes[self::ATTRIBUTE_RECIPIENT_TAX_NUMBER] = $recipientTaxNumber;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRecipientTaxNumber()
+    {
+        return $this->attributes[self::ATTRIBUTE_RECIPIENT_TAX_NUMBER];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function setSenderAddress(AddressInterface $senderAddress)
     {
         $this->attributes[self::ATTRIBUTE_SENDER_ADDRESS] = $senderAddress;
@@ -178,6 +208,24 @@ class Shipment implements ShipmentInterface
     public function getSenderAddress()
     {
         return $this->attributes[self::ATTRIBUTE_SENDER_ADDRESS];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setSenderTaxNumber($senderTaxNumber)
+    {
+        $this->attributes[self::ATTRIBUTE_SENDER_TAX_NUMBER] = $senderTaxNumber;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSenderTaxNumber()
+    {
+        return $this->attributes[self::ATTRIBUTE_SENDER_TAX_NUMBER];
     }
 
     /**
@@ -262,16 +310,6 @@ class Shipment implements ShipmentInterface
     public function setDescription($description)
     {
         $this->attributes[self::ATTRIBUTE_DESCRIPTION] = $description;
-
-        return $this;
-    }
-    /**
-     * {@inheritdoc}
-     */
-    public function setTags($tagsname)
-    {
-        //$newtags = (string)$tagsname;
-        $this->attributes[self::ATTRIBUTE_TAGS] = array("Flat Rate");
 
         return $this;
     }
@@ -765,5 +803,55 @@ class Shipment implements ShipmentInterface
     public function getServiceCode()
     {
         return $this->meta[self::META_SERVICE_CODE];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setTags(array $tags)
+    {
+        $this->attributes[self::ATTRIBUTE_TAGS] = $tags;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addTag($tag)
+    {
+        $this->attributes[self::ATTRIBUTE_TAGS][] = $tag;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTags()
+    {
+        return $this->attributes[self::ATTRIBUTE_TAGS];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function clearTags()
+    {
+        $this->attributes[self::ATTRIBUTE_TAGS] = null;
+
+        return $this;
+    }
+
+    /**
+     * Supported values are FileInterface::MIME_TYPE_PDF or FileInterface::MIME_TYPE_ZPL
+     * @param $labelMimeType
+     * @return $this
+     */
+    public function setLabelMimeType($labelMimeType)
+    {
+        $this->meta[self::META_LABEL_MIME_TYPE] = $labelMimeType;
+
+        return $this;
     }
 }

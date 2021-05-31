@@ -37,19 +37,45 @@ class CustomsTest extends TestCase
     }
 
     /** @test */
+    public function testLicenseNumber()
+    {
+        $customs = new Customs();
+        $this->assertEquals('512842382', $customs->setLicenseNumber('512842382')->getLicenseNumber());
+    }
+
+    /** @test */
+    public function testCertificateNumber()
+    {
+        $customs = new Customs();
+        $this->assertEquals('2112211', $customs->setCertificateNumber('2112211')->getCertificateNumber());
+    }
+
+    /** @test */
+    public function testShippingValue()
+    {
+        $customs = new Customs();
+        $this->assertEquals(4242, $customs->setShippingValueAmount(4242)->getShippingValueAmount());
+        $this->assertEquals('GBP', $customs->setShippingValueCurrency('GBP')->getShippingValueCurrency());
+    }
+
+    /** @test */
     public function testJsonSerialize()
     {
         $customs = (new Customs())
-            ->setIncoterm(CustomsInterface::INCOTERM_DDU)
+            ->setIncoterm(CustomsInterface::INCOTERM_DAP)
             ->setNonDelivery(CustomsInterface::NON_DELIVERY_RETURN)
             ->setInvoiceNumber('NO.5')
-            ->setContentType(CustomsInterface::CONTENT_TYPE_DOCUMENTS);
+            ->setContentType(CustomsInterface::CONTENT_TYPE_DOCUMENTS)
+            ->setLicenseNumber('512842382')
+            ->setCertificateNumber('2112211');
 
         $this->assertEquals([
-            'content_type'   => 'documents',
-            'invoice_number' => 'NO.5',
-            'non_delivery'   => 'return',
-            'incoterm'       => 'DDU',
+            'content_type'       => 'documents',
+            'invoice_number'     => 'NO.5',
+            'non_delivery'       => 'return',
+            'incoterm'           => 'DAP',
+            'license_number'     => '512842382',
+            'certificate_number' => '2112211',
         ], $customs->jsonSerialize());
     }
 }

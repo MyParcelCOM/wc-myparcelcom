@@ -107,6 +107,7 @@ class ResourceFactory implements ResourceFactoryInterface, ResourceProxyInterfac
         $serviceRateFactory = [$this, 'serviceRateFactory'];
         $fileFactory = [$this, 'fileFactory'];
         $shipmentItemFactory = [$this, 'shipmentItemFactory'];
+        $customsFactory = [$this, 'customsFactory'];
 
         $this->setFactoryForType(ResourceInterface::TYPE_SHIPMENT, $shipmentFactory);
         $this->setFactoryForType(ShipmentInterface::class, $shipmentFactory);
@@ -121,6 +122,8 @@ class ResourceFactory implements ResourceFactoryInterface, ResourceProxyInterfac
         $this->setFactoryForType(FileInterface::class, $fileFactory);
 
         $this->setFactoryForType(ShipmentItemInterface::class, $shipmentItemFactory);
+
+        $this->setFactoryForType(CustomsInterface::class, $customsFactory);
     }
 
     /**
@@ -237,6 +240,13 @@ class ResourceFactory implements ResourceFactoryInterface, ResourceProxyInterfac
             unset($properties['attributes']['price']);
         }
 
+        if (isset($properties['attributes']['fuel_surcharge']['amount'])) {
+            $serviceRate->setFuelSurchargeAmount($properties['attributes']['fuel_surcharge']['amount']);
+            $serviceRate->setFuelSurchargeCurrency($properties['attributes']['fuel_surcharge']['currency']);
+
+            unset($properties['attributes']['fuel_surcharge']);
+        }
+
         if (isset($properties['relationships']['service_options'])) {
             $serviceOptions = $properties['relationships']['service_options']['data'];
 
@@ -307,6 +317,26 @@ class ResourceFactory implements ResourceFactoryInterface, ResourceProxyInterfac
         }
 
         return $item;
+    }
+
+    /**
+     * Factory for creating a shipment item.
+     *
+     * @param $attributes
+     * @return Customs
+     */
+    protected function customsFactory(&$attributes)
+    {
+        $customs = new Customs();
+
+        if (isset($attributes['shipping_value']['amount'])) {
+            $customs->setShippingValueAmount($attributes['shipping_value']['amount']);
+            $customs->setShippingValueCurrency($attributes['shipping_value']['currency']);
+
+            unset($attributes['shipping_value']);
+        }
+
+        return $customs;
     }
 
     /**

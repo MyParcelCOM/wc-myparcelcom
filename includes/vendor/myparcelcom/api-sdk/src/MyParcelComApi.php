@@ -28,6 +28,8 @@ use MyParcelCom\ApiSdk\Validators\ShipmentValidator;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\SimpleCache\CacheInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Psr16Cache;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use function GuzzleHttp\Psr7\parse_response;
 use function GuzzleHttp\Psr7\str;
@@ -111,10 +113,17 @@ class MyParcelComApi implements MyParcelComApiInterface
             ->setHttpClient($httpClient)
             ->setApiUri($apiUri);
 
-        // Either use the given cache or instantiate a new one that uses the
-        // filesystem as cache. By default the `FilesystemCache` will use the
-        // system temp directory as a cache.
-        $this->setCache($cache ?: new FilesystemCache('myparcelcom'));
+        // Either use the given cache or instantiate a new one that uses the filesystem temp directory as a cache.
+        if (!$cache) {
+            // Symfony 5.0.0 removed their PSR-16 cache classes. Their PSR-6 cache classes can be wrapped in Psr16Cache.
+            if (class_exists('\Symfony\Component\Cache\Psr16Cache')) {
+                $psr6Cache = new FilesystemAdapter('myparcelcom');
+                $cache = new Psr16Cache($psr6Cache);
+            } else {
+                $cache = new FilesystemCache('myparcelcom');
+            }
+        }
+        $this->setCache($cache);
 
         // Either use the given resource factory or instantiate a new one.
         $this->setResourceFactory($resourceFactory ?: new ResourceFactory());
@@ -133,7 +142,7 @@ class MyParcelComApi implements MyParcelComApiInterface
     /**
      * {@inheritdoc}
      */
-    public function getRegions($filters = [], $ttl = self::TTL_WEEK)
+    public function getRegions($filters = [], $ttl = self::TTL_10MIN)
     {
         $url = (new UrlBuilder($this->apiUri . self::PATH_REGIONS));
 
@@ -172,7 +181,7 @@ class MyParcelComApi implements MyParcelComApiInterface
     /**
      * {@inheritdoc}
      */
-    public function getCarriers($ttl = self::TTL_WEEK)
+    public function getCarriers($ttl = self::TTL_10MIN)
     {
         // These resources can be stored for a week.
         return $this->getRequestCollection($this->apiUri . self::PATH_CARRIERS, $ttl);
@@ -188,7 +197,7 @@ class MyParcelComApi implements MyParcelComApiInterface
         $streetNumber = null,
         CarrierInterface $specificCarrier = null,
         $onlyActiveContracts = true,
-        $ttl = self::TTL_WEEK
+        $ttl = self::TTL_10MIN
     ) {
         $carriers = $this->determineCarriersForPudoLocations($onlyActiveContracts, $specificCarrier);
 
@@ -225,7 +234,7 @@ class MyParcelComApi implements MyParcelComApiInterface
                 // carrier, we want to be able to distinct between 'no results'
                 // or 'something went wrong'. However, when we're not looking
                 // for carrier specific pudo locations, we just want to show
-                // pudo locations for the failing carrier as not aviilable (null).
+                // pudo locations for the failing carrier as not available (null).
                 if ($specificCarrier) {
                     throw $exception;
                 }
@@ -249,7 +258,7 @@ class MyParcelComApi implements MyParcelComApiInterface
     /**
      * {@inheritdoc}
      */
-    public function getShops($ttl = self::TTL_WEEK)
+    public function getShops($ttl = self::TTL_10MIN)
     {
         // These resources can be stored for a week. Or should be removed from
         // cache when updated
@@ -259,7 +268,7 @@ class MyParcelComApi implements MyParcelComApiInterface
     /**
      * {@inheritdoc}
      */
-    public function getDefaultShop($ttl = self::TTL_WEEK)
+    public function getDefaultShop($ttl = self::TTL_10MIN)
     {
         $shops = $this->getResourcesArray($this->apiUri . self::PATH_SHOPS, $ttl);
 
@@ -277,7 +286,7 @@ class MyParcelComApi implements MyParcelComApiInterface
     public function getServices(
         ShipmentInterface $shipment = null,
         array $filters = ['has_active_contract' => 'true'],
-        $ttl = self::TTL_WEEK
+        $ttl = self::TTL_10MIN
     ) {
         $url = new UrlBuilder($this->apiUri . self::PATH_SERVICES);
         $url->addQuery($this->arrayToFilters($filters));
@@ -290,14 +299,10 @@ class MyParcelComApi implements MyParcelComApiInterface
             $shipment->setSenderAddress($this->getDefaultShop()->getReturnAddress());
         }
         if ($shipment->getRecipientAddress() === null) {
-            throw new InvalidResourceException(
-                'Missing `recipient_address` on `shipments` resource'
-            );
+            throw new InvalidResourceException('Missing `recipient_address` on `shipments` resource');
         }
         if ($shipment->getSenderAddress() === null) {
-            throw new InvalidResourceException(
-                'Missing `sender_address` on `shipments` resource'
-            );
+            throw new InvalidResourceException('Missing `sender_address` on `shipments` resource');
         }
 
         $url->addQuery($this->arrayToFilters([
@@ -325,7 +330,7 @@ class MyParcelComApi implements MyParcelComApiInterface
     /**
      * {@inheritdoc}
      */
-    public function getServicesForCarrier(CarrierInterface $carrier, $ttl = self::TTL_WEEK)
+    public function getServicesForCarrier(CarrierInterface $carrier, $ttl = self::TTL_10MIN)
     {
         $url = new UrlBuilder($this->apiUri . self::PATH_SERVICES);
         $url->addQuery($this->arrayToFilters([
@@ -339,7 +344,7 @@ class MyParcelComApi implements MyParcelComApiInterface
     /**
      * {@inheritdoc}
      */
-    public function getServiceRates(array $filters = ['has_active_contract' => 'true'], $ttl = self::TTL_WEEK)
+    public function getServiceRates(array $filters = ['has_active_contract' => 'true'], $ttl = self::TTL_10MIN)
     {
         $url = new UrlBuilder($this->apiUri . self::PATH_SERVICE_RATES);
         $url->addQuery($this->arrayToFilters($filters));
@@ -350,9 +355,9 @@ class MyParcelComApi implements MyParcelComApiInterface
     /**
      * {@inheritdoc}
      */
-    public function getServiceRatesForShipment(ShipmentInterface $shipment, $ttl = self::TTL_WEEK)
+    public function getServiceRatesForShipment(ShipmentInterface $shipment, $ttl = self::TTL_10MIN)
     {
-        $services = $this->getServices($shipment);
+        $services = $this->getServices($shipment, ['has_active_contract' => 'true'], $ttl);
         $serviceIds = [];
         foreach ($services as $service) {
             $serviceIds[] = $service->getId();
@@ -393,7 +398,7 @@ class MyParcelComApi implements MyParcelComApiInterface
     /**
      * {@inheritdoc}
      */
-    public function getShipments(ShopInterface $shop = null, $ttl = self::TTL_WEEK)
+    public function getShipments(ShopInterface $shop = null, $ttl = self::TTL_NO_CACHE)
     {
         $url = new UrlBuilder($this->apiUri . self::PATH_SHIPMENTS);
 
@@ -440,8 +445,7 @@ class MyParcelComApi implements MyParcelComApiInterface
             $shipment->setShop($this->getDefaultShop());
         }
 
-        // If no sender address is set use one of the addresses in the following
-        // order: shop sender > shipment return > shop return
+        // If no sender address is set, use the sender address of the shop (or the return address of the shipment).
         $shop = $shipment->getShop();
         if ($shipment->getSenderAddress() === null) {
             $shipment->setSenderAddress(
@@ -450,8 +454,7 @@ class MyParcelComApi implements MyParcelComApiInterface
                     ?: $shop->getReturnAddress()
             );
         }
-        // If no return address is set use the return address of the shop or the
-        // sender address on the shipment.
+        // If no return address is set, use the return address of the shop (or the sender address of the shipment).
         if ($shipment->getReturnAddress() === null) {
             $shipment->setReturnAddress(
                 $shop->getReturnAddress()
@@ -469,8 +472,8 @@ class MyParcelComApi implements MyParcelComApiInterface
 
             throw $exception;
         }
-        
-        return $this->postResource($shipment);
+
+        return $this->postResource($shipment, $shipment->getMeta());
     }
 
     /**
@@ -480,6 +483,11 @@ class MyParcelComApi implements MyParcelComApiInterface
     {
         $validator = new ShipmentValidator($shipment);
 
+        if (!$shipment->getId()) {
+            throw new InvalidResourceException(
+                'Could not update shipment. This shipment does not have an id, use createShipment() to save it.'
+            );
+        }
         if (!$validator->isValid()) {
             $exception = new InvalidResourceException(
                 'Could not update shipment. ' . implode('. ', $validator->getErrors()) . '.'
@@ -489,7 +497,7 @@ class MyParcelComApi implements MyParcelComApiInterface
             throw $exception;
         }
 
-        return $this->patchResource($shipment);
+        return $this->patchResource($shipment, $shipment->getMeta());
     }
 
     /**
@@ -625,7 +633,7 @@ class MyParcelComApi implements MyParcelComApiInterface
     /**
      * {@inheritdoc}
      */
-    public function doRequest($uri, $method = 'get', array $body = [], array $headers = [], $ttl = self::TTL_10MIN)
+    public function doRequest($uri, $method = 'get', array $body = [], array $headers = [], $ttl = self::TTL_NO_CACHE)
     {
         if (strpos($uri, $this->apiUri) !== 0) {
             $uri = $this->apiUri . $uri;
@@ -672,9 +680,7 @@ class MyParcelComApi implements MyParcelComApiInterface
             $body = json_encode($body);
         }
 
-        $request = new Request($method, $uri, $headers, $body);
-
-        return $request;
+        return new Request($method, $uri, $headers, $body);
     }
 
     /**
@@ -739,7 +745,7 @@ class MyParcelComApi implements MyParcelComApiInterface
      * @return ResourceInterface
      * @throws RequestException
      */
-    public function getResourceById($resourceType, $id, $ttl = self::TTL_10MIN)
+    public function getResourceById($resourceType, $id, $ttl = self::TTL_NO_CACHE)
     {
         $resources = $this->getResourcesArray(
             $this->getResourceUri($resourceType, $id),
@@ -761,24 +767,26 @@ class MyParcelComApi implements MyParcelComApiInterface
      * Patch given resource and return the resource that was returned by the request.
      *
      * @param ResourceInterface $resource
+     * @param array             $meta
      * @return ResourceInterface|null
      * @throws RequestException
      */
-    protected function patchResource(ResourceInterface $resource)
+    protected function patchResource(ResourceInterface $resource, $meta = [])
     {
-        return $this->sendResource($resource, 'patch');
+        return $this->sendResource($resource, 'patch', $meta);
     }
 
     /**
      * Post given resource and return the resource that was returned by the request.
      *
      * @param ResourceInterface $resource
+     * @param array             $meta
      * @return ResourceInterface|null
      * @throws RequestException
      */
-    protected function postResource(ResourceInterface $resource)
+    protected function postResource(ResourceInterface $resource, $meta = [])
     {
-        return $this->sendResource($resource);
+        return $this->sendResource($resource, 'post', $meta);
     }
 
     /**
@@ -786,15 +794,19 @@ class MyParcelComApi implements MyParcelComApiInterface
      *
      * @param ResourceInterface $resource
      * @param string            $method
+     * @param array             $meta
      * @return ResourceInterface|null
      * @throws RequestException
      */
-    protected function sendResource(ResourceInterface $resource, $method = 'post')
+    protected function sendResource(ResourceInterface $resource, $method = 'post', $meta = [])
     {
         $response = $this->doRequest(
             $this->getResourceUri($resource->getType(), $resource->getId()),
             $method,
-            ['data' => $resource],
+            array_filter([
+                'data' => $resource,
+                'meta' => array_filter($meta),
+            ]),
             $this->authenticator->getAuthorizationHeader() + [
                 AuthenticatorInterface::HEADER_ACCEPT => AuthenticatorInterface::MIME_TYPE_JSONAPI,
             ]

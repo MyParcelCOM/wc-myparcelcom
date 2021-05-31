@@ -5,7 +5,7 @@ services:
     build:
       context: ./docker/php
       dockerfile: Dockerfile
-    image: myparcelcom/sdk-php:v2-dev
+    image: myparcelcom/sdk-php:v3-dev
     working_dir: /opt/sdk
     volumes:
       - .:/opt/sdk
@@ -15,7 +15,7 @@ services:
     build:
       context: ./docker/php70
       dockerfile: Dockerfile
-    image: myparcelcom/sdk-php70:v2-dev
+    image: myparcelcom/sdk-php70:v3-dev
     working_dir: /opt/sdk
     volumes:
       - .:/opt/sdk
@@ -25,7 +25,7 @@ services:
     build:
       context: ./docker/php71
       dockerfile: Dockerfile
-    image: myparcelcom/sdk-php71:v2-dev
+    image: myparcelcom/sdk-php71:v3-dev
     working_dir: /opt/sdk
     volumes:
       - .:/opt/sdk
@@ -35,7 +35,7 @@ services:
     build:
       context: ./docker/php72
       dockerfile: Dockerfile
-    image: myparcelcom/sdk-php72:v1-dev
+    image: myparcelcom/sdk-php72:v3-dev
     working_dir: /opt/sdk
     volumes:
       - .:/opt/sdk

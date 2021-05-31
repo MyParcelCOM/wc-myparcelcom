@@ -29,7 +29,7 @@ class PhysicalProperties implements PhysicalPropertiesInterface
     private $volumetricWeight;
 
     /** @var array */
-    private static $unitConversion = [
+    public static $unitConversion = [
         self::WEIGHT_GRAM     => 1,
         self::WEIGHT_KILOGRAM => 1000,
         self::WEIGHT_POUND    => 453.59237,

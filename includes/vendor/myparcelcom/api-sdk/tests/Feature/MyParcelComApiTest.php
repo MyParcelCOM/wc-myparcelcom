@@ -81,8 +81,7 @@ class MyParcelComApiTest extends TestCase
             ->setPostalCode('B48 7QN')
             ->setCountryCode('GB');
 
-        // Minimum required data should be a recipient address and weight. All
-        // other data should be filled with defaults.
+        // Minimum required data should be recipient address and weight. All other data should be filled with defaults.
         $shipment = (new Shipment())
             ->setWeight(500)
             ->setRecipientAddress($recipient);
@@ -100,9 +99,9 @@ class MyParcelComApiTest extends TestCase
             'Successfully created shipments should have a price'
         );
         $this->assertEquals(
-            $this->api->getDefaultShop()->getReturnAddress(),
+            $this->api->getDefaultShop()->getSenderAddress(),
             $shipment->getSenderAddress(),
-            'The shipment\'s sender address should default to the default shop\'s return address'
+            'The shipment\'s sender address should default to the default shop\'s sender address'
         );
         $this->assertEquals(
             $recipient,
@@ -123,8 +122,7 @@ class MyParcelComApiTest extends TestCase
             ->setPostalCode('B48 7QN')
             ->setCountryCode('GB');
 
-        // Minimum required data should be a recipient address and weight. All
-        // other data should be filled with defaults.
+        // Minimum required data should be recipient address and weight. All other data should be filled with defaults.
         $shipment = (new Shipment())
             ->setWeight(500)
             ->setRecipientAddress($initialAddress)
@@ -143,9 +141,9 @@ class MyParcelComApiTest extends TestCase
             'Successfully created shipments should have a price'
         );
         $this->assertEquals(
-            $this->api->getDefaultShop()->getReturnAddress(),
+            $this->api->getDefaultShop()->getSenderAddress(),
             $shipment->getSenderAddress(),
-            'The shipment\'s sender address should default to the default shop\'s return address'
+            'The shipment\'s sender address should default to the default shop\'s sender address'
         );
         $this->assertEquals(
             $initialAddress,
@@ -210,6 +208,15 @@ class MyParcelComApiTest extends TestCase
     }
 
     /** @test */
+    public function testUpdateInvalidShipmentMissingId()
+    {
+        $shipment = new Shipment();
+
+        $this->expectException(InvalidResourceException::class);
+        $this->api->updateShipment($shipment);
+    }
+
+    /** @test */
     public function testGetCarriers()
     {
         $carriers = $this->api->getCarriers();
@@ -221,6 +228,7 @@ class MyParcelComApiTest extends TestCase
             $this->assertNotEmpty($carrier->getName());
             $this->assertNotEmpty($carrier->getCode());
             $this->assertNotEmpty($carrier->getCredentialsFormat());
+            $this->assertNotEmpty($carrier->getLabelMimeTypes());
         }
     }
 
@@ -652,7 +660,7 @@ class MyParcelComApiTest extends TestCase
                 $this->assertEquals($shop->getId(), $shipment->getShop()->getId());
                 $this->assertEquals($shop->getType(), $shipment->getShop()->getType());
                 $this->assertEquals($shop->getCreatedAt(), $shipment->getShop()->getCreatedAt());
-                $this->assertEquals($shop->getBillingAddress(), $shipment->getShop()->getBillingAddress());
+                $this->assertEquals($shop->getSenderAddress(), $shipment->getShop()->getSenderAddress());
                 $this->assertEquals($shop->getReturnAddress(), $shipment->getShop()->getReturnAddress());
                 $this->assertEquals($shop->getName(), $shipment->getShop()->getName());
             }
@@ -827,11 +835,11 @@ class MyParcelComApiTest extends TestCase
                 ->setCity('London')
                 ->setCountryCode('GB')
                 ->setFirstName('Mister')
-                ->setLastName('Billing')
+                ->setLastName('Sender')
                 ->setCompany('MyParcel.com')
                 ->setEmail('info@myparcel.com')
                 ->setPhoneNumber('+31 85 208 5997'),
-            $shop->getBillingAddress()
+            $shop->getSenderAddress()
         );
         $this->assertEquals(
             (new Address())

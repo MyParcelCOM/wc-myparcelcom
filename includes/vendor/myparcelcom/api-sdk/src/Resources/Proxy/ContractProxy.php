@@ -48,6 +48,25 @@ class ContractProxy implements ContractInterface, ResourceProxyInterface
     }
 
     /**
+     * @param string $name
+     * @return $this
+     */
+    public function setName($name)
+    {
+        $this->getResource()->setName($name);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->getResource()->getName();
+    }
+
+    /**
      * @param string $currency
      * @return $this
      */
