@@ -1,7 +1,7 @@
 <?php
+
 declare(strict_types=1);
 
-use MyParcelCom\ApiSdk\MyParcelComApi;
 use MyParcelCom\ApiSdk\Resources\Address;
 use MyParcelCom\ApiSdk\Resources\Customs;
 use MyParcelCom\ApiSdk\Resources\PhysicalProperties;
@@ -16,30 +16,6 @@ function myparcelExceptionRedirection()
 }
 
 /**
- * @return void
- */
-function addFrontEndJs()
-{
-    $absolutePath = __FILE__;
-    wp_enqueue_style(
-        VIEW_STYLE_TYPE,
-        plugins_url('', $absolutePath).'/../assets/front-end/css/frontend-myparcel.css'
-    );
-    if (is_page('checkout')) {
-        wp_register_script(
-            CHECKOUT_PAGE_SCRIPT,
-            plugins_url('woocommerce-connect-myparcel/assets/front-end/js/address-checkout-page.js', $absolutePath),
-            '',
-            '1.0',
-            true
-        );
-        wp_enqueue_script('checkout-page-script');
-    }
-}
-
-add_action('wp_enqueue_scripts', 'addFrontEndJs');
-
-/**
  * @param array $columns
  * @return array
  */
@@ -51,7 +27,8 @@ function customShopOrderColumn($columns): array
         if (5 === $i) {
             $customShopOrderColumn['order_type']          = __(ORDER_TYPE_TEXT, 'order_type');
             $customShopOrderColumn['shipped_status']      = __(SHIPPED_STATUS_TEXT, 'shipped_status');
-            $customShopOrderColumn['shipped_label']       = __(SHIPPED_LABEL, 'shipped_label');
+            // TODO: reactivate the label column once webhooks are properly implemented
+            //$customShopOrderColumn['shipped_label']       = __(SHIPPED_LABEL, 'shipped_label');
             $customShopOrderColumn['get_shipment_status'] = __(SHIPMENT_STATUS, 'get_shipment_status');
         }
         $customShopOrderColumn[$key] = $value;
@@ -416,9 +393,7 @@ function shutDownFunction()
         // Given URL
         $url = $error['file'];
         // Search substring
-        $key     = KEY_TEXT;
-        $message = '';
-        if (strpos($url, $key) == false) {
+        if (strpos($url, 'api-sdk') == false) {
             $message = NOT_FOUND_TEXT;
         } else {
             $message = IS_EXISTS_TEXT;

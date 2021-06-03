@@ -16,9 +16,6 @@ function adminLoadJsCss()
     }
     if ('edit-shop_order' === $screen->id) {
         enqueueJsAndCssFile();
-        wp_enqueue_style('bootstrap-cdn', plugins_url('', __FILE__).'/../assets/admin/css/bootstrap.min.css');
-        wp_enqueue_style('bootstrap-cdn-min', plugins_url('', __FILE__).'/../assets/admin/css/bootstrap-theme.min.css');
-        wp_enqueue_script('bootstrap-cdn-jquey', plugins_url('', __FILE__).'/../assets/admin/js/bootstrap.min.js');
         if (!session_id()) {
             session_start();
         }
@@ -85,10 +82,9 @@ function orderItemValues($product, $item, $itemId)
 
                 $qtyHtml = '<input type="text" name="ship_qty" class="ship_qty ship_qty_'.$itemId.'" value="'.$itemQuantity.'" data-qty="'.$itemQuantity.'" data-old-qty="0" data-flag-id="0" data-rqty="'.$itemQuantity.'" data-item-id="'.$itemId.'" data-order-id="'.$orderId.'" style="width: 43px;"/>';
 
-                echo '<td class="partital-td-item"><span class="text-span">'.$qtyHtml.' <i class="fa fa-truck fa-sm" aria-hidden="true"></i></span> <input type="button" class="btn btn-success btn-quanity-update" id="update-quantity-'.$itemId.'" value="Update Quantity"></td>';
+                echo '<td class="partital-td-item"><span class="text-span">'.$qtyHtml.'</span> <input type="button" class="btn btn-success btn-quanity-update" id="update-quantity-'.$itemId.'" value="Update Quantity"></td>';
                 echo '<td class="partial-status-td" width="1%">'.$tdHtml.'</td>';
                 echo '<td class="remain-status-td" width="1%"> 0 </td>';
-
             } else {
                 if (!empty($orderId)) {
                     if (!empty($shipped)) {
@@ -104,7 +100,7 @@ function orderItemValues($product, $item, $itemId)
                             $remainHtml
                         );
                     }
-                    echo '<td class="partital-td-item"><span class="text-span">'.$qtyHtml.' <i class="fa fa-truck fa-sm" aria-hidden="true"></i></span> <input type="button" class="btn btn-success btn-quanity-update" id="update-quantity-'.$itemId.'" value="Update Quantity"></td>';
+                    echo '<td class="partital-td-item"><span class="text-span">'.$qtyHtml.'</span> <input type="button" class="btn btn-success btn-quanity-update" id="update-quantity-'.$itemId.'" value="Update Quantity"></td>';
                     echo '<td class="partial-status-td" width="1%">'.$tdHtml.'</td>';
                     echo '<td class="remain-status-td" width="1%">'.$remainHtml.'</td>';
                 }
