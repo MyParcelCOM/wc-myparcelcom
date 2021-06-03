@@ -374,6 +374,7 @@ function prepareHtmlForSettingPage()
 function enqueueJsAndCssFile()
 {
     wp_enqueue_style('wcp_style', plugins_url('', __FILE__).'/../../assets/admin/css/admin-myparcel.css');
+    wp_enqueue_script('jquery-ui-dialog');
     wp_register_script(
         'wcp_partial_ship_script',
         plugins_url('', __FILE__).'/../../assets/admin/js/admin-myparcel.js',
@@ -692,32 +693,25 @@ function admin_order_list_top_bar_button($which)
     global $typenow;
     if ('shop_order' === $typenow && 'top' === $which) {
         ?>
-      <!-- Button trigger modal -->
-      <button type="button" id="primary-modal" class="btn btn-primary" data-toggle="modal" data-target="#labelModal" title="Print Selected">
-        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-      </button>
       <!-- Modal -->
-      <div class="modal fade" id="labelModal" tabindex="-1" role="dialog" aria-labelledby="labelModalLabel" aria-hidden="true">
+      <div class="modal fade" id="labelModal" tabindex="-1" role="dialog" aria-labelledby="labelModalLabel" aria-hidden="true" style="display:none">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="labelModalLabel">Label position</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
               <div class="row">
-                <div class="col-lg-6" id="printer-orintation">
+                <div class="col-lg-6" id="printer-orientation">
                   <label class="container">
-                    <input type="radio" checked="checked" name="selectorientation" class="toggle" value="1"> A4 - default printer
+                    <input type="radio" name="selectorientation" class="toggle" value="2" checked="checked"> A6 - label printer
                   </label>
+                  <br>
                   <label class="container">
-                    <input type="radio" name="selectorientation" class="toggle" value="2"> A6 - label printer
+                    <input type="radio" name="selectorientation" class="toggle" value="1"> A4 - default printer
                   </label>
                 </div>
               </div>
             </div>
             <div class="modal-body">
-              <div class="row cntnr" id="orientation1" style="margin: 0px;">
+              <div class="row cntnr" id="orientation1" style="display:none">
                 <div class="col-lg-6">
                   <label class="container radio-inline">
                     <input type="radio" checked="checked" name="radio" class="toggle" value="1"> 1
@@ -728,6 +722,7 @@ function admin_order_list_top_bar_button($which)
                     <input type="radio" name="radio" class="toggle" value="2"> 2
                   </label>
                 </div>
+                <div class="break"></div>
                 <div class="col-lg-6">
                   <label class="container radio-inline">
                     <input type="radio" name="radio" class="toggle" value="3"> 3
@@ -739,7 +734,7 @@ function admin_order_list_top_bar_button($which)
                   </label>
                 </div>
               </div>
-              <div class="row cntnr" id="orientation2" style="display: none;">
+              <div class="row cntnr" id="orientation2">
               </div>
             </div>
             <div class="modal-footer">
@@ -750,41 +745,57 @@ function admin_order_list_top_bar_button($which)
               <div class="alert alert-danger alert-dismissible fade in text-center" role="alert" style="display: none;">
                 Label is not available.
               </div>
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
               <button type="button" class="btn btn-primary" id="download-pdf">Download</button>
             </div>
           </div>
         </div>
       </div>
       <style type="text/css">
-        .modal-dialog {
-          width: 30%;
-          margin: 0 auto;
+        .modal-header {
+          margin-top: 8px;
         }
 
-        .modal-content {
-          height: auto;
-          min-height: 100%;
-          border-radius: 0;
+        .modal-header .container {
+          line-height: 20px;
         }
 
-        .cntnr .col-lg-6 {
+        .modal-body {
+          margin-top: 16px;
+        }
+
+        #orientation1 {
+          display: flex;
+          flex-wrap: wrap;
+        }
+
+        #orientation1 .col-lg-6 {
+          flex-grow: 1;
           border: 1px solid grey;
-          padding: 50px;
+          padding: 40px 0;
+          text-align: center;
         }
 
-        label.container input[type=radio] {
-          height: 16px;
+        #orientation1 .break {
+          flex-basis: 100%;
+          height: 0;
         }
 
-        .modal-content {
-          top: 35px;
+        .modal-footer {
+          margin-top: 16px;
         }
       </style>
       <script type="text/javascript">
         jQuery(document).ready(function ($) {
-          var selectVal = $('#printer-orintation input[name=\'selectorientation\']:checked').val()
-          $('#printer-orintation input[name=\'selectorientation\']').click(function () {
+          jQuery('#labelModal').dialog({
+            autoOpen: false,
+            closeText: '',
+            modal: true,
+            title: 'Label position',
+            width: 400,
+          });
+
+          var selectVal = $('#printer-orientation input[name=\'selectorientation\']:checked').val()
+          $('#printer-orientation input[name=\'selectorientation\']').click(function () {
             selectVal = $(this).val()
             $('div.cntnr').hide()
             $('#orientation' + selectVal).show()
@@ -792,7 +803,7 @@ function admin_order_list_top_bar_button($which)
           $('#download-pdf').click(function (e) {
             var selected = []
             e.preventDefault()
-            $('#loadingmessage').show()  // show the loading message.
+            $('#loadingmessage').show()
             $('.wp-list-table #the-list tr input[name=\'post[]\']:checked').map(function () {
               if ($('.wp-list-table #the-list tr input[name=\'post[]\']').is(':checked')) {
                 var idx = $.inArray($(this).val(), selected)
@@ -802,7 +813,7 @@ function admin_order_list_top_bar_button($which)
               } else {
                 selected.splice($(this).val())
               }
-            }) // <----
+            })
             var selectOrientation = $('input[name=\'radio\']:checked').val()
             if (selectOrientation) {
               var data = {
@@ -829,7 +840,7 @@ function admin_order_list_top_bar_button($which)
                   downloadLink.download = fileName
                   downloadLink.click()
                   $('#loadingmessage').hide() // hide the loading message
-                  $('#labelModal').modal('hide')
+                  $('#labelModal').dialog('close')
                 }
               })
             }
@@ -852,7 +863,7 @@ function my_action()
     define('LOCATION_TOP_RIGHT', LOCATION_TOP | LOCATION_RIGHT);
     define('LOCATION_BOTTOM_LEFT', LOCATION_BOTTOM | LOCATION_LEFT);
     define('LOCATION_BOTTOM_RIGHT', LOCATION_BOTTOM | LOCATION_RIGHT);
-    global $wpdb;
+
     $selectOrientation = intval($_POST['selectOrientation']);
     $orderIds          = $_POST['orderIds'];
     $labelPrinter      = intval($_POST['labelPrinter']);

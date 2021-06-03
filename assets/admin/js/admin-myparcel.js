@@ -104,23 +104,10 @@ jQuery(function($){
 });
 
 jQuery( document ).ready(function($) {
-    $selectedOption = $("select#bulk-action-selector-top").children("option:selected").val();
-    $("select#bulk-action-selector-top").change(function(e){
-        $selectedOption = $("select#bulk-action-selector-top").children("option:selected").val();
-        if($selectedOption === 'print_label_shipment') {
-            $('#doaction').attr('type', 'button');
-        } else {
-            $('#doaction').attr('type', 'submit');
-        }
-    });
-    var btnId = $('#doaction');
-    btnId.click(function() {
-        if($selectedOption === 'print_label_shipment') {
-            btnId.attr('data-toggle', 'modal');
-            btnId.attr('data-target', '#labelModal');
-        } else {
-            btnId.removeAttr('data-toggle');
-            btnId.removeAttr('data-target');
+    $('#doaction').click(function(e) {
+        if(jQuery('#bulk-action-selector-top').val() === 'print_label_shipment') {
+            jQuery('#labelModal').dialog('open');
+            e.preventDefault();
         }
     });
 });
