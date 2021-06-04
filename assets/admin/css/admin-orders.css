@@ -1,0 +1,36 @@
+#labelModal .modal-header {
+  margin-top: 8px;
+}
+
+#labelModal .modal-header .container {
+  line-height: 20px;
+}
+
+#labelModal .modal-body {
+  margin-top: 16px;
+}
+
+#labelModal #orientation1 {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#labelModal #orientation1 .col-lg-6 {
+  flex-grow: 1;
+  border: 1px solid grey;
+  padding: 40px 0;
+  text-align: center;
+}
+
+#labelModal #orientation1 .break {
+  flex-basis: 100%;
+  height: 0;
+}
+
+#labelModal .modal-footer {
+  margin-top: 16px;
+}
+
+#labelModal .alert {
+  color: #f00;
+}

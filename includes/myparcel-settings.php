@@ -75,7 +75,7 @@ function validationCallBack(): bool
         add_settings_error(
             'show_message',
             esc_attr('settings_updated'),
-            __(MYPARCEL_SETTING_SAVE_TEXT),
+            'Settings saved.',
             'updated'
         );
         add_action('admin_notices', 'printErrors');
@@ -100,17 +100,11 @@ add_action(
     2
 );
 
-/**
- * @return void
- */
 function printErrors()
 {
     settings_errors('show_message');
 }
 
-/**
- * @return void
- */
 function updateOption()
 {
     update_option('client_key', '');
@@ -119,9 +113,6 @@ function updateOption()
     update_option('myparcel_shopid', '');
 }
 
-/**
- * @return void
- */
 function addSettingMenu()
 {
     add_options_page(
@@ -135,9 +126,6 @@ function addSettingMenu()
 
 add_action('admin_menu', 'addSettingMenu');
 
-/**
- * @return void
- */
 function settingPage()
 {
     global $woocommerce;
