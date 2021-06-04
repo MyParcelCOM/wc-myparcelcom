@@ -6,7 +6,7 @@ declare(strict_types=1);
  * Plugin Name: MyParcel.com
  * Plugin URI: https://myparcel-com.odoo.com/en/woocommerce
  * Description: This plugin enables you to export WooCommerce orders to MyParcel.com.
- * Version: 2.1.0
+ * Version: 2.1.1
  * Author: MyParcel.com
  * Author URI: https://www.myparcel.com
  * Requires at least:
