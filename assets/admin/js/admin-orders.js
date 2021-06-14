@@ -38,7 +38,7 @@ jQuery(function ($) {
     var selectOrientation = $('input[name=\'radio\']:checked').val()
     if (selectOrientation) {
       var data = {
-        'action': 'download_pdf',
+        'action': 'myparcelcom_download_pdf',
         'selectOrientation': selectOrientation,
         'orderIds': selected,
         'labelPrinter': selectVal
