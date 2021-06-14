@@ -7,14 +7,6 @@ use MyParcelCom\ApiSdk\Resources\Customs;
 use MyParcelCom\ApiSdk\Resources\PhysicalProperties;
 use MyParcelCom\ApiSdk\Resources\Shipment;
 
-function myparcelExceptionRedirection()
-{
-    $_SESSION['errormessage'] = ERROR_MESSAGE_CREDENTIAL;
-    $url                      = admin_url('/edit.php?post_type=shop_order');
-    wp_redirect($url);
-    exit;
-}
-
 /**
  * @param array $columns
  * @return array
@@ -241,36 +233,6 @@ function isEUCountry($countryCode)
 
     return in_array($countryCode, $euCountryCodes);
 }
-
-function shutDownFunction()
-{
-    $error = error_get_last();
-    if ($error != null || $error != '') {
-        // Given URL
-        $url = $error['file'];
-        // Search substring
-        if (strpos($url, 'api-sdk') == false) {
-            $message = NOT_FOUND_TEXT;
-        } else {
-            $message = IS_EXISTS_TEXT;
-        }
-        // fatal error, E_ERROR === 1
-        if ($error['type'] === E_ERROR && $message === IS_EXISTS_TEXT) {
-            myparcelExceptionRedirection();
-        }
-    }
-}
-
-register_shutdown_function('shutDownFunction');
-
-function register_session()
-{
-    if (!session_id()) {
-        session_start();
-    }
-}
-
-add_action('init', 'register_session');
 
 function extra_fields_for_myparcel() {
     $screens = [ 'product' ];

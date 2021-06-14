@@ -34,13 +34,11 @@ function registerSettings()
 {
     add_option('client_key', '');
     add_option('client_secret_key', '');
-    add_option('ship_exists', '0');
     add_option('act_test_mode', '0');
     add_option('myparcel_shopid', '');
 
     register_setting('myplugin_options_group', 'client_key');
     register_setting('myplugin_options_group', 'client_secret_key');
-    register_setting('myplugin_options_group', 'ship_exists');
     register_setting('myplugin_options_group', 'act_test_mode');
     register_setting('myplugin_options_group', 'myparcel_shopid');
     register_setting('myplugin_options_group', 'checkValidation', 'validationCallBack');
@@ -109,7 +107,6 @@ function updateOption()
 {
     update_option('client_key', '');
     update_option('client_secret_key', '');
-    update_option('ship_exists', '0');
     update_option('myparcel_shopid', '');
 }
 
@@ -120,14 +117,8 @@ function addSettingMenu()
         MYPARCEL_API_SETTING_TEXT,
         'manage_options',
         'api_setting',
-        'settingPage'
+        'prepareHtmlForSettingPage'
     );
 }
 
 add_action('admin_menu', 'addSettingMenu');
-
-function settingPage()
-{
-    global $woocommerce;
-    prepareHtmlForSettingPage();
-}
