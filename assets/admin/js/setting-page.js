@@ -38,16 +38,16 @@ jQuery(function ($) {
   const shopSelect = $('#myparcel_shopid')
 
   function resetShopList () {
-    shopSelect.empty().append($('<option>', {
-      value: '',
-      text: 'Please select a shop'
-    }))
-
     const id = $('#client_key').val()
     const secret = $('#client_secret_key').val()
     const testmode = $('#act_test_mode').prop('checked') ? '1' : '0'
 
     if (id && secret) {
+      shopSelect.empty().append($('<option>', {
+        value: '',
+        text: 'Loading...'
+      }))
+
       const data = {
         action: 'myparcelcom_get_shops_for_client',
         client_key: id,
@@ -63,12 +63,17 @@ jQuery(function ($) {
             text: 'No shops available for this ' + (testmode === '1' ? 'sandbox' : 'production') + ' client'
           }))
         } else {
+          shopSelect.empty().append($('<option>', {
+            value: '',
+            text: 'Please select a shop...'
+          }))
           $.each(shops, function (index, shop) {
             shopSelect.append($('<option>', {
               value: shop.id,
               text: shop.name
             }))
           })
+          shopSelect.val(initialShop)
         }
       })
     }
@@ -77,7 +82,5 @@ jQuery(function ($) {
   $('#act_test_mode, #client_key, #client_secret_key').change(function () {
     resetShopList()
   })
-  if (!shopSelect.val()) {
-    resetShopList()
-  }
+  resetShopList()
 })

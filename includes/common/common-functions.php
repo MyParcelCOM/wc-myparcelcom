@@ -156,21 +156,10 @@ function prepareHtmlForSettingPage()
             <th scope="row"><label for="myparcel_shopid">Default shop</label></th>
             <td>
               <select class="regular-text" id="myparcel_shopid" name="myparcel_shopid">
-                  <?php
-                  $shops = getMyParcelShopList();
-
-                  if (!empty($shops)) {
-                      foreach ($shops as $shop) {
-                          if (!empty(get_option('myparcel_shopid'))) {
-                              echo '<option value="' . $shop->getId() . '" ' . ($shop->getId() == get_option('myparcel_shopid') ? 'selected' : '') . '>' . $shop->getName() . '</option>';
-                          } else {
-                              echo '<option value="' . $shop->getId() . '">' . $shop->getName() . '</option>';
-                          }
-                      }
-                  }
-                  ?>
+                <option value="">Please enter your client ID and secret</option>
               </select>
-              <p class="description">Please select the related MyParcel.com shop for this WordPress Shop.</p>
+              <script>const initialShop = '<?php echo get_option('myparcel_shopid'); ?>'</script>
+              <p class="description">Please select the related MyParcel.com shop for this WordPress shop.</p>
             </td>
           </tr>
         </tbody>
