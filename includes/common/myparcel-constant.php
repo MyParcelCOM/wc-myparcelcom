@@ -1,12 +1,9 @@
 <?php
 
-define('MYPARCEL_PLUGIN_VERSION', '2.1.1');
-define('ERROR_MESSAGE_CREDENTIAL', 'Incorrect client id or secret.');
+define('MYPARCEL_PLUGIN_VERSION', '2.1.3');
 define('SHIPMENT_PLUGIN_NOTICE', 'alive');
 define('GET_META_MYPARCEL_SHIPMENT_KEY', 'myparcel_shipment_key');
 define('GET_META_SHIPMENT_TRACKING_KEY', 'shipment_track_key');
-define('IS_EXISTS_TEXT', 'Exists');
-define('NOT_FOUND_TEXT', 'Not found');
 define('MYPARCEL_SUPPORT_TEXT_AND_URL', 'https://myparcel-com.odoo.com/en/woocommerce');
 define('MYPARCEL_API_SETTING_TEXT', 'MyParcel.com API');
 define('MYPARCEL_WEBHOOK_URL', 'https://sandbox-api.myparcel.com/hooks');

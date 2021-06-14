@@ -6,7 +6,7 @@ declare(strict_types=1);
  * Plugin Name: MyParcel.com
  * Plugin URI: https://myparcel-com.odoo.com/en/woocommerce
  * Description: This plugin enables you to export WooCommerce orders to MyParcel.com.
- * Version: 2.1.1
+ * Version: 2.1.3
  * Author: MyParcel.com
  * Author URI: https://www.myparcel.com
  * Requires at least:
@@ -27,7 +27,7 @@ if (!defined('MY_PARCEL_PLUGIN_NAME')) {
 
 $phpVersion = (float) phpversion();
 $phpVersionMessage = '<p>' . MY_PARCEL_PLUGIN_NAME . ' plugin needs PHP 7.1 or higher.</p>';
-$wooVersionMessage = '<p>Please install <a href="https://wordpress.org/plugins/woocommerce/" target="_blank">WooCommerce</a> to use ' . MY_PARCEL_PLUGIN_NAME . ' plugin.</p>';
+$wooVersionMessage = '<p>Please install <a href="https://wordpress.org/plugins/woocommerce/" target="_blank">WooCommerce</a> to use the ' . MY_PARCEL_PLUGIN_NAME . ' plugin.</p>';
 
 if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
     global $pagenow;

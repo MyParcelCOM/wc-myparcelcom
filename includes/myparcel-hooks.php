@@ -2,18 +2,11 @@
 
 declare(strict_types=1);
 
+use MyParcelCom\ApiSdk\Http\Exceptions\RequestException;
 use MyParcelCom\ApiSdk\Resources\Address;
 use MyParcelCom\ApiSdk\Resources\Customs;
 use MyParcelCom\ApiSdk\Resources\PhysicalProperties;
 use MyParcelCom\ApiSdk\Resources\Shipment;
-
-function myparcelExceptionRedirection()
-{
-    $_SESSION['errormessage'] = ERROR_MESSAGE_CREDENTIAL;
-    $url                      = admin_url('/edit.php?post_type=shop_order');
-    wp_redirect($url);
-    exit;
-}
 
 /**
  * @param array $columns
@@ -72,7 +65,7 @@ add_filter('bulk_actions-edit-shop_order', 'bulkActionsEditProduct', 20, 1);
  */
 function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): string
 {
-    $queryParam = ['_customer_user', 'm', 'export_shipment_action', 'check_action'];
+    $queryParam = ['_customer_user', 'm', 'check_action', 'shipment_created_amount', 'shipment_error_messages'];
     $redirectTo = remove_query_arg($queryParam, $redirectTo);
 
     if ($action === 'export_myparcel_order') {
@@ -82,22 +75,56 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
             $shipmentKey = get_post_meta($postId, GET_META_MYPARCEL_SHIPMENT_KEY, true);
 
             if (empty($shipmentKey)) {
-                $shipmentTrackKey = createShipmentForOrder($postId);
-                $orderShippedCount++;
-                /* Update the shipment key*/
-                updateShipmentKey($postId, $shipmentKey);
-                $shipmentKey = get_post_meta($postId, GET_META_MYPARCEL_SHIPMENT_KEY, true);
-                if ($shipmentKey) {
-                    $shippedTrackingArray = json_encode([
-                        'trackingKey' => $shipmentTrackKey,
-                        'items'       => '',
-                    ]);
-                    update_post_meta($postId, GET_META_SHIPMENT_TRACKING_KEY, $shippedTrackingArray);
+                try {
+                    $shipmentTrackKey = createShipmentForOrder($postId);
+
+                    $orderShippedCount++;
+                    /* Update the shipment key*/
+                    updateShipmentKey($postId, $shipmentKey);
+                    $shipmentKey = get_post_meta($postId, GET_META_MYPARCEL_SHIPMENT_KEY, true);
+                    if ($shipmentKey) {
+                        $shippedTrackingArray = json_encode([
+                            'trackingKey' => $shipmentTrackKey,
+                            'items'       => '',
+                        ]);
+                        update_post_meta($postId, GET_META_SHIPMENT_TRACKING_KEY, $shippedTrackingArray);
+                    }
+
+                    if ($orderShippedCount > 0) {
+                        $redirectTo = add_query_arg([
+                            'check_action'            => 'shipment_created',
+                            'shipment_created_amount' => $orderShippedCount,
+                        ], $redirectTo);
+                    }
+                } catch (RequestException $exception) {
+                    $response = json_decode((string) $exception->getResponse()->getBody(), true);
+                    $errorMessages = [
+                        implode(' ', [$exception->getMessage(), 'for order', '#' . $postId]),
+                    ];
+
+                    if (isset($response['errors'])) {
+                        foreach ($response['errors'] as $error) {
+                            if (isset($error['meta']['json_schema_errors'])) {
+                                foreach ($error['meta']['json_schema_errors'] as $schemaError) {
+                                    if (in_array($schemaError['message'], ['Failed to match all schemas'])) {
+                                        continue;
+                                    }
+                                    $errorMessages[] = $schemaError['message'];
+                                }
+                            }
+                        }
+                    }
+
+                    return add_query_arg([
+                        'check_action'            => 'shipment_error',
+                        'shipment_error_messages' => array_map('urlencode', $errorMessages),
+                    ], $redirectTo);
+                } catch (Throwable $throwable) {
+                    return add_query_arg([
+                        'check_action'            => 'shipment_error',
+                        'shipment_error_messages' => [$throwable->getMessage()],
+                    ], $redirectTo);
                 }
-                $redirectTo = ($orderShippedCount > 0) ? add_query_arg(
-                    ['export_shipment_action' => $orderShippedCount, 'check_action' => 'export_order'],
-                    $redirectTo
-                ) : $redirectTo;
             } else {
                 return add_query_arg(['check_action' => 'shipment_already_created'], $redirectTo);
             }
@@ -117,13 +144,27 @@ set_transient('shipment-plugin-notice', SHIPMENT_PLUGIN_NOTICE, 3);
 function exportPrintBulkActionAdminNotice()
 {
     if (SHIPMENT_PLUGIN_NOTICE === get_transient("shipment-plugin-notice")) {
-        if (!empty($_REQUEST['export_shipment_action']) && 'export_order' == $_REQUEST['check_action']) {
-            $orderShippedCount = intval($_REQUEST['export_shipment_action']);
-            echo '<div class="notice notice-success is-dismissible" style="color:green;"><p>'
-                . sprintf(_n('%s order successfully exported to MyParcel.com', '%s orders successfully exported to MyParcel.com', $orderShippedCount), $orderShippedCount)
-                . '</p></div>';
-        } elseif (isset($_REQUEST['check_action']) && $_REQUEST['check_action'] == 'shipment_already_created') {
-            echo '<div class="notice notice-success is-dismissible" style="color:red;"><p>Order already exported to MyParcel.com</p></div>';
+        if (isset($_REQUEST['check_action'])) {
+            switch ($_REQUEST['check_action']) {
+                case 'shipment_created':
+                    $orderShippedCount = intval(isset($_REQUEST['shipment_created_amount']) ? $_REQUEST['shipment_created_amount'] : 0);
+                    echo '<div class="notice notice-success is-dismissible" style="color:green;"><p>'
+                        . sprintf(_n('%s order successfully exported to MyParcel.com', '%s orders successfully exported to MyParcel.com', $orderShippedCount), $orderShippedCount)
+                        . '</p></div>';
+                    break;
+
+                case 'shipment_already_created':
+                    echo '<div class="notice notice-success is-dismissible" style="color:red;"><p>Order already exported to MyParcel.com</p></div>';
+                    break;
+
+                case 'shipment_error':
+                    $errorMessages = array_map('htmlspecialchars', $_REQUEST['shipment_error_messages']);
+
+                    echo '<div class="notice notice-success is-dismissible" style="color:red;"><p>'
+                        . implode($errorMessages, '<br>')
+                        . '</p></div>';
+                    break;
+            }
         }
         delete_transient('shipment-plugin-notice');
     }
@@ -134,6 +175,7 @@ add_action('admin_notices', 'exportPrintBulkActionAdminNotice');
 /**
  * @param int $orderId
  * @return string
+ * @throws RequestException
  */
 function createShipmentForOrder($orderId)
 {
@@ -241,36 +283,6 @@ function isEUCountry($countryCode)
 
     return in_array($countryCode, $euCountryCodes);
 }
-
-function shutDownFunction()
-{
-    $error = error_get_last();
-    if ($error != null || $error != '') {
-        // Given URL
-        $url = $error['file'];
-        // Search substring
-        if (strpos($url, 'api-sdk') == false) {
-            $message = NOT_FOUND_TEXT;
-        } else {
-            $message = IS_EXISTS_TEXT;
-        }
-        // fatal error, E_ERROR === 1
-        if ($error['type'] === E_ERROR && $message === IS_EXISTS_TEXT) {
-            myparcelExceptionRedirection();
-        }
-    }
-}
-
-register_shutdown_function('shutDownFunction');
-
-function register_session()
-{
-    if (!session_id()) {
-        session_start();
-    }
-}
-
-add_action('init', 'register_session');
 
 function extra_fields_for_myparcel() {
     $screens = [ 'product' ];

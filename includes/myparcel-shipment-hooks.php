@@ -19,14 +19,6 @@ function adminLoadJsCss()
         );
         wp_enqueue_script('myparcelcom-orders');
     }
-    if (!empty($_SESSION['errormessage'])) {
-        ?>
-      <div class="notice-error notice is-dismissible">
-        <p><?php _e($_SESSION['errormessage'], 'woocommerce'); ?></p>
-      </div>
-        <?php
-    }
-    unset($_SESSION['errormessage']);
 }
 
 add_action('admin_enqueue_scripts', 'adminLoadJsCss', 999);

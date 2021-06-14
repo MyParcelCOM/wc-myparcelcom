@@ -117,7 +117,7 @@ function prepareHtmlForSettingPage()
         </td>
       </tr>
     </table>
-    <form method="post" action="options.php" id="api-setting-form">
+    <form method="post" action="options.php" id="myparcelcom-settings-form">
         <?php settings_fields('myplugin_options_group'); ?>
       <table class="form-table">
         <tbody>
@@ -127,7 +127,7 @@ function prepareHtmlForSettingPage()
               <fieldset>
                 <legend class="screen-reader-text"><span></span></legend>
                 <label for="users_can_register">
-                  <input type="checkbox" name="act_test_mode"
+                  <input type="checkbox" id="act_test_mode" name="act_test_mode"
                          value="1" <?php checked(1, (int) get_option('act_test_mode')); ?>>
                 </label>
               </fieldset>
@@ -152,29 +152,16 @@ function prepareHtmlForSettingPage()
                      value="<?php echo get_option('client_secret_key'); ?>"/>
             </td>
           </tr>
-          <?php if (get_option('client_key')) { ?>
           <tr valign="top">
             <th scope="row"><label for="myparcel_shopid">Default shop</label></th>
             <td>
               <select class="regular-text" id="myparcel_shopid" name="myparcel_shopid">
-                  <?php
-                  $shops = getMyParcelShopList();
-
-                  if (!empty($shops)) {
-                      foreach ($shops as $shop) {
-                          if (!empty(get_option('myparcel_shopid'))) {
-                              echo '<option value="' . $shop->getId() . '" ' . ($shop->getId() == get_option('myparcel_shopid') ? 'selected' : '') . '>' . $shop->getName() . '</option>';
-                          } else {
-                              echo '<option value="' . $shop->getId() . '">' . $shop->getName() . '</option>';
-                          }
-                      }
-                  }
-                  ?>
+                <option value="">Please enter your client ID and secret</option>
               </select>
-              <p class="description">Please select the related MyParcel.com shop for this WordPress Shop.</p>
+              <script>const initialShop = '<?php echo get_option('myparcel_shopid'); ?>'</script>
+              <p class="description">Please select the related MyParcel.com shop for this WordPress shop.</p>
             </td>
           </tr>
-          <?php } ?>
         </tbody>
       </table>
         <?php submit_button('Save changes'); ?>
@@ -218,19 +205,18 @@ function renderOrderColumnContent($column, $orderId, $the_order)
 /**
  * Get Auth Token
  */
-function getAuthToken()
+function getAuthTokenAndRegisterWebhook()
 {
-    $clientKey       = get_option('client_key');
+    $clientKey = get_option('client_key');
     $clientSecretKey = get_option('client_secret_key');
     if ($clientKey && $clientSecretKey) {
-        $dataString    = json_encode([
+        $dataString = json_encode([
             'grant_type'    => 'client_credentials',
             'client_id'     => $clientKey,
             'client_secret' => $clientSecretKey,
             'scope'         => '*',
         ]);
-        $url           = MYPARCEL_WEBHOOK_ACCESS_TOKEN;
-        $result        = createWebHookCurlRequest($url, $dataString);
+        $result = createCurlRequest(MYPARCEL_WEBHOOK_ACCESS_TOKEN, $dataString);
         if (!empty($result)) {
             $getToken = json_decode($result);
             if (isset($getToken->access_token)) {
@@ -288,7 +274,7 @@ function registerMyParcelWebHook($accessToken)
     $dataString      = json_encode($data);
     $authorization   = "Authorization: Bearer $accessToken";
     $url             = MYPARCEL_WEBHOOK_URL;
-    $result          = createWebHookCurlRequest($url, $dataString, $authorization);
+    $result          = createCurlRequest($url, $dataString, $authorization);
     $webHookResponse = json_decode($result);
     if (get_option(MYPARCEL_WEBHOOK_OPTION_ID) !== false) {
         update_option(MYPARCEL_WEBHOOK_OPTION_ID, $webHookResponse->data->id);
@@ -379,7 +365,7 @@ function getShipmentFiles($post_id)
  * @param null $authorization
  * @return bool|string
  */
-function createWebHookCurlRequest($url, $dataString, $authorization = null)
+function createCurlRequest($url, $dataString, $authorization = null)
 {
     $httpHeader = array_filter([
         'Content-Type: application/json',
@@ -494,8 +480,8 @@ function admin_order_list_top_bar_button($which)
     }
 }
 
-add_action('wp_ajax_download_pdf', 'download_pdf');
-function download_pdf()
+add_action('wp_ajax_myparcelcom_download_pdf', 'downloadPdf');
+function downloadPdf()
 {
     define('LOCATION_TOP', 1);
     define('LOCATION_BOTTOM', 2);

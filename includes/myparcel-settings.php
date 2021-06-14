@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 /**
  * @return void
@@ -34,54 +36,39 @@ function registerSettings()
 {
     add_option('client_key', '');
     add_option('client_secret_key', '');
-    add_option('ship_exists', '0');
     add_option('act_test_mode', '0');
     add_option('myparcel_shopid', '');
 
     register_setting('myplugin_options_group', 'client_key');
     register_setting('myplugin_options_group', 'client_secret_key');
-    register_setting('myplugin_options_group', 'ship_exists');
     register_setting('myplugin_options_group', 'act_test_mode');
     register_setting('myplugin_options_group', 'myparcel_shopid');
-    register_setting('myplugin_options_group', 'checkValidation', 'validationCallBack');
 }
 
 add_action('admin_init', 'registerSettings');
 
-/**
- * @return bool
- */
-function validationCallBack(): bool
+add_action('wp_ajax_myparcelcom_get_shops_for_client', 'getShopsForClient');
+function getShopsForClient()
 {
-    $error          = false;
-    $clientKey      = get_option('client_key');
-    $secretKey      = get_option('client_secret_key');
-    $myparcelshopId = get_option('myparcel_shopid');
-    if (empty($clientKey) || empty($secretKey)) {
-        $error = true;
-    }
-    if ($error) {
-        add_settings_error(
-            'show_message',
-            esc_attr('settings_updated'),
-            __('Settings NOT saved. Please fill all the required fields.'),
-            'error'
-        );
-        add_action('admin_notices', 'printErrors');
-        updateOption();
+    $getAuth = new MyParcelApi();
+    $api = $getAuth->doAuthentication($_POST['client_key'], $_POST['client_secret_key'], $_POST['act_test_mode']);
 
-        return false;
-    } else {
-        add_settings_error(
-            'show_message',
-            esc_attr('settings_updated'),
-            'Settings saved.',
-            'updated'
-        );
-        add_action('admin_notices', 'printErrors');
-
-        return true;
+    $shopData = [];
+    if ($api) {
+        $shops = $api->getShops()->limit(100)->get();
+        usort($shops, function ($a, $b) {
+            return strcmp(strtolower($a->getName()), strtolower($b->getName()));
+        });
+        foreach ($shops as $shop) {
+            $shopData[] = [
+                'id'   => $shop->getId(),
+                'name' => $shop->getName(),
+            ];
+        }
     }
+
+    echo json_encode($shopData);
+    exit;
 }
 
 /**
@@ -91,8 +78,8 @@ add_action(
     'update_option_myparcel_shopid',
     function ($old_value, $new_value) {
         if ($old_value != $new_value) {
-            if (function_exists('getAuthToken')) {
-                getAuthToken();
+            if (function_exists('getAuthTokenAndRegisterWebhook')) {
+                getAuthTokenAndRegisterWebhook();
             }
         }
     },
@@ -100,34 +87,15 @@ add_action(
     2
 );
 
-function printErrors()
-{
-    settings_errors('show_message');
-}
-
-function updateOption()
-{
-    update_option('client_key', '');
-    update_option('client_secret_key', '');
-    update_option('ship_exists', '0');
-    update_option('myparcel_shopid', '');
-}
-
 function addSettingMenu()
 {
     add_options_page(
         'API Setting',
         MYPARCEL_API_SETTING_TEXT,
         'manage_options',
-        'api_setting',
-        'settingPage'
+        'myparcelcom_settings',
+        'prepareHtmlForSettingPage'
     );
 }
 
 add_action('admin_menu', 'addSettingMenu');
-
-function settingPage()
-{
-    global $woocommerce;
-    prepareHtmlForSettingPage();
-}

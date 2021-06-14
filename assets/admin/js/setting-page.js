@@ -1,75 +1,21 @@
 jQuery(function ($) {
-  $('form#api-setting-form').validate({
+  $('#myparcelcom-settings-form').validate({
     rules: {
-      api_url: {
-        required: true
-      },
-      api_auth_url: {
-        required: true
-      },
       client_key: {
         required: true
       },
       client_secret_key: {
-        required: true
-      },
-      street1: {
-        required: true
-      },
-      street_number: {
-        required: true
-      },
-      city: {
-        required: true
-      },
-      postal_code: {
-        required: true
-      },
-      country_code: {
-        required: true
-      },
-      phone_number: {
-        required: true
-      },
-      company_name: {
         required: true
       },
       myparcel_shopid: {
-        required: false
+        required: true
       }
     },
     messages: {
-      api_url: {
-        required: 'Required'
-      },
-      api_auth_url: {
-        required: 'Required'
-      },
       client_key: {
         required: 'Required'
       },
       client_secret_key: {
-        required: 'Required'
-      },
-      street1: {
-        required: 'Required'
-      },
-      street_number: {
-        required: 'Required'
-      },
-      city: {
-        required: 'Required'
-      },
-      postal_code: {
-        required: 'Required'
-      },
-      country_code: {
-        required: 'Required'
-      },
-      phone_number: {
-        required: 'Required'
-      },
-      company_name: {
         required: 'Required'
       },
       myparcel_shopid: {
@@ -88,4 +34,53 @@ jQuery(function ($) {
         error.appendTo(element.parent())
     },
   })
+
+  const shopSelect = $('#myparcel_shopid')
+
+  function resetShopList () {
+    const id = $('#client_key').val()
+    const secret = $('#client_secret_key').val()
+    const testmode = $('#act_test_mode').prop('checked') ? '1' : '0'
+
+    if (id && secret) {
+      shopSelect.empty().append($('<option>', {
+        value: '',
+        text: 'Loading...'
+      }))
+
+      const data = {
+        action: 'myparcelcom_get_shops_for_client',
+        client_key: id,
+        client_secret_key: secret,
+        act_test_mode: testmode
+      }
+      jQuery.post(myparcelAdminAjaxUrl, data, function (response) {
+        const shops = JSON.parse(response)
+
+        if (shops.length === 0) {
+          shopSelect.empty().append($('<option>', {
+            value: '',
+            text: 'No shops available for this ' + (testmode === '1' ? 'sandbox' : 'production') + ' client'
+          }))
+        } else {
+          shopSelect.empty().append($('<option>', {
+            value: '',
+            text: 'Please select a shop...'
+          }))
+          $.each(shops, function (index, shop) {
+            shopSelect.append($('<option>', {
+              value: shop.id,
+              text: shop.name
+            }))
+          })
+          shopSelect.val(initialShop)
+        }
+      })
+    }
+  }
+
+  $('#act_test_mode, #client_key, #client_secret_key').change(function () {
+    resetShopList()
+  })
+  resetShopList()
 })
