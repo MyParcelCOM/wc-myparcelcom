@@ -106,10 +106,17 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
                         foreach ($response['errors'] as $error) {
                             if (isset($error['meta']['json_schema_errors'])) {
                                 foreach ($error['meta']['json_schema_errors'] as $schemaError) {
-                                    if (in_array($schemaError['message'], ['Failed to match all schemas'])) {
+                                    if (in_array($schemaError['message'], [
+                                        'Failed to match all schemas',
+                                        'Failed to match exactly one schema',
+                                    ])) {
                                         continue;
                                     }
-                                    $errorMessages[] = $schemaError['message'];
+                                    $errorMessages[] = implode(' ', [
+                                        str_replace('data.attributes.', '', $schemaError['property']),
+                                        '-',
+                                        $schemaError['message']
+                                    ]);
                                 }
                             }
                         }
@@ -199,7 +206,7 @@ function createShipmentForOrder($orderId)
             ->setInvoiceNumber('N/A');
         if ($orderData['shipping_total']) {
             $customs
-                ->setShippingValueAmount($orderData['shipping_total'] * 100)
+                ->setShippingValueAmount((int) round($orderData['shipping_total'] * 100))
                 ->setShippingValueCurrency($currency);
         }
         $shipment->setCustoms($customs);
@@ -223,7 +230,7 @@ function createShipmentForOrder($orderId)
         ->setReturnAddress($shop->getReturnAddress())
         ->setRecipientAddress($recipient)
         ->setPhysicalProperties(
-            (new PhysicalProperties())->setWeight($countAllWeight)
+            (new PhysicalProperties())->setWeight((int) round($countAllWeight))
         )
         ->setCustomerReference((string) $orderId)
         ->setDescription('Order #' . $orderId)
@@ -234,7 +241,7 @@ function createShipmentForOrder($orderId)
 
     if ($orderData['total']) {
         $shipment
-            ->setTotalValueAmount($orderData['total'] * 100)
+            ->setTotalValueAmount((int) round($orderData['total'] * 100))
             ->setTotalValueCurrency($currency);
     }
 
