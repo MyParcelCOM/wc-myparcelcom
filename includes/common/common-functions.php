@@ -45,7 +45,7 @@ function getShipmentItems($orderId, $currency, $originCountryCode)
         $sku = $product->get_sku() ?: $product->get_id();
         $imageUrl = $product->get_image_id() ? wp_get_attachment_image_url($product->get_image_id(), 'medium') : null;
         $itemValue = (int) round($product->get_price() * 100);
-        $itemWeight = $product->get_weight() ? $product->get_weight() * 1000 : null;
+        $itemWeight = $product->get_weight() ? (int) round($product->get_weight() * 1000) : null;
         $hsCode = get_post_meta($product->get_id(), 'myparcel_hs_code', true) ?: null;
         $productCountry = get_post_meta($product->get_id(), 'myparcel_product_country', true);
 
