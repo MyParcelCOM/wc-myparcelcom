@@ -4,6 +4,7 @@ namespace MyParcelCom\ApiSdk\Tests\Feature\Proxy;
 
 use Http\Client\HttpClient;
 use MyParcelCom\ApiSdk\Authentication\AuthenticatorInterface;
+use MyParcelCom\ApiSdk\Enums\TaxTypeEnum;
 use MyParcelCom\ApiSdk\MyParcelComApi;
 use MyParcelCom\ApiSdk\MyParcelComApiInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\AddressInterface;
@@ -18,6 +19,7 @@ use MyParcelCom\ApiSdk\Resources\Interfaces\ShipmentItemInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ShipmentStatusInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ShopInterface;
 use MyParcelCom\ApiSdk\Resources\Proxy\ShipmentProxy;
+use MyParcelCom\ApiSdk\Resources\TaxIdentificationNumber;
 use MyParcelCom\ApiSdk\Tests\Traits\MocksApiCommunication;
 use PHPUnit\Framework\TestCase;
 
@@ -152,13 +154,25 @@ class ShipmentProxyTest extends TestCase
         $this->assertEquals('Some road', $this->shipmentProxy->getRecipientAddress()->getStreet1());
         $this->assertEquals('1GL HF1', $this->shipmentProxy->getRecipientAddress()->getPostalCode());
 
-        $this->assertEquals('H111111-11', $this->shipmentProxy->getRecipientTaxNumber());
+        $taxIdentificationNumbers = $this->shipmentProxy->getRecipientTaxIdentificationNumbers();
+        $this->assertCount(1, $taxIdentificationNumbers);
+        array_walk($taxIdentificationNumbers, function ($taxIdentificationNumber) {
+            $this->assertInstanceOf(TaxIdentificationNumber::class, $taxIdentificationNumber);
+            $this->assertEquals(TaxTypeEnum::IOSS, $taxIdentificationNumber->getType());
+            $this->assertEquals('IM2760000742', $taxIdentificationNumber->getNumber());
+        });
 
         $this->assertInstanceOf(AddressInterface::class, $this->shipmentProxy->getSenderAddress());
         $this->assertEquals(17, $this->shipmentProxy->getSenderAddress()->getStreetNumber());
         $this->assertEquals('Cardiff', $this->shipmentProxy->getSenderAddress()->getCity());
 
-        $this->assertEquals('G666666-66', $this->shipmentProxy->getSenderTaxNumber());
+        $taxIdentificationNumbers = $this->shipmentProxy->getSenderTaxIdentificationNumbers();
+        $this->assertCount(1, $taxIdentificationNumbers);
+        array_walk($taxIdentificationNumbers, function ($taxIdentificationNumber) {
+            $this->assertInstanceOf(TaxIdentificationNumber::class, $taxIdentificationNumber);
+            $this->assertEquals(TaxTypeEnum::EORI, $taxIdentificationNumber->getType());
+            $this->assertEquals('XI123456789', $taxIdentificationNumber->getNumber());
+        });
 
         $this->assertEquals('123456', $this->shipmentProxy->getPickupLocationCode());
         $this->assertInstanceOf(AddressInterface::class, $this->shipmentProxy->getPickupLocationAddress());

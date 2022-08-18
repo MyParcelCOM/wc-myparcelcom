@@ -231,6 +231,44 @@ class ServiceProxy implements ServiceInterface, ResourceProxyInterface
     }
 
     /**
+     * @param array $regions
+     * @return $this
+     */
+    public function setRegionsFrom(array $regions)
+    {
+        $this->getResource()->setRegionsFrom($regions);
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRegionsFrom()
+    {
+        return $this->getResource()->getRegionsFrom();
+    }
+
+    /**
+     * @param array $regions
+     * @return $this
+     */
+    public function setRegionsTo(array $regions)
+    {
+        $this->getResource()->setRegionsTo($regions);
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRegionsTo()
+    {
+        return $this->getResource()->getRegionsTo();
+    }
+
+    /**
      * @param bool $usesVolumetricWeight
      * @return $this
      */

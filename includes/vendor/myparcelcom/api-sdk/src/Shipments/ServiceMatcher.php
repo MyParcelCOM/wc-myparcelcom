@@ -40,8 +40,7 @@ class ServiceMatcher
     }
 
     /**
-     * Returns true if the service has a delivery method that matches the
-     * shipment.
+     * Returns true if the service has a delivery method that matches the shipment.
      *
      * @param ShipmentInterface $shipment
      * @param ServiceInterface  $service
@@ -57,8 +56,7 @@ class ServiceMatcher
     }
 
     /**
-     * Returns a subset of the given service rates that have all the options that
-     * the shipment requires.
+     * Returns a subset of the given service rates that have all the options that the shipment requires.
      *
      * @param ShipmentInterface      $shipment
      * @param ServiceRateInterface[] $serviceRates

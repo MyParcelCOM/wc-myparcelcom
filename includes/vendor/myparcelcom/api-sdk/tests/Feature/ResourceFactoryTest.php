@@ -262,6 +262,7 @@ class ResourceFactoryTest extends TestCase
             'type'          => 'services',
             'attributes'    => [
                 'name'                   => 'Easy Delivery Service',
+                'code'                   => 'easy-service',
                 'package_type'           => ServiceInterface::PACKAGE_TYPE_PARCEL,
                 'transit_time'           => [
                     'min' => 2,
@@ -274,6 +275,17 @@ class ResourceFactoryTest extends TestCase
                     'Friday',
                 ],
                 'delivery_method'        => 'delivery',
+                'regions_from'           => [
+                    [
+                        'country_code' => 'GB',
+                    ],
+                ],
+                'regions_to'             => [
+                    [
+                        'country_code' => 'GB',
+                        'postal_code'  => '^((GY|JE).*|TR2[1-5]) ?[0-9]{1}[A-Z]{2}$',
+                    ],
+                ],
                 'uses_volumetric_weight' => true,
             ],
             'relationships' => [

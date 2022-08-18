@@ -35,13 +35,13 @@
       "self": "https://api/shops/shop-id-1"
     },
     "relationships": {
-      "region": {
+      "organization": {
         "data": {
-          "id": "c1048135-db45-404e-adac-fdecd0c7134a",
-          "type": "regions"
+          "id": "organization-id-1",
+          "type": "organizations"
         },
         "links": {
-          "related": "https://api/regions/shop-id-1"
+          "related": "https://api/organizations/organization-id-1"
         }
       }
     }

@@ -165,7 +165,6 @@ class MyParcelComApi implements MyParcelComApiInterface
             }
         }
 
-        // These resources can be stored for a week.
         $regions = $this->getRequestCollection($url->getUrl(), $ttl);
 
         if ($regions->count() > 0 || !isset($filters['region_code'])) {
@@ -183,7 +182,6 @@ class MyParcelComApi implements MyParcelComApiInterface
      */
     public function getCarriers($ttl = self::TTL_10MIN)
     {
-        // These resources can be stored for a week.
         return $this->getRequestCollection($this->apiUri . self::PATH_CARRIERS, $ttl);
     }
 
@@ -226,7 +224,6 @@ class MyParcelComApi implements MyParcelComApiInterface
         foreach ($carriers as $carrier) {
             $carrierUri = str_replace('{carrier_id}', $carrier->getId(), $uri->getUrl());
 
-            // These resources can be stored for a week.
             try {
                 $resources = $this->getResourcesArray($carrierUri, $ttl);
             } catch (RequestException $exception) {
@@ -260,8 +257,6 @@ class MyParcelComApi implements MyParcelComApiInterface
      */
     public function getShops($ttl = self::TTL_10MIN)
     {
-        // These resources can be stored for a week. Or should be removed from
-        // cache when updated
         return $this->getRequestCollection($this->apiUri . self::PATH_SHOPS, $ttl);
     }
 
@@ -306,22 +301,23 @@ class MyParcelComApi implements MyParcelComApiInterface
         }
 
         $url->addQuery($this->arrayToFilters([
-            'address_from' => [
+            'address_from' => array_filter([
                 'country_code' => $shipment->getSenderAddress()->getCountryCode(),
+                'state_code'   => $shipment->getSenderAddress()->getStateCode(),
                 'postal_code'  => $shipment->getSenderAddress()->getPostalCode(),
-            ],
-            'address_to'   => [
+            ]),
+            'address_to'   => array_filter([
                 'country_code' => $shipment->getRecipientAddress()->getCountryCode(),
+                'state_code'   => $shipment->getRecipientAddress()->getStateCode(),
                 'postal_code'  => $shipment->getRecipientAddress()->getPostalCode(),
-            ],
+            ]),
         ]));
 
-        // Services can be cached for a week.
         $services = $this->getResourcesArray($url->getUrl(), $ttl);
 
         $matcher = new ServiceMatcher();
         $services = array_values(array_filter($services, function (ServiceInterface $service) use ($shipment, $matcher) {
-            return $matcher->matches($shipment, $service);
+            return $matcher->matchesDeliveryMethod($shipment, $service);
         }));
 
         return new ArrayCollection($services);
@@ -374,6 +370,13 @@ class MyParcelComApi implements MyParcelComApiInterface
             'volumetric_weight'   => $shipment->getPhysicalProperties()->getVolumetricWeight(),
             'service'             => implode(',', $serviceIds),
         ]));
+        if ($shipment->getShop()) {
+            $url->addQuery($this->arrayToFilters([
+                'organization' => $shipment->getShop()->getOrganization()->getId(),
+            ]));
+        }
+        // Include the services to avoid extra http requests when the result is looped with: $serviceRate->getService().
+        $url->addQuery(['include' => 'contract,service']);
 
         $serviceRates = $this->getRequestCollection($url->getUrl(), $ttl);
 
@@ -596,8 +599,9 @@ class MyParcelComApi implements MyParcelComApiInterface
     {
         $response = $this->doRequest($uri, 'get', [], [], $ttl);
         $json = json_decode((string) $response->getBody(), true);
+        $included = isset($json['included']) ? $json['included'] : null;
 
-        $resources = $this->jsonToResources($json['data']);
+        $resources = $this->jsonToResources($json['data'], $included);
 
         // If there is no next link, we don't have to retrieve any more data
         if (!isset($json['links']['next'])) {
@@ -625,8 +629,8 @@ class MyParcelComApi implements MyParcelComApiInterface
             ])->getUrl();
 
             return $this->doRequest($url, 'get', [], [], $ttl);
-        }, function ($data) {
-            return $this->jsonToResources($data);
+        }, function ($data, $included = null) {
+            return $this->jsonToResources($data, $included);
         });
     }
 
@@ -686,10 +690,11 @@ class MyParcelComApi implements MyParcelComApiInterface
     /**
      * Convert the data from a json request to an array of resources.
      *
-     * @param array $json
+     * @param array      $json
+     * @param array|null $included
      * @return array
      */
-    protected function jsonToResources(array $json)
+    protected function jsonToResources(array $json, $included = null)
     {
         $resources = [];
 
@@ -698,7 +703,14 @@ class MyParcelComApi implements MyParcelComApiInterface
         }
 
         foreach ($json as $resourceData) {
-            $resources[] = $this->resourceFactory->create($resourceData['type'], $resourceData);
+            $resource = $this->resourceFactory->create($resourceData['type'], $resourceData);
+
+            if (isset($included)) {
+                $includedResources = $this->jsonToResources($included);
+                $resource->processIncludedResources($includedResources);
+            }
+
+            $resources[] = $resource;
         }
 
         return $resources;
@@ -813,7 +825,8 @@ class MyParcelComApi implements MyParcelComApiInterface
         );
 
         $json = json_decode($response->getBody(), true);
-        $resources = $this->jsonToResources($json['data']);
+        $included = isset($json['included']) ? $json['included'] : null;
+        $resources = $this->jsonToResources($json['data'], $included);
 
         return reset($resources);
     }

@@ -18,7 +18,14 @@
         "email": "john@doe.com",
         "phone_number": "+31 234 567 890"
       },
-      "recipient_tax_number": "H111111-11",
+      "recipient_tax_identification_numbers": [
+        {
+          "country_code": "GB",
+          "number": "IM2760000742",
+          "description": "eBay IOSS number",
+          "type": "ioss"
+        }
+      ],
       "sender_address": {
         "street_1": "Some road",
         "street_2": "Room 3",
@@ -34,7 +41,14 @@
         "email": "john@doe.com",
         "phone_number": "+31 234 567 890"
       },
-      "sender_tax_number": "G666666-66",
+      "sender_tax_identification_numbers": [
+        {
+          "country_code": "GB",
+          "number": "XI123456789",
+          "description": "Eori XI number for Northern Ireland",
+          "type": "eori"
+        }
+      ],
       "return_address": {
         "street_1": "Some road",
         "street_2": "Room 3",

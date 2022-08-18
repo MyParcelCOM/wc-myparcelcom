@@ -66,4 +66,15 @@ interface ShopInterface extends ResourceInterface
      * @return DateTime
      */
     public function getCreatedAt();
+
+    /**
+     * @param OrganizationInterface $organization
+     * @return $this
+     */
+    public function setOrganization(OrganizationInterface $organization);
+
+    /**
+     * @return OrganizationInterface
+     */
+    public function getOrganization();
 }

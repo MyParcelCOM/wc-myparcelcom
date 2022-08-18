@@ -61,7 +61,7 @@ class PromiseCollectionTest extends TestCase
     {
         foreach ($this->collection as $resource) {
             $this->assertGreaterThanOrEqual(0, $resource->id);
-            $this->assertLessThanOrEqual(29, $resource->id);
+            $this->assertLessThanOrEqual(99, $resource->id);
         }
     }
 

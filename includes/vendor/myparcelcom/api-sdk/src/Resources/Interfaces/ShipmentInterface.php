@@ -3,6 +3,7 @@
 namespace MyParcelCom\ApiSdk\Resources\Interfaces;
 
 use DateTime;
+use MyParcelCom\ApiSdk\Resources\TaxIdentificationNumber;
 
 interface ShipmentInterface extends ResourceInterface
 {
@@ -26,13 +27,32 @@ interface ShipmentInterface extends ResourceInterface
     /**
      * @param string|null $recipientTaxNumber
      * @return $this
+     * @deprecated
      */
     public function setRecipientTaxNumber($recipientTaxNumber);
 
     /**
      * @return string|null
+     * @deprecated
      */
     public function getRecipientTaxNumber();
+
+    /**
+     * @param TaxIdentificationNumber[] $taxIdentificationNumbers
+     * @return $this
+     */
+    public function setRecipientTaxIdentificationNumbers(array $taxIdentificationNumbers);
+
+    /**
+     * @param TaxIdentificationNumber $taxIdentificationNumber
+     * @return $this
+     */
+    public function addRecipientTaxIdentificationNumber(TaxIdentificationNumber $taxIdentificationNumber);
+
+    /**
+     * @return TaxIdentificationNumber[]
+     */
+    public function getRecipientTaxIdentificationNumbers();
 
     /**
      * @param AddressInterface $senderAddress
@@ -48,13 +68,32 @@ interface ShipmentInterface extends ResourceInterface
     /**
      * @param string|null $senderTaxNumber
      * @return $this
+     * @deprecated
      */
     public function setSenderTaxNumber($senderTaxNumber);
 
     /**
      * @return string|null
+     * @deprecated
      */
     public function getSenderTaxNumber();
+
+    /**
+     * @param TaxIdentificationNumber[] $taxIdentificationNumbers
+     * @return $this
+     */
+    public function setSenderTaxIdentificationNumbers(array $taxIdentificationNumbers);
+
+    /**
+     * @param TaxIdentificationNumber $taxIdentificationNumber
+     * @return $this
+     */
+    public function addSenderTaxIdentificationNumber(TaxIdentificationNumber $taxIdentificationNumber);
+
+    /**
+     * @return TaxIdentificationNumber[]
+     */
+    public function getSenderTaxIdentificationNumbers();
 
     /**
      * @param AddressInterface $returnAddress

@@ -57,6 +57,14 @@ class AddressTest extends TestCase
     }
 
     /** @test */
+    public function testStateCode()
+    {
+        $address = new Address();
+        $this->assertNull($address->getStateCode());
+        $this->assertEquals('CA', $address->setStateCode('CA')->getStateCode());
+    }
+
+    /** @test */
     public function testCountryCode()
     {
         $address = new Address();
@@ -109,6 +117,7 @@ class AddressTest extends TestCase
             ->setPostalCode('1AR BR2')
             ->setCity('London')
             ->setRegionCode('NH')
+            ->setStateCode('CA')
             ->setCountryCode('AF')
             ->setFirstName('Robert')
             ->setLastName('Drop Tables')
@@ -124,6 +133,7 @@ class AddressTest extends TestCase
             'postal_code'          => '1AR BR2',
             'city'                 => 'London',
             'region_code'          => 'NH',
+            'state_code'           => 'CA',
             'country_code'         => 'AF',
             'first_name'           => 'Robert',
             'last_name'            => 'Drop Tables',

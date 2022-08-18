@@ -8,10 +8,12 @@ use MyParcelCom\ApiSdk\Resources\Interfaces\ServiceInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ServiceOptionInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ServiceRateInterface;
 use MyParcelCom\ApiSdk\Resources\Traits\JsonSerializable;
+use MyParcelCom\ApiSdk\Resources\Traits\ProcessIncludes;
 
 class ServiceRate implements ServiceRateInterface
 {
     use JsonSerializable;
+    use ProcessIncludes;
 
     const ATTRIBUTE_PRICE = 'price';
     const ATTRIBUTE_FUEL_SURCHARGE = 'fuel_surcharge';
@@ -27,6 +29,11 @@ class ServiceRate implements ServiceRateInterface
     const RELATIONSHIP_SERVICE = 'service';
     const RELATIONSHIP_CONTRACT = 'contract';
     const RELATIONSHIP_SERVICE_OPTIONS = 'service_options';
+
+    const INCLUDES = [
+        ResourceInterface::TYPE_CONTRACT => self::RELATIONSHIP_CONTRACT,
+        ResourceInterface::TYPE_SERVICE  => self::RELATIONSHIP_SERVICE,
+    ];
 
     /** @var string */
     private $id;

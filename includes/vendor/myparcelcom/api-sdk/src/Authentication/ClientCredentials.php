@@ -101,7 +101,7 @@ class ClientCredentials implements AuthenticatorInterface
      */
     protected function isAuthenticating()
     {
-        return (bool) $this->cache->get(self::CACHE_AUTHENTICATING);
+        return (bool) $this->cache->get($this->cacheKey(self::CACHE_AUTHENTICATING));
     }
 
     /**
@@ -111,7 +111,7 @@ class ClientCredentials implements AuthenticatorInterface
     protected function setAuthenticating($authenticating = true)
     {
         // Don't let the authenticating lock stay active for more than 30s.
-        $this->cache->set(self::CACHE_AUTHENTICATING, $authenticating, 30);
+        $this->cache->set($this->cacheKey(self::CACHE_AUTHENTICATING), $authenticating, 30);
 
         return $this;
     }
@@ -170,7 +170,7 @@ class ClientCredentials implements AuthenticatorInterface
      */
     protected function getCachedHeader()
     {
-        return $this->cache->get(self::CACHE_TOKEN);
+        return $this->cache->get($this->cacheKey(self::CACHE_TOKEN));
     }
 
     /**
@@ -182,9 +182,18 @@ class ClientCredentials implements AuthenticatorInterface
      */
     protected function setCachedHeader(array $header, $ttl)
     {
-        $this->cache->set(self::CACHE_TOKEN, $header, $ttl - self::TTL_MARGIN);
+        $this->cache->set($this->cacheKey(self::CACHE_TOKEN), $header, $ttl - self::TTL_MARGIN);
 
         return $this;
+    }
+
+    /**
+     * @param string $cacheType
+     * @return string
+     */
+    protected function cacheKey($cacheType)
+    {
+        return implode('_', [$cacheType, $this->clientId]);
     }
 
     /**

@@ -35,6 +35,9 @@ class ShipmentItem implements ShipmentItemInterface
         self::CURRENCY => null,
     ];
 
+    /** @var int|null */
+    private $vatPercentage;
+
     /** @var string|null */
     private $originCountryCode;
 
@@ -172,6 +175,29 @@ class ShipmentItem implements ShipmentItemInterface
     public function getCurrency()
     {
         return $this->itemValue[self::CURRENCY];
+    }
+
+    /**
+     * @param int|null $percentage Value between 0 and 100
+     * @return $this
+     */
+    public function setVatPercentage($percentage)
+    {
+        if ($percentage < 0 || $percentage > 100) {
+            throw new MyParcelComException('Invalid percentage: ' . $percentage . ' should be between 0 and 100.');
+        }
+
+        $this->vatPercentage = (int) $percentage;
+
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getVatPercentage()
+    {
+        return $this->vatPercentage;
     }
 
     /**
