@@ -234,7 +234,7 @@ function createShipmentForOrder($orderId)
         )
         ->setCustomerReference((string) $orderId)
         ->setDescription('Order #' . $orderId)
-        ->setTags([$orderData['payment_method_title'], $order->get_shipping_method()])
+        ->setTags(array_filter([$orderData['payment_method_title'], $order->get_shipping_method()]))
         ->setItems($shipmentItems)
         ->setShop($shop)
         ->setChannel('WooCommerce_' . MYPARCEL_PLUGIN_VERSION);
