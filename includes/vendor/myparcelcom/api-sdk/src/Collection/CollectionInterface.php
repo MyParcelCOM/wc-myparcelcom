@@ -16,7 +16,7 @@ interface CollectionInterface extends Iterator
 
     /**
      * Retrieves the resources based on limit and offset.
-     * Max (and default) limit is 30.
+     * Default (and max) limit is 100.
      *
      * @return ResourceInterface[]
      */
@@ -32,10 +32,10 @@ interface CollectionInterface extends Iterator
 
     /**
      * Sets the amount of resources to be retrieved by get().
-     * Default limit is 30, max limit is 100.
+     * Default (and max) limit is 100.
      *
      * @param int $limit
      * @return $this
      */
-    public function limit($limit = 30);
+    public function limit($limit = 100);
 }

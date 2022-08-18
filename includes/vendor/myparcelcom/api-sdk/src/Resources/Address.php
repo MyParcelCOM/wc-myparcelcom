@@ -28,6 +28,9 @@ class Address implements AddressInterface
     /** @var string */
     private $regionCode;
 
+    /** @var string|null */
+    private $stateCode;
+
     /** @var string */
     private $countryCode;
 
@@ -170,6 +173,24 @@ class Address implements AddressInterface
     public function setRegionCode($regionCode)
     {
         $this->regionCode = $regionCode;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getStateCode()
+    {
+        return $this->stateCode;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setStateCode($stateCode)
+    {
+        $this->stateCode = $stateCode;
 
         return $this;
     }

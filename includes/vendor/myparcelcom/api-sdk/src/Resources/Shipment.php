@@ -34,8 +34,10 @@ class Shipment implements ShipmentInterface
     const ATTRIBUTE_PHYSICAL_PROPERTIES = 'physical_properties';
     const ATTRIBUTE_RECIPIENT_ADDRESS = 'recipient_address';
     const ATTRIBUTE_RECIPIENT_TAX_NUMBER = 'recipient_tax_number';
+    const ATTRIBUTE_RECIPIENT_TAX_IDENTIFICATION_NUMBERS = 'recipient_tax_identification_numbers';
     const ATTRIBUTE_SENDER_ADDRESS = 'sender_address';
     const ATTRIBUTE_SENDER_TAX_NUMBER = 'sender_tax_number';
+    const ATTRIBUTE_SENDER_TAX_IDENTIFICATION_NUMBERS = 'sender_tax_identification_numbers';
     const ATTRIBUTE_RETURN_ADDRESS = 'return_address';
     const ATTRIBUTE_PICKUP = 'pickup_location';
     const ATTRIBUTE_PICKUP_CODE = 'code';
@@ -70,28 +72,30 @@ class Shipment implements ShipmentInterface
 
     /** @var array */
     private $attributes = [
-        self::ATTRIBUTE_BARCODE              => null,
-        self::ATTRIBUTE_TRACKING_CODE        => null,
-        self::ATTRIBUTE_TRACKING_URL         => null,
-        self::ATTRIBUTE_CHANNEL              => null,
-        self::ATTRIBUTE_DESCRIPTION          => null,
-        self::ATTRIBUTE_CUSTOMER_REFERENCE   => null,
-        self::ATTRIBUTE_PRICE                => null,
-        self::ATTRIBUTE_PHYSICAL_PROPERTIES  => null,
-        self::ATTRIBUTE_RECIPIENT_ADDRESS    => null,
-        self::ATTRIBUTE_RECIPIENT_TAX_NUMBER => null,
-        self::ATTRIBUTE_SENDER_ADDRESS       => null,
-        self::ATTRIBUTE_SENDER_TAX_NUMBER    => null,
-        self::ATTRIBUTE_RETURN_ADDRESS       => null,
-        self::ATTRIBUTE_PICKUP               => null,
-        self::ATTRIBUTE_CUSTOMS              => null,
-        self::ATTRIBUTE_ITEMS                => null,
-        self::ATTRIBUTE_REGISTER_AT          => null,
-        self::ATTRIBUTE_TOTAL_VALUE          => [
+        self::ATTRIBUTE_BARCODE                              => null,
+        self::ATTRIBUTE_TRACKING_CODE                        => null,
+        self::ATTRIBUTE_TRACKING_URL                         => null,
+        self::ATTRIBUTE_CHANNEL                              => null,
+        self::ATTRIBUTE_DESCRIPTION                          => null,
+        self::ATTRIBUTE_CUSTOMER_REFERENCE                   => null,
+        self::ATTRIBUTE_PRICE                                => null,
+        self::ATTRIBUTE_PHYSICAL_PROPERTIES                  => null,
+        self::ATTRIBUTE_RECIPIENT_ADDRESS                    => null,
+        self::ATTRIBUTE_RECIPIENT_TAX_NUMBER                 => null,
+        self::ATTRIBUTE_RECIPIENT_TAX_IDENTIFICATION_NUMBERS => null,
+        self::ATTRIBUTE_SENDER_ADDRESS                       => null,
+        self::ATTRIBUTE_SENDER_TAX_NUMBER                    => null,
+        self::ATTRIBUTE_SENDER_TAX_IDENTIFICATION_NUMBERS    => null,
+        self::ATTRIBUTE_RETURN_ADDRESS                       => null,
+        self::ATTRIBUTE_PICKUP                               => null,
+        self::ATTRIBUTE_CUSTOMS                              => null,
+        self::ATTRIBUTE_ITEMS                                => null,
+        self::ATTRIBUTE_REGISTER_AT                          => null,
+        self::ATTRIBUTE_TOTAL_VALUE                          => [
             'amount'   => null,
             'currency' => null,
         ],
-        self::ATTRIBUTE_TAGS                 => null,
+        self::ATTRIBUTE_TAGS                                 => null,
     ];
 
     /** @var array */
@@ -176,6 +180,7 @@ class Shipment implements ShipmentInterface
 
     /**
      * {@inheritdoc}
+     * @deprecated
      */
     public function setRecipientTaxNumber($recipientTaxNumber)
     {
@@ -186,10 +191,43 @@ class Shipment implements ShipmentInterface
 
     /**
      * {@inheritdoc}
+     * @deprecated
      */
     public function getRecipientTaxNumber()
     {
         return $this->attributes[self::ATTRIBUTE_RECIPIENT_TAX_NUMBER];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setRecipientTaxIdentificationNumbers(array $taxIdentificationNumbers)
+    {
+        $this->attributes[self::ATTRIBUTE_RECIPIENT_TAX_IDENTIFICATION_NUMBERS] = [];
+
+        array_walk($taxIdentificationNumbers, function (TaxIdentificationNumber $taxIdentificationNumber) {
+            $this->addRecipientTaxIdentificationNumber($taxIdentificationNumber);
+        });
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addRecipientTaxIdentificationNumber(TaxIdentificationNumber $taxIdentificationNumber)
+    {
+        $this->attributes[self::ATTRIBUTE_RECIPIENT_TAX_IDENTIFICATION_NUMBERS][] = $taxIdentificationNumber;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRecipientTaxIdentificationNumbers()
+    {
+        return $this->attributes[self::ATTRIBUTE_RECIPIENT_TAX_IDENTIFICATION_NUMBERS];
     }
 
     /**
@@ -212,6 +250,7 @@ class Shipment implements ShipmentInterface
 
     /**
      * {@inheritdoc}
+     * @deprecated
      */
     public function setSenderTaxNumber($senderTaxNumber)
     {
@@ -222,10 +261,43 @@ class Shipment implements ShipmentInterface
 
     /**
      * {@inheritdoc}
+     * @deprecated
      */
     public function getSenderTaxNumber()
     {
         return $this->attributes[self::ATTRIBUTE_SENDER_TAX_NUMBER];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setSenderTaxIdentificationNumbers(array $taxIdentificationNumbers)
+    {
+        $this->attributes[self::ATTRIBUTE_SENDER_TAX_IDENTIFICATION_NUMBERS] = [];
+
+        array_walk($taxIdentificationNumbers, function (TaxIdentificationNumber $taxIdentificationNumber) {
+            $this->addSenderTaxIdentificationNumber($taxIdentificationNumber);
+        });
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addSenderTaxIdentificationNumber(TaxIdentificationNumber $taxIdentificationNumber)
+    {
+        $this->attributes[self::ATTRIBUTE_SENDER_TAX_IDENTIFICATION_NUMBERS][] = $taxIdentificationNumber;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSenderTaxIdentificationNumbers()
+    {
+        return $this->attributes[self::ATTRIBUTE_SENDER_TAX_IDENTIFICATION_NUMBERS];
     }
 
     /**

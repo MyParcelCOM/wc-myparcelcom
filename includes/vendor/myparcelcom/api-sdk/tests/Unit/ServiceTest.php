@@ -161,6 +161,17 @@ class ServiceTest extends TestCase
             ->setHandoverMethod('drop-off')
             ->setDeliveryDays(['Monday'])
             ->setCarrier($carrier)
+            ->setRegionsFrom([
+                [
+                    'country_code' => 'GB',
+                ],
+            ])
+            ->setRegionsTo([
+                [
+                    'country_code' => 'GB',
+                    'postal_code'  => '^((GY|JE).*|TR2[1-5]) ?[0-9]{1}[A-Z]{2}$',
+                ],
+            ])
             ->setUsesVolumetricWeight(true);
 
         $this->assertEquals([
@@ -176,6 +187,17 @@ class ServiceTest extends TestCase
                 'handover_method'        => 'drop-off',
                 'delivery_days'          => [
                     'Monday',
+                ],
+                'regions_from'           => [
+                    [
+                        'country_code' => 'GB',
+                    ],
+                ],
+                'regions_to'             => [
+                    [
+                        'country_code' => 'GB',
+                        'postal_code'  => '^((GY|JE).*|TR2[1-5]) ?[0-9]{1}[A-Z]{2}$',
+                    ],
                 ],
                 'uses_volumetric_weight' => true,
             ],

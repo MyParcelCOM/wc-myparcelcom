@@ -10,6 +10,7 @@ interface ResourceInterface extends \JsonSerializable
     const TYPE_CARRIER = 'carriers';
     const TYPE_CONTRACT = 'contracts';
     const TYPE_FILE = 'files';
+    const TYPE_ORGANIZATIONS = 'organizations';
     const TYPE_PUDO_LOCATION = 'pickup-dropoff-locations';
     const TYPE_REGION = 'regions';
     const TYPE_SERVICE = 'services';

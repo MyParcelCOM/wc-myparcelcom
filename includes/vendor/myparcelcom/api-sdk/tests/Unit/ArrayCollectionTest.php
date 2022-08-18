@@ -19,7 +19,7 @@ class ArrayCollectionTest extends TestCase
     {
         parent::setUp();
 
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 123; $i++) {
             $resource = $this->createMock(ResourceInterface::class);
             $resource->id = $i;
 
@@ -42,7 +42,7 @@ class ArrayCollectionTest extends TestCase
     {
         foreach ($this->collection as $resource) {
             $this->assertGreaterThanOrEqual(0, $resource->id);
-            $this->assertLessThanOrEqual(29, $resource->id);
+            $this->assertLessThanOrEqual(99, $resource->id);
         }
     }
 
@@ -61,7 +61,7 @@ class ArrayCollectionTest extends TestCase
     /** @test */
     public function testCount()
     {
-        $this->assertEquals(50, $this->collection->count());
+        $this->assertEquals(123, $this->collection->count());
     }
 
     /** @test */

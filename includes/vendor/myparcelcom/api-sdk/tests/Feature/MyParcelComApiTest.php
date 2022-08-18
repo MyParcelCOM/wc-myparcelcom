@@ -21,8 +21,10 @@ use MyParcelCom\ApiSdk\Resources\Interfaces\ShipmentInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ShipmentStatusInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ShopInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\StatusInterface;
+use MyParcelCom\ApiSdk\Resources\Organization;
 use MyParcelCom\ApiSdk\Resources\PhysicalProperties;
 use MyParcelCom\ApiSdk\Resources\Shipment;
+use MyParcelCom\ApiSdk\Resources\Shop;
 use MyParcelCom\ApiSdk\Tests\Traits\MocksApiCommunication;
 use PHPUnit\Framework\TestCase;
 
@@ -393,19 +395,12 @@ class MyParcelComApiTest extends TestCase
     /** @test */
     public function testGetRegions()
     {
-        $collection = $this->api->getRegions();
-        $allRegions = [];
-        for ($offset = 0; $offset < $collection->count(); $offset += 30) {
-            $allRegions = array_merge($allRegions, $collection->offset($offset)->get());
+        $shipments = $this->api->getRegions();
+
+        $this->assertInstanceOf(CollectionInterface::class, $shipments);
+        foreach ($shipments as $shipment) {
+            $this->assertInstanceOf(RegionInterface::class, $shipment);
         }
-
-        $this->assertInstanceOf(CollectionInterface::class, $collection);
-        $this->assertEquals(78, $collection->count());
-        $this->assertCount(78, $allRegions);
-
-        array_walk($allRegions, function ($region) {
-            $this->assertInstanceOf(RegionInterface::class, $region);
-        });
     }
 
     /** @test */
@@ -588,7 +583,11 @@ class MyParcelComApiTest extends TestCase
             ->setPostalCode('W8 6UX')
             ->setCountryCode('GB');
 
+        $shop = (new Shop())
+            ->setOrganization((new Organization())->setId('org-id'));
+
         $shipment = (new Shipment())
+            ->setShop($shop)
             ->setWeight(500)
             ->setRecipientAddress($recipient);
 
@@ -598,6 +597,9 @@ class MyParcelComApiTest extends TestCase
             $this->assertInstanceOf(ServiceRateInterface::class, $serviceRate);
             $this->assertGreaterThanOrEqual(500, $serviceRate->getWeightMax());
             $this->assertLessThanOrEqual(500, $serviceRate->getWeightMin());
+            $this->assertEquals('Letter Test', $serviceRate->getService()->getName(), 'Included service name');
+            $this->assertEquals('letter-test', $serviceRate->getService()->getCode(), 'Included service code');
+            $this->assertTrue(in_array($serviceRate->getContract()->getName(), ['Contract X', 'Contract Y']), 'Included contract name');
         }
     }
 

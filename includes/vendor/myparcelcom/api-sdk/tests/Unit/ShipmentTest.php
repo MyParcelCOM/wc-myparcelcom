@@ -2,6 +2,7 @@
 
 namespace MyParcelCom\ApiSdk\Tests\Unit;
 
+use MyParcelCom\ApiSdk\Enums\TaxTypeEnum;
 use MyParcelCom\ApiSdk\Exceptions\MyParcelComException;
 use MyParcelCom\ApiSdk\Resources\Interfaces\AddressInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ContractInterface;
@@ -14,6 +15,7 @@ use MyParcelCom\ApiSdk\Resources\Interfaces\ShipmentItemInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ShipmentStatusInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ShopInterface;
 use MyParcelCom\ApiSdk\Resources\Shipment;
+use MyParcelCom\ApiSdk\Resources\TaxIdentificationNumber;
 use PHPUnit\Framework\TestCase;
 
 class ShipmentTest extends TestCase
@@ -51,6 +53,25 @@ class ShipmentTest extends TestCase
     }
 
     /** @test */
+    public function testRecipientTaxIdentificationNumbers()
+    {
+        $vatNumber = (new TaxIdentificationNumber())
+            ->setCountryCode('GB')
+            ->setNumber('123')
+            ->setType(TaxTypeEnum::VAT());
+        $iossNumber = (new TaxIdentificationNumber())
+            ->setCountryCode('GB')
+            ->setNumber('456')
+            ->setType(TaxTypeEnum::IOSS());
+
+        $shipment = (new Shipment())
+            ->setRecipientTaxIdentificationNumbers([$vatNumber])
+            ->addRecipientTaxIdentificationNumber($iossNumber);
+
+        $this->assertEquals([$vatNumber, $iossNumber], $shipment->getRecipientTaxIdentificationNumbers());
+    }
+
+    /** @test */
     public function testSenderAddress()
     {
         $shipment = new Shipment();
@@ -66,6 +87,25 @@ class ShipmentTest extends TestCase
     {
         $shipment = new Shipment();
         $this->assertEquals('G666666-66', $shipment->setSenderTaxNumber('G666666-66')->getSenderTaxNumber());
+    }
+
+    /** @test */
+    public function testSenderTaxIdentificationNumbers()
+    {
+        $vatNumber = (new TaxIdentificationNumber())
+            ->setCountryCode('GB')
+            ->setNumber('123')
+            ->setType(TaxTypeEnum::VAT());
+        $iossNumber = (new TaxIdentificationNumber())
+            ->setCountryCode('GB')
+            ->setNumber('456')
+            ->setType(TaxTypeEnum::IOSS());
+
+        $shipment = (new Shipment())
+            ->setSenderTaxIdentificationNumbers([$vatNumber])
+            ->addSenderTaxIdentificationNumber($iossNumber);
+
+        $this->assertEquals([$vatNumber, $iossNumber], $shipment->getSenderTaxIdentificationNumbers());
     }
 
     /** @test */

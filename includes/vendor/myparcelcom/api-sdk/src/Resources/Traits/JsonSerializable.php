@@ -75,12 +75,13 @@ trait JsonSerializable
         $array = [];
         foreach ($arrayValues as $key => $value) {
             $key = StringUtils::camelToSnakeCase($key);
+            $isObjectOrClass = is_object($value) || (is_string($value) && class_exists($value));
 
             if (is_scalar($value)) {
                 $array[$key] = $value;
             } elseif (is_array($value)) {
                 $array[$key] = $this->arrayValuesToArray($value);
-            } elseif (method_exists($value, 'jsonSerialize')) {
+            } elseif ($isObjectOrClass && method_exists($value, 'jsonSerialize')) {
                 $array[$key] = $value->jsonSerialize();
             }
         }

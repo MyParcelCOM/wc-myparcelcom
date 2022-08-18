@@ -75,6 +75,8 @@ interface AddressInterface extends \JsonSerializable
      */
     public function getRegionCode();
 
+    // TODO: add getStateCode() and setStateCode() to the interface when removing all Region functions
+
     /**
      * @param string $regionCode
      * @return $this

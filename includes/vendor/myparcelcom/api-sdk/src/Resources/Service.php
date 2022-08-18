@@ -44,8 +44,8 @@ class Service implements ServiceInterface
         self::ATTRIBUTE_NAME            => null,
         self::ATTRIBUTE_CODE            => null,
         self::ATTRIBUTE_PACKAGE_TYPE    => null,
-        self::ATTRIBUTE_REGIONS_FROM    => null,
-        self::ATTRIBUTE_REGIONS_TO      => null,
+        self::ATTRIBUTE_REGIONS_FROM    => [],
+        self::ATTRIBUTE_REGIONS_TO      => [],
         self::ATTRIBUTE_TRANSIT_TIME    => [
             self::ATTRIBUTE_TRANSIT_TIME_MIN => null,
             self::ATTRIBUTE_TRANSIT_TIME_MAX => null,
@@ -262,6 +262,44 @@ class Service implements ServiceInterface
         $this->attributes[self::ATTRIBUTE_DELIVERY_METHOD] = $deliveryMethod;
 
         return $this;
+    }
+
+    /**
+     * @param array $regions
+     * @return $this
+     */
+    public function setRegionsFrom(array $regions)
+    {
+        $this->attributes[self::ATTRIBUTE_REGIONS_FROM] = $regions;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRegionsFrom()
+    {
+        return $this->attributes[self::ATTRIBUTE_REGIONS_FROM];
+    }
+
+    /**
+     * @param array $regions
+     * @return $this
+     */
+    public function setRegionsTo(array $regions)
+    {
+        $this->attributes[self::ATTRIBUTE_REGIONS_TO] = $regions;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRegionsTo()
+    {
+        return $this->attributes[self::ATTRIBUTE_REGIONS_TO];
     }
 
     /**

@@ -4,6 +4,7 @@ namespace MyParcelCom\ApiSdk\Resources\Proxy;
 
 use DateTime;
 use MyParcelCom\ApiSdk\Resources\Interfaces\AddressInterface;
+use MyParcelCom\ApiSdk\Resources\Interfaces\OrganizationInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ResourceInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ResourceProxyInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ShopInterface;
@@ -143,6 +144,23 @@ class ShopProxy implements ShopInterface, ResourceProxyInterface
     public function getCreatedAt()
     {
         return $this->getResource()->getCreatedAt();
+    }
+
+    /**
+     * @param OrganizationInterface $organization
+     * @return $this
+     */
+    public function setOrganization(OrganizationInterface $organization)
+    {
+        return $this->getResource()->setOrganization($organization);
+    }
+
+    /**
+     * @return OrganizationInterface
+     */
+    public function getOrganization()
+    {
+        return $this->getResource()->getOrganization();
     }
 
     /**
