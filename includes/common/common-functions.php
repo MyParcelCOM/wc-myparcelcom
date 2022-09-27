@@ -44,7 +44,7 @@ function getShipmentItems($orderId, $currency, $originCountryCode)
 
     foreach ($items as $item) {
         $product = $item->get_product();
-        $sku = $product->get_sku() ?: $product->get_id();
+        $sku = $product->get_sku() ?: (string) $product->get_id();
         $imageUrl = $product->get_image_id() ? wp_get_attachment_image_url($product->get_image_id(), 'medium') : null;
         $itemValue = (int) round(floatval($product->get_price()) * 100);
         $itemWeight = $product->get_weight() ? (int) round(floatval($product->get_weight()) * 1000) : null;
