@@ -1,0 +1,6 @@
+{
+    "name": "myparcelcom/woocommerce-plugin",
+    "description": "WooCommerce plugin to import orders into the MyParcel.com platform.",
+    "type": "wordpress-plugin",
+    "require": {}
+}
