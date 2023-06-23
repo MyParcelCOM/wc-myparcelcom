@@ -2,6 +2,7 @@
 
 namespace MyParcelCom\ApiSdk\Tests\Unit\Authentication;
 
+use GuzzleHttp\Psr7\Message;
 use GuzzleHttp\Psr7\Request;
 use Http\Client\HttpClient;
 use MyParcelCom\ApiSdk\Authentication\ClientCredentials;
@@ -10,7 +11,6 @@ use MyParcelCom\ApiSdk\Http\Exceptions\RequestException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use function GuzzleHttp\Psr7\parse_response;
 
 class ClientCredentialsTest extends TestCase
 {
@@ -153,7 +153,7 @@ class ClientCredentialsTest extends TestCase
             'https://auth.myparcel.com'
         ))->setHttpClient($this->httpClient);
 
-        $this->response = parse_response('HTTP/1.1 403
+        $this->response = Message::parseResponse('HTTP/1.1 403
 status: 403
 content-type: application/vnd.api+json
 

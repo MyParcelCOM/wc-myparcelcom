@@ -32,8 +32,8 @@ class PhysicalProperties implements PhysicalPropertiesInterface
     public static $unitConversion = [
         self::WEIGHT_GRAM     => 1,
         self::WEIGHT_KILOGRAM => 1000,
-        self::WEIGHT_POUND    => 453.59237,
         self::WEIGHT_OUNCE    => 28.349523125,
+        self::WEIGHT_POUND    => 453.59237,
         self::WEIGHT_STONE    => 6350.29318,
     ];
 

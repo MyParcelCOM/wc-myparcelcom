@@ -112,9 +112,11 @@
             "currency": "GBP"
           },
           "item_weight": 128,
+          "item_weight_unit": "mg",
           "quantity": 2,
           "hs_code": "8517.12.00",
-          "origin_country_code": "GB"
+          "origin_country_code": "GB",
+          "is_preferential_origin": false
         },
         {
           "sku": "213425",
@@ -124,9 +126,11 @@
             "currency": "GBP"
           },
           "item_weight": 256,
+          "item_weight_unit": "g",
           "quantity": 3,
           "hs_code": "8517.12.00",
-          "origin_country_code": "GB"
+          "origin_country_code": "GB",
+          "is_preferential_origin": true
         },
         {
           "sku": "6876",
@@ -136,9 +140,11 @@
             "currency": "GBP"
           },
           "item_weight": 512,
+          "item_weight_unit": "kg",
           "quantity": 1,
           "hs_code": "8517.12.00",
-          "origin_country_code": "GB"
+          "origin_country_code": "GB",
+          "is_preferential_origin": false
         }
       ],
       "customs": {

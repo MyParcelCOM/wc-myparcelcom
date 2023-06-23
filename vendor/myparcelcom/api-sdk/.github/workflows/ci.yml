@@ -1,0 +1,96 @@
+name: Tests
+on: push
+jobs:
+  php56:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Composer
+        uses: php-actions/composer@v6
+        with:
+          version: 2.2.x
+          php_version: 5.6
+      - name: PHPUnit
+        uses: php-actions/phpunit@v3
+        with:
+          version: 5
+          php_version: 5.6
+          configuration: phpunit.xml
+  php70:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Composer
+        uses: php-actions/composer@v6
+        with:
+          version: 2.2.x
+          php_version: 7.0
+      - name: PHPUnit
+        uses: php-actions/phpunit@v3
+        with:
+          version: 6
+          php_version: 7.0
+          configuration: phpunit.xml
+  php71:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Composer
+        uses: php-actions/composer@v6
+        with:
+          version: 2.2.x
+          php_version: 7.1
+      - name: PHPUnit
+        uses: php-actions/phpunit@v3
+        with:
+          version: 7
+          php_version: 7.1
+          configuration: phpunit.xml
+  php72:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Composer
+        uses: php-actions/composer@v6
+        with:
+          php_version: 7.2
+      - name: PHPUnit
+        uses: php-actions/phpunit@v3
+        with:
+          version: 7
+          php_version: 7.2
+          configuration: phpunit.xml
+  php73:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Composer
+        uses: php-actions/composer@v6
+        with:
+          php_version: 7.3
+      - name: PHPUnit
+        uses: php-actions/phpunit@v3
+        with:
+          version: 7
+          php_version: 7.3
+          configuration: phpunit.xml
+  php74:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Composer
+        uses: php-actions/composer@v6
+        with:
+          php_version: 7.4
+      - name: PHPUnit
+        uses: php-actions/phpunit@v3
+        with:
+          version: 7
+          php_version: 7.4
+          configuration: phpunit.xml

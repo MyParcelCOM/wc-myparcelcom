@@ -39,4 +39,15 @@ interface CarrierStatusInterface extends JsonSerializable
      * @return $this
      */
     public function setAssignedAt($assignedAt);
+
+    /**
+     * @return string|null
+     */
+    public function getTrackingCode();
+
+    /**
+     * @param string $trackingCode
+     * @return $this
+     */
+    public function setTrackingCode($trackingCode);
 }

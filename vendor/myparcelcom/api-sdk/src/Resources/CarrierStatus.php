@@ -20,6 +20,9 @@ class CarrierStatus implements CarrierStatusInterface
     /** @var int */
     protected $assignedAt;
 
+    /** @var string|null */
+    private $trackingCode;
+
     /**
      * @return string
      */
@@ -75,6 +78,24 @@ class CarrierStatus implements CarrierStatusInterface
     public function setAssignedAt($assignedAt)
     {
         $this->assignedAt = DateUtils::toTimestamp($assignedAt);
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getTrackingCode()
+    {
+        return $this->trackingCode;
+    }
+
+    /**
+     * @param string|null $trackingCode
+     */
+    public function setTrackingCode($trackingCode)
+    {
+        $this->trackingCode = $trackingCode;
 
         return $this;
     }

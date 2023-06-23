@@ -2,6 +2,7 @@
 
 namespace MyParcelCom\ApiSdk;
 
+use GuzzleHttp\Psr7\Message;
 use GuzzleHttp\Psr7\Request;
 use Http\Client\HttpClient;
 use Http\Discovery\HttpClientDiscovery;
@@ -13,6 +14,7 @@ use MyParcelCom\ApiSdk\Exceptions\InvalidResourceException;
 use MyParcelCom\ApiSdk\Http\Contracts\HttpClient\RequestExceptionInterface;
 use MyParcelCom\ApiSdk\Http\Exceptions\RequestException;
 use MyParcelCom\ApiSdk\Resources\Interfaces\CarrierInterface;
+use MyParcelCom\ApiSdk\Resources\Interfaces\FileInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ResourceFactoryInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ResourceInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ResourceProxyInterface;
@@ -22,6 +24,8 @@ use MyParcelCom\ApiSdk\Resources\Interfaces\ShipmentInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ShopInterface;
 use MyParcelCom\ApiSdk\Resources\ResourceFactory;
 use MyParcelCom\ApiSdk\Resources\Service;
+use MyParcelCom\ApiSdk\Resources\ServiceRate;
+use MyParcelCom\ApiSdk\Resources\Shipment;
 use MyParcelCom\ApiSdk\Shipments\ServiceMatcher;
 use MyParcelCom\ApiSdk\Utils\UrlBuilder;
 use MyParcelCom\ApiSdk\Validators\ShipmentValidator;
@@ -31,8 +35,6 @@ use Psr\SimpleCache\CacheInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Cache\Psr16Cache;
 use Symfony\Component\Cache\Simple\FilesystemCache;
-use function GuzzleHttp\Psr7\parse_response;
-use function GuzzleHttp\Psr7\str;
 
 class MyParcelComApi implements MyParcelComApiInterface
 {
@@ -378,14 +380,41 @@ class MyParcelComApi implements MyParcelComApiInterface
         // Include the services to avoid extra http requests when the result is looped with: $serviceRate->getService().
         $url->addQuery(['include' => 'contract,service']);
 
+        /** @var ServiceRate[] $serviceRates */
         $serviceRates = $this->getRequestCollection($url->getUrl(), $ttl);
+
+        $availableServiceRates = [];
+        foreach ($serviceRates as $serviceRate) {
+            if ($serviceRate->isDynamic()) {
+                // Resolve the price and currency for service-rates with a dynamic price.
+                try {
+                    $serviceRates = $this->resolveDynamicServiceRates($shipment, $serviceRate);
+
+                    if (!empty($serviceRates)) {
+                        // Hydrate the service and contract resources to prevent additional API calls to retrieve these.
+                        $serviceRates[0]->setService($serviceRate->getService());
+                        $serviceRates[0]->setContract($serviceRate->getContract());
+                        $availableServiceRates[] = $serviceRates[0];
+                    }
+                } catch (RequestException $exception) {
+                    // If communicating with the carrier does not result in a service rate, this service is unavailable.
+                }
+            } elseif ($serviceRate->getBracketPrice()) {
+                // Resolve the price and currency for service-rates with a bracket price (calculated by the API).
+                $serviceRate->setPrice($serviceRate->getBracketPrice());
+                $serviceRate->setCurrency($serviceRate->getBracketCurrency());
+                $availableServiceRates[] = $serviceRate;
+            } else {
+                $availableServiceRates[] = $serviceRate;
+            }
+        }
 
         $shipmentOptionIds = array_map(function (ServiceOptionInterface $serviceOption) {
             return $serviceOption->getId();
         }, $shipment->getServiceOptions());
 
         $matchingServiceRates = [];
-        foreach ($serviceRates as $serviceRate) {
+        foreach ($availableServiceRates as $serviceRate) {
             $serviceRateOptionIds = array_map(function (ServiceOptionInterface $serviceOption) {
                 return $serviceOption->getId();
             }, $serviceRate->getServiceOptions());
@@ -396,6 +425,49 @@ class MyParcelComApi implements MyParcelComApiInterface
         }
 
         return new ArrayCollection($matchingServiceRates);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function resolveDynamicServiceRates($shipmentData, $dynamicServiceRate = null)
+    {
+        $data = ($shipmentData instanceof ShipmentInterface) ? $shipmentData->jsonSerialize() : $shipmentData;
+
+        if (!isset($data['relationships'])) {
+            $data['relationships'] = [];
+        }
+        if (!isset($data['relationships']['shop'])) {
+            $data['relationships']['shop'] = [
+                'data' => [
+                    'type' => ResourceInterface::TYPE_SHOP,
+                    'id'   => $this->getDefaultShop()->getId(),
+                ],
+            ];
+        }
+
+        if ($dynamicServiceRate) {
+            $data['relationships']['service'] = [
+                'data' => [
+                    'type' => ResourceInterface::TYPE_SERVICE,
+                    'id'   => $dynamicServiceRate->getService()->getId(),
+                ],
+            ];
+            $data['relationships']['contract'] = [
+                'data' => [
+                    'type' => ResourceInterface::TYPE_CONTRACT,
+                    'id'   => $dynamicServiceRate->getContract()->getId(),
+                ],
+            ];
+        }
+
+        $response = $this->doRequest('/get-dynamic-service-rates', 'post', ['data' => $data], [
+            AuthenticatorInterface::HEADER_ACCEPT => AuthenticatorInterface::MIME_TYPE_JSON,
+        ]);
+        $json = json_decode((string) $response->getBody(), true);
+        $included = isset($json['included']) ? $json['included'] : null;
+
+        return $this->jsonToResources($json['data'], $included);
     }
 
     /**
@@ -432,17 +504,8 @@ class MyParcelComApi implements MyParcelComApiInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function createShipment(ShipmentInterface $shipment)
+    protected function populateShipmentWithDefaultsFromShop(ShipmentInterface $shipment)
     {
-        if ($shipment->getPhysicalProperties() === null || $shipment->getPhysicalProperties()->getWeight() === null) {
-            throw new InvalidResourceException(
-                'Cannot create shipment without weight'
-            );
-        }
-
         // If no shop is set, use the default shop.
         if ($shipment->getShop() === null) {
             $shipment->setShop($this->getDefaultShop());
@@ -464,19 +527,37 @@ class MyParcelComApi implements MyParcelComApiInterface
                     ?: $shipment->getSenderAddress()
             );
         }
+    }
 
+    public function validateShipment(ShipmentInterface $shipment)
+    {
         $validator = new ShipmentValidator($shipment);
 
         if (!$validator->isValid()) {
             $exception = new InvalidResourceException(
-                'Could not create shipment. ' . implode('. ', $validator->getErrors()) . '.'
+                'This shipment contains invalid data. ' . implode('. ', $validator->getErrors()) . '.'
             );
             $exception->setErrors($validator->getErrors());
 
             throw $exception;
         }
+    }
 
-        return $this->postResource($shipment, $shipment->getMeta());
+    /**
+     * {@inheritdoc}
+     */
+    public function createShipment(ShipmentInterface $shipment, $idempotencyKey = null)
+    {
+        $this->populateShipmentWithDefaultsFromShop($shipment);
+        $this->validateShipment($shipment);
+
+        $headers = [];
+
+        if ($idempotencyKey) {
+            $headers[self::HEADER_IDEMPOTENCY_KEY] = $idempotencyKey;
+        }
+
+        return $this->postResource($shipment, $shipment->getMeta(), $headers);
     }
 
     /**
@@ -484,23 +565,73 @@ class MyParcelComApi implements MyParcelComApiInterface
      */
     public function updateShipment(ShipmentInterface $shipment)
     {
-        $validator = new ShipmentValidator($shipment);
-
         if (!$shipment->getId()) {
             throw new InvalidResourceException(
                 'Could not update shipment. This shipment does not have an id, use createShipment() to save it.'
             );
         }
-        if (!$validator->isValid()) {
-            $exception = new InvalidResourceException(
-                'Could not update shipment. ' . implode('. ', $validator->getErrors()) . '.'
-            );
-            $exception->setErrors($validator->getErrors());
 
-            throw $exception;
-        }
+        $this->validateShipment($shipment);
 
         return $this->patchResource($shipment, $shipment->getMeta());
+    }
+
+    /**
+     * This function is similar to createShipment() but will immediately communicate the shipment to the carrier.
+     * The carrier response is processed before your request is completed, so files and base64 data will be available.
+     *
+     * This removes the need to `poll` for files, but has some side effects (exceptions instead of registration-failed).
+     * @see https://docs.myparcel.com/api/create-a-shipment.html#registering-your-shipment-with-the-carrier
+     */
+    public function createAndRegisterShipment(ShipmentInterface $shipment, $idempotencyKey = null)
+    {
+        $this->populateShipmentWithDefaultsFromShop($shipment);
+        $this->validateShipment($shipment);
+
+        $headers = [];
+
+        if ($idempotencyKey) {
+            $headers[self::HEADER_IDEMPOTENCY_KEY] = $idempotencyKey;
+        }
+
+        $response = $this->doRequest(
+            $this->apiUri . '/registered-shipments?' . http_build_query(['include' => 'files']),
+            'post',
+            [
+                'data' => $shipment,
+                'meta' => $shipment->getMeta(),
+            ],
+            $this->authenticator->getAuthorizationHeader() + [
+                AuthenticatorInterface::HEADER_ACCEPT => AuthenticatorInterface::MIME_TYPE_JSONAPI,
+            ] + $headers
+        );
+
+        $json = json_decode($response->getBody(), true);
+
+        /** @var Shipment $registeredShipment */
+        $registeredShipment = $this->resourceFactory->create('shipments', $json['data']);
+        $included = isset($json['included']) ? $json['included'] : [];
+        $metaFiles = isset($json['meta']['files']) ? $json['meta']['files'] : [];
+
+        if (!empty($included)) {
+            $includedResources = $this->jsonToResources($included);
+            $registeredShipment->processIncludedResources($includedResources);
+
+            foreach ($registeredShipment->getFiles() as $file) {
+                $format = $file->getFormats()[0];
+
+                foreach ($metaFiles as $metaFile) {
+                    if ($metaFile['document_type'] === $file->getDocumentType()
+                        && $metaFile['mime_type'] === $format[FileInterface::FORMAT_MIME_TYPE]
+                        && $metaFile['extension'] === $format[FileInterface::FORMAT_EXTENSION]
+                    ) {
+                        $file->setBase64Data($metaFile['contents'], $metaFile['mime_type']);
+                    }
+                }
+            }
+        }
+
+        return $registeredShipment;
     }
 
     /**
@@ -649,7 +780,7 @@ class MyParcelComApi implements MyParcelComApiInterface
         // Attempt to fetch a response from cache
         $cacheKey = sha1(join($headers) . $uri);
         if (($response = $this->cache->get($cacheKey)) && strtolower($method) === 'get') {
-            return parse_response($response);
+            return Message::parseResponse($response);
         }
 
         try {
@@ -658,7 +789,7 @@ class MyParcelComApi implements MyParcelComApiInterface
 
             // Store the response in cache
             if (strtolower($method) === 'get') {
-                $this->cache->set($cacheKey, str($response), $ttl);
+                $this->cache->set($cacheKey, Message::toString($response), $ttl);
             }
 
             if ($response->getStatusCode() >= 300) {
@@ -780,12 +911,13 @@ class MyParcelComApi implements MyParcelComApiInterface
      *
      * @param ResourceInterface $resource
      * @param array             $meta
+     * @param array             $headers
      * @return ResourceInterface|null
      * @throws RequestException
      */
-    protected function patchResource(ResourceInterface $resource, $meta = [])
+    protected function patchResource(ResourceInterface $resource, $meta = [], array $headers = [])
     {
-        return $this->sendResource($resource, 'patch', $meta);
+        return $this->sendResource($resource, 'patch', $meta, $headers);
     }
 
     /**
@@ -793,12 +925,13 @@ class MyParcelComApi implements MyParcelComApiInterface
      *
      * @param ResourceInterface $resource
      * @param array             $meta
+     * @param array             $headers
      * @return ResourceInterface|null
      * @throws RequestException
      */
-    protected function postResource(ResourceInterface $resource, $meta = [])
+    protected function postResource(ResourceInterface $resource, $meta = [], array $headers = [])
     {
-        return $this->sendResource($resource, 'post', $meta);
+        return $this->sendResource($resource, 'post', $meta, $headers);
     }
 
     /**
@@ -807,10 +940,11 @@ class MyParcelComApi implements MyParcelComApiInterface
      * @param ResourceInterface $resource
      * @param string            $method
      * @param array             $meta
+     * @param array             $headers
      * @return ResourceInterface|null
      * @throws RequestException
      */
-    protected function sendResource(ResourceInterface $resource, $method = 'post', $meta = [])
+    protected function sendResource(ResourceInterface $resource, $method = 'post', $meta = [], array $headers = [])
     {
         $response = $this->doRequest(
             $this->getResourceUri($resource->getType(), $resource->getId()),
@@ -821,7 +955,7 @@ class MyParcelComApi implements MyParcelComApiInterface
             ]),
             $this->authenticator->getAuthorizationHeader() + [
                 AuthenticatorInterface::HEADER_ACCEPT => AuthenticatorInterface::MIME_TYPE_JSONAPI,
-            ]
+            ] + $headers
         );
 
         $json = json_decode($response->getBody(), true);

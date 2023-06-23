@@ -6,7 +6,6 @@ use MyParcelCom\ApiSdk\Collection\CollectionInterface;
 use MyParcelCom\ApiSdk\Collection\RequestCollection;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
-use function GuzzleHttp\Promise\promise_for;
 
 class PromiseCollectionTest extends TestCase
 {

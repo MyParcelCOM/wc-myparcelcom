@@ -207,9 +207,36 @@ class ShipmentProxyTest extends TestCase
         array_walk($items, function ($item) {
             $this->assertInstanceOf(ShipmentItemInterface::class, $item);
         });
+
         $this->assertEquals('123456789', $items[0]->getSku());
+        $this->assertEquals('OnePlus X', $items[0]->getDescription());
+        $this->assertEquals(100, $items[0]->getItemValue());
+        $this->assertEquals(128, $items[0]->getItemWeight());
+        $this->assertEquals('mg', $items[0]->getItemWeightUnit());
+        $this->assertEquals(2, $items[0]->getQuantity());
+        $this->assertEquals('8517.12.00', $items[0]->getHsCode());
+        $this->assertEquals('GB', $items[0]->getOriginCountryCode());
+        $this->assertEquals(false, $items[0]->getIsPreferentialOrigin());
+
+        $this->assertEquals('213425', $items[1]->getSku());
         $this->assertEquals('OnePlus One', $items[1]->getDescription());
+        $this->assertEquals(200, $items[1]->getItemValue());
+        $this->assertEquals(256, $items[1]->getItemWeight());
+        $this->assertEquals('g', $items[1]->getItemWeightUnit());
+        $this->assertEquals(3, $items[1]->getQuantity());
+        $this->assertEquals('8517.12.00', $items[1]->getHsCode());
+        $this->assertEquals('GB', $items[1]->getOriginCountryCode());
+        $this->assertEquals(true, $items[1]->getIsPreferentialOrigin());
+
+        $this->assertEquals('6876', $items[2]->getSku());
+        $this->assertEquals('OnePlus Two', $items[2]->getDescription());
         $this->assertEquals(300, $items[2]->getItemValue());
+        $this->assertEquals(512, $items[2]->getItemWeight());
+        $this->assertEquals('kg', $items[2]->getItemWeightUnit());
+        $this->assertEquals(1, $items[2]->getQuantity());
+        $this->assertEquals('8517.12.00', $items[2]->getHsCode());
+        $this->assertEquals('GB', $items[2]->getOriginCountryCode());
+        $this->assertEquals(false, $items[2]->getIsPreferentialOrigin());
     }
 
     /** @test */

@@ -17,6 +17,7 @@ trait MocksContract
      * @param int|null                 $weightMin
      * @param int|null                 $weightMax
      * @param int|null                 $fuelSurcharge
+     * @param bool                     $isDynamic
      * @return ServiceRateInterface
      */
     protected function getMockedServiceRate(
@@ -24,8 +25,15 @@ trait MocksContract
         $price = null,
         $weightMin = null,
         $weightMax = null,
-        $fuelSurcharge = null
+        $fuelSurcharge = null,
+        $isDynamic = false
     ) {
+        $dynamicServiceRateMock = $this->getMockBuilder(ServiceRateInterface::class)->getMock();
+        $dynamicServiceRateMock->method('getPrice')->willReturn(intval($price) + 321);
+        $dynamicServiceRateMock->method('getServiceOptions')->willReturn($serviceOptions);
+        $dynamicServiceRateMock->method('getWeightMin')->willReturn($weightMin);
+        $dynamicServiceRateMock->method('getWeightMax')->willReturn($weightMax);
+
         $mock = $this->getMockBuilder(ServiceRateInterface::class)
             ->disableOriginalConstructor()
             ->disableOriginalClone()
@@ -47,6 +55,15 @@ trait MocksContract
         $mock
             ->method('getWeightMax')
             ->willReturn($weightMax);
+        $mock
+            ->method('getWeightBracket')
+            ->willReturn([]);
+        $mock
+            ->method('isDynamic')
+            ->willReturn($isDynamic);
+        $mock
+            ->method('resolveDynamicRateForShipment')
+            ->willReturn($dynamicServiceRateMock);
 
         return $mock;
     }

@@ -27,6 +27,22 @@ interface ServiceRateInterface extends ResourceInterface
     public function getWeightMax();
 
     /**
+     * @param array $weightBracket
+     */
+    public function setWeightBracket($weightBracket);
+
+    /**
+     * @return array
+     */
+    public function getWeightBracket();
+
+    /**
+     * @param int $weight
+     * @return int|null
+     */
+    public function calculateBracketPrice($weight);
+
+    /**
      * @param int $lengthMax
      * @return $this
      */
@@ -152,4 +168,20 @@ interface ServiceRateInterface extends ResourceInterface
      * @return ServiceOptionInterface[]
      */
     public function getServiceOptions();
+
+    /**
+     * @param bool $isDynamic
+     * @return $this
+     */
+    public function setIsDynamic($isDynamic);
+
+    /**
+     * @return bool
+     */
+    public function isDynamic();
+
+    /**
+     * @return ServiceRateInterface
+     */
+    public function resolveDynamicRateForShipment(ShipmentInterface $shipment);
 }

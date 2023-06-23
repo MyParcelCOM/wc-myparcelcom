@@ -15,6 +15,7 @@ class CarrierStatusTest extends TestCase
         $this->assertEquals('4w350m3', $carrierStatus->setCode('4w350m3')->getCode());
         $this->assertEquals('This is a very helpful description', $carrierStatus->setDescription('This is a very helpful description')->getDescription());
         $this->assertEquals(13371337, $carrierStatus->setAssignedAt(13371337)->getAssignedAt()->getTimestamp());
+        $this->assertEquals('3SAAA0123456789', $carrierStatus->setTrackingCode('3SAAA0123456789')->getTrackingCode());
     }
 
     /** @test */

@@ -50,9 +50,9 @@ class FileStreamProxyTest extends TestCase
     /** @test */
     public function testClose()
     {
-        $this->assertNotEmpty($this->fileStreamProxy->__toString());
+        $this->assertTrue($this->fileStreamProxy->isReadable());
         $this->fileStreamProxy->close();
-        $this->assertEmpty($this->fileStreamProxy->__toString());
+        $this->assertFalse($this->fileStreamProxy->isReadable());
     }
 
     /** @test */

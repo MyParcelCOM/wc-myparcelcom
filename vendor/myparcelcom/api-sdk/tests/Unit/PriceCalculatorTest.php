@@ -31,6 +31,17 @@ class PriceCalculatorTest extends TestCase
     }
 
     /** @test */
+    public function testItCalculatesTheTotalPriceOfAShipmentWithDynamicServiceRate()
+    {
+        $serviceRateMock = $this->getMockedServiceRate([], null, 0, 5000, null, true);
+        $serviceMock = $this->getMockedService([$serviceRateMock]);
+        $shipment = $this->getMockedShipment(1337, $serviceMock);
+
+        $priceCalculator = new PriceCalculator();
+        $this->assertEquals(321, $priceCalculator->calculate($shipment));
+    }
+
+    /** @test */
     public function testItCalculatesTheTotalPriceIncludingFuelSurcharge()
     {
         $serviceOptionMocks = [

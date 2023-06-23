@@ -90,8 +90,7 @@ trait JsonSerializable
     }
 
     /**
-     * Remove all the attributes from the relationships, so it only has `id` and
-     * `type` values.
+     * Remove all the attributes from the relationships, so it only has `id` and `type` values.
      *
      * @param array $relationships
      * @return array

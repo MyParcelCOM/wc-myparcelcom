@@ -76,6 +76,7 @@ class ServiceRateTest extends TestCase
             'currency'       => ['setCurrency', 'GBP', 'getCurrency'],
             'price'          => ['setPrice', 500, 'getPrice'],
             'fuel_surcharge' => ['setFuelSurchargeAmount', 19, 'getFuelSurchargeAmount'],
+            'is_dynamic'     => ['setIsDynamic', true, 'isDynamic'],
         ];
     }
 
@@ -146,16 +147,24 @@ class ServiceRateTest extends TestCase
             ->setId('service-rate-id')
             ->setWeightMin(123)
             ->setWeightMax(456)
+            ->setWeightBracket([
+                'start'        => 200,
+                'start_amount' => 500,
+                'size'         => 100,
+                'size_amount'  => 123,
+            ])
             ->setLengthMax(789)
             ->setWidthMax(987)
             ->setHeightMax(654)
             ->setVolumeMax(321)
+            ->setVolumetricWeightDivisor(5000)
             ->setCurrency('GBP')
             ->setPrice(741)
             ->setFuelSurchargeAmount(19)
             ->setFuelSurchargeCurrency('GBP')
             ->setService($serviceMock)
             ->setContract($contractMock)
+            ->setIsDynamic(false)
             ->setServiceOptions([
                 $serviceOptionMockA,
                 $serviceOptionMockB,
@@ -166,20 +175,28 @@ class ServiceRateTest extends TestCase
             'id'            => 'service-rate-id',
             'type'          => 'service-rates',
             'attributes'    => [
-                'price'          => [
+                'price'                     => [
                     'amount'   => 741,
                     'currency' => 'GBP',
                 ],
-                'fuel_surcharge' => [
+                'fuel_surcharge'            => [
                     'amount'   => 19,
                     'currency' => 'GBP',
                 ],
-                'weight_min'     => 123,
-                'weight_max'     => 456,
-                'length_max'     => 789,
-                'width_max'      => 987,
-                'height_max'     => 654,
-                'volume_max'     => 321,
+                'weight_min'                => 123,
+                'weight_max'                => 456,
+                'weight_bracket'            => [
+                    'start'        => 200,
+                    'start_amount' => 500,
+                    'size'         => 100,
+                    'size_amount'  => 123,
+                ],
+                'length_max'                => 789,
+                'width_max'                 => 987,
+                'height_max'                => 654,
+                'volume_max'                => 321,
+                'volumetric_weight_divisor' => 5000,
+                'is_dynamic'                => false,
             ],
             'relationships' => [
                 'service'         => [

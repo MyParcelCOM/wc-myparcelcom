@@ -2,11 +2,11 @@
 
 namespace MyParcelCom\ApiSdk\Resources;
 
+use GuzzleHttp\Psr7\Utils;
 use MyParcelCom\ApiSdk\Resources\Interfaces\FileInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ResourceInterface;
 use MyParcelCom\ApiSdk\Resources\Traits\JsonSerializable;
 use Psr\Http\Message\StreamInterface;
-use function GuzzleHttp\Psr7\stream_for;
 
 class File implements FileInterface
 {
@@ -151,10 +151,10 @@ class File implements FileInterface
             return $this->streams[$mimeType];
         }
         if (isset($this->base64Data[$mimeType])) {
-            return stream_for(base64_decode($this->base64Data[$mimeType]));
+            return Utils::streamFor(base64_decode($this->base64Data[$mimeType]));
         }
         if (isset($this->paths[$mimeType])) {
-            return stream_for(fopen($this->paths[$mimeType], 'r'));
+            return Utils::streamFor(fopen($this->paths[$mimeType], 'r'));
         }
     }
 

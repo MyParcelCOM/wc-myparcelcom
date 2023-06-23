@@ -8,6 +8,7 @@ use MyParcelCom\ApiSdk\Collection\CollectionInterface;
 use MyParcelCom\ApiSdk\Exceptions\InvalidResourceException;
 use MyParcelCom\ApiSdk\Http\Exceptions\RequestException;
 use MyParcelCom\ApiSdk\MyParcelComApi;
+use MyParcelCom\ApiSdk\MyParcelComApiInterface;
 use MyParcelCom\ApiSdk\Resources\Address;
 use MyParcelCom\ApiSdk\Resources\Carrier;
 use MyParcelCom\ApiSdk\Resources\Interfaces\CarrierInterface;
@@ -27,6 +28,8 @@ use MyParcelCom\ApiSdk\Resources\Shipment;
 use MyParcelCom\ApiSdk\Resources\Shop;
 use MyParcelCom\ApiSdk\Tests\Traits\MocksApiCommunication;
 use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_MockObject_MockObject;
+use Psr\Http\Message\RequestInterface;
 
 class MyParcelComApiTest extends TestCase
 {
@@ -36,7 +39,7 @@ class MyParcelComApiTest extends TestCase
     private $authenticator;
     /** @var MyParcelComApi */
     private $api;
-    /** @var HttpClient */
+    /** @var HttpClient|PHPUnit_Framework_MockObject_MockObject */
     private $client;
 
     public function setUp()
@@ -113,6 +116,79 @@ class MyParcelComApiTest extends TestCase
     }
 
     /** @test */
+    public function testCreateIdempotentShipment()
+    {
+        $idempotencyKey = 'a-shipment-identifier';
+
+        $this->client
+            ->method('sendRequest')
+            ->willReturnCallback(function (RequestInterface $request) use ($idempotencyKey) {
+                $requestIdempotencyKey = $request->getHeader(MyParcelComApiInterface::HEADER_IDEMPOTENCY_KEY)[0];
+                $this->assertEquals($idempotencyKey, $requestIdempotencyKey);
+            });
+
+        $recipient = (new Address())
+            ->setFirstName('Bobby')
+            ->setLastName('Tables')
+            ->setCity('Birmingham')
+            ->setStreet1('Newbourne Hill')
+            ->setStreetNumber(12)
+            ->setPostalCode('B48 7QN')
+            ->setCountryCode('GB');
+
+        $shopMock = $this
+            ->getMockBuilder(Shop::class)
+            ->getMock();
+
+        $senderAddress = (new Address())
+            ->setFirstName('Bobby')
+            ->setLastName('Tables')
+            ->setCity('Birmingham')
+            ->setStreet1('Newbourne Hill')
+            ->setStreetNumber(12)
+            ->setPostalCode('B48 7QN')
+            ->setCountryCode('GB');
+
+        $shopMock
+            ->method('getSenderAddress')
+            ->willReturn($senderAddress);
+
+
+        // Minimum required data should be recipient address and weight. All other data should be filled with defaults.
+        $shipment = (new Shipment())
+            ->setPhysicalProperties((new PhysicalProperties())->setWeight(500))
+            ->setShop($shopMock)
+            ->setRecipientAddress($recipient);
+
+        $this->api->createShipment($shipment, $idempotencyKey);
+    }
+
+    /** @test */
+    public function testCreateRegisteredShipment()
+    {
+        $recipient = (new Address())
+            ->setFirstName('Sherlock')
+            ->setLastName('Holmes')
+            ->setCity('London')
+            ->setStreet1('Baker Street')
+            ->setStreetNumber(221)
+            ->setPostalCode('NW1 6XE')
+            ->setCountryCode('GB');
+
+        $shipment = (new Shipment())
+            ->setPhysicalProperties((new PhysicalProperties())->setWeight(500))
+            ->setRecipientAddress($recipient)
+            ->setServiceCode('myparcelcom-unstamped');
+
+        $shipment = $this->api->createAndRegisterShipment($shipment);
+
+        $this->assertNotNull($shipment->getService());
+        $this->assertNotNull($shipment->getContract());
+        $this->assertCount(1, $shipment->getFiles());
+        $this->assertNotNull($shipment->getFiles()[0]->getBase64Data());
+    }
+
+    /** @test */
     public function testSaveShipment()
     {
         $initialAddress = (new Address())
@@ -163,6 +239,7 @@ class MyParcelComApiTest extends TestCase
             ->setCountryCode('GB');
 
         $shipment->setRecipientAddress($patchRecipient);
+        $shipment->setDescription('new patched description');
 
         // Save an existing shipment should patch it
         $shipment = $this->api->saveShipment($shipment);
@@ -170,14 +247,14 @@ class MyParcelComApiTest extends TestCase
         $this->assertEquals(
             $patchRecipient,
             $shipment->getRecipientAddress(),
-            'patch did not replace the recipient address'
+            'patch replaced the recipient address'
         );
-
         $this->assertEquals(
             $initialAddress,
             $shipment->getReturnAddress(),
             'patch should not have replaced the return address'
         );
+        $this->assertEquals('new patched description', $shipment->getDescription());
     }
 
     /** @test */
@@ -584,6 +661,7 @@ class MyParcelComApiTest extends TestCase
             ->setCountryCode('GB');
 
         $shop = (new Shop())
+            ->setId('shop-id')
             ->setOrganization((new Organization())->setId('org-id'));
 
         $shipment = (new Shipment())
@@ -600,6 +678,82 @@ class MyParcelComApiTest extends TestCase
             $this->assertEquals('Letter Test', $serviceRate->getService()->getName(), 'Included service name');
             $this->assertEquals('letter-test', $serviceRate->getService()->getCode(), 'Included service code');
             $this->assertTrue(in_array($serviceRate->getContract()->getName(), ['Contract X', 'Contract Y']), 'Included contract name');
+        }
+    }
+
+    /** @test */
+    public function testItRetrievesDynamicServiceRatesForShipment()
+    {
+        $recipient = (new Address())
+            ->setFirstName('Steven')
+            ->setLastName('Frayne')
+            ->setCity('Vancouver')
+            ->setStreet1('1st Street')
+            ->setPostalCode('W8 6UX')
+            ->setCountryCode('CA');
+
+        $shop = (new Shop())
+            ->setId('shop-id')
+            ->setOrganization((new Organization())->setId('org-id'));
+
+        $shipment = (new Shipment())
+            ->setShop($shop)
+            ->setWeight(500)
+            ->setRecipientAddress($recipient);
+
+        $serviceRates = $this->api->getServiceRatesForShipment($shipment);
+        $this->assertInstanceOf(CollectionInterface::class, $serviceRates);
+        foreach ($serviceRates as $serviceRate) {
+            $this->assertInstanceOf(ServiceRateInterface::class, $serviceRate);
+            $this->assertEquals(0, $serviceRate->getWeightMin());
+            $this->assertEquals(10000, $serviceRate->getWeightMax());
+            $this->assertEquals('Dynamic Test', $serviceRate->getService()->getName(), 'Included service name');
+            $this->assertEquals('dynamic-test', $serviceRate->getService()->getCode(), 'Included service code');
+            $this->assertEquals('Contract Z', $serviceRate->getContract()->getName(), 'Included contract name');
+            $this->assertEquals(321, $serviceRate->getPrice());
+        }
+    }
+
+    /** @test */
+    public function testItResolvesServiceRatesWithWeightBracketForShipment()
+    {
+        $recipient = (new Address())
+            ->setFirstName('Steven')
+            ->setLastName('Frayne')
+            ->setCity('Vancouver')
+            ->setStreet1('1st Street')
+            ->setPostalCode('W8 6UX')
+            ->setCountryCode('CA');
+
+        $shop = (new Shop())
+            ->setId('shop-id')
+            ->setOrganization((new Organization())->setId('org-id'));
+
+        $shipment = (new Shipment())
+            ->setShop($shop)
+            ->setPhysicalProperties((new PhysicalProperties())->setWeight(9000))
+            ->setRecipientAddress($recipient);
+
+        $serviceRates = $this->api->getServiceRatesForShipment($shipment);
+        $this->assertInstanceOf(CollectionInterface::class, $serviceRates);
+        foreach ($serviceRates as $serviceRate) {
+            $this->assertInstanceOf(ServiceRateInterface::class, $serviceRate);
+            $this->assertEquals(0, $serviceRate->getWeightMin());
+            $this->assertEquals(30000, $serviceRate->getWeightMax());
+            $this->assertEquals([
+                'start'        => 6000,
+                'start_amount' => 500,
+                'size'         => 1000,
+                'size_amount'  => 50,
+            ], $serviceRate->getWeightBracket());
+            $this->assertEquals(9500, $serviceRate->getPrice(), 'Should be the meta.bracket_price.amount');
+            $this->assertEquals('EUR', $serviceRate->getCurrency(), 'Should be the meta.bracket_price.currency');
+
+            $this->assertEquals(500, $serviceRate->calculateBracketPrice(0));
+            $this->assertEquals(500, $serviceRate->calculateBracketPrice(6000));
+            $this->assertEquals(550, $serviceRate->calculateBracketPrice(6001));
+            $this->assertEquals(650, $serviceRate->calculateBracketPrice(9000));
+            $this->assertEquals(700, $serviceRate->calculateBracketPrice(9001));
         }
     }
 

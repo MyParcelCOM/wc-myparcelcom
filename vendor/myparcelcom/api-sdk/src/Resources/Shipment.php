@@ -16,11 +16,13 @@ use MyParcelCom\ApiSdk\Resources\Interfaces\ShipmentItemInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ShipmentStatusInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ShopInterface;
 use MyParcelCom\ApiSdk\Resources\Traits\JsonSerializable;
+use MyParcelCom\ApiSdk\Resources\Traits\ProcessIncludes;
 use MyParcelCom\ApiSdk\Utils\DateUtils;
 
 class Shipment implements ShipmentInterface
 {
     use JsonSerializable;
+    use ProcessIncludes;
 
     const ATTRIBUTE_BARCODE = 'barcode';
     const ATTRIBUTE_TRACKING_CODE = 'tracking_code';
@@ -57,6 +59,15 @@ class Shipment implements ShipmentInterface
 
     const META_LABEL_MIME_TYPE = 'label_mime_type';
     const META_SERVICE_CODE = 'service_code';
+
+    const INCLUDES = [
+        ResourceInterface::TYPE_CONTRACT        => self::RELATIONSHIP_CONTRACT,
+        ResourceInterface::TYPE_FILE            => self::RELATIONSHIP_FILES,
+        ResourceInterface::TYPE_SERVICE         => self::RELATIONSHIP_SERVICE,
+        ResourceInterface::TYPE_SERVICE_OPTION  => self::RELATIONSHIP_SERVICE_OPTIONS,
+        ResourceInterface::TYPE_SHIPMENT_STATUS => self::RELATIONSHIP_STATUS,
+        ResourceInterface::TYPE_SHOP            => self::RELATIONSHIP_SHOP,
+    ];
 
     /** @var string */
     private $id;

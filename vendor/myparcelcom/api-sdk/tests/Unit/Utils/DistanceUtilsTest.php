@@ -14,7 +14,7 @@ class DistanceUtilsTest extends TestCase
         $convertedDistance = DistanceUtils::convertDistance(100, 'kilometers', 'miles');
         $revertedDistance = DistanceUtils::convertDistance($convertedDistance, 'miles', 'kilometers');
 
-        $this->assertEquals(62.1371192237, $convertedDistance);
+        $this->assertEquals(62.1371192237, round($convertedDistance, 10));
         $this->assertEquals(100, $revertedDistance);
     }
 

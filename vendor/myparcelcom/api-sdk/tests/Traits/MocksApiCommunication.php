@@ -40,7 +40,6 @@ trait MocksApiCommunication
             ->willReturnCallback(function (RequestInterface $request) {
                 $method = strtolower($request->getMethod());
                 $uri = urldecode((string) $request->getUri());
-                $jsonBody = $request->getBody()->getContents();
 
                 $filePath = implode(DIRECTORY_SEPARATOR, [
                         dirname(dirname(__FILE__)),
@@ -71,46 +70,6 @@ trait MocksApiCommunication
                 }
 
                 $returnJson = file_get_contents($filePath);
-
-                if ($method === 'post') {
-                    // You may wonder why we would encode and then
-                    // decode this, but it is possible that the json in
-                    // the options array is not an associative array,
-                    // which we need to be able to merge.
-                    if (is_array(json_decode($jsonBody, true))) {
-                        $jsonBody = json_decode($jsonBody, true);
-                    } else {
-                        $jsonBody = json_decode(json_encode($jsonBody), true);
-                    }
-
-                    // Any post will have the data from the stub added to the
-                    // original request. This simulates the api creating the
-                    // resource and returning it with added attributes.
-                    $returnJson = json_encode(
-                        array_merge_recursive(
-                            json_decode($returnJson, true),
-                            $jsonBody
-                        )
-                    );
-                }
-
-                if ($method === 'patch') {
-                    if (is_array(json_decode($jsonBody, true))) {
-                        $jsonBody = json_decode($jsonBody, true);
-                    } else {
-                        $jsonBody = json_decode(json_encode($jsonBody), true);
-                    }
-
-                    // Any patch will have the data from the stub merged with the
-                    // original request data. This simulates the api updating the
-                    // resource and returning it with merged attributes.
-                    $returnJson = json_encode(
-                        array_replace_recursive(
-                            json_decode($returnJson, true),
-                            $jsonBody
-                        )
-                    );
-                }
 
                 if (strpos($returnJson, '"errors": [') !== false && strpos($returnJson, '"data": ') === false) {
                     throw new RequestException(

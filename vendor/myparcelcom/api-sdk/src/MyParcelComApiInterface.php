@@ -8,6 +8,7 @@ use MyParcelCom\ApiSdk\Exceptions\MyParcelComException;
 use MyParcelCom\ApiSdk\Http\Exceptions\RequestException;
 use MyParcelCom\ApiSdk\Resources\Interfaces\CarrierInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ResourceInterface;
+use MyParcelCom\ApiSdk\Resources\Interfaces\ServiceRateInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ShipmentInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ShopInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -23,6 +24,8 @@ interface MyParcelComApiInterface
     const PATH_SHIPMENTS = '/shipments';
     const PATH_SHIPMENT_STATUSES = '/shipments/{shipment_id}/statuses';
     const PATH_SHOPS = '/shops';
+
+    const HEADER_IDEMPOTENCY_KEY = 'Idempotency-Key';
 
     const TTL_NO_CACHE = 0;
     const TTL_10MIN = 600;
@@ -132,8 +135,9 @@ interface MyParcelComApiInterface
     public function getServicesForCarrier(CarrierInterface $carrier, $ttl = self::TTL_10MIN);
 
     /**
-     * Retrieves service rates based on the set filters.
-     * Available filters are: service, contract and weight.
+     * Retrieves service rates based on the set filters. Available filters are: service, contract and weight. Note that
+     * this function could return service rates which are dynamic. Their price and availability depends on the shipment
+     * data and requires communication with the carrier. This info can be retrieved using resolveDynamicServiceRates().
      *
      * @param array $filters
      * @param int   $ttl Cache time to live (in seconds)
@@ -152,8 +156,19 @@ interface MyParcelComApiInterface
     public function getServiceRatesForShipment(ShipmentInterface $shipment, $ttl = self::TTL_10MIN);
 
     /**
-     * Get shipments for a given shop. If no shop is given the default shop is
-     * used.
+     * Retrieve dynamic rates (price / options / availability) from the carrier, based on the provided shipment data.
+     * The shipment should have a service, contract, addresses, weight and sometimes dimensions are required as well.
+     * If you have a ServiceRate which is_dynamic, you can pass it and its service and contract will be used instead.
+     *
+     * @param ShipmentInterface|array   $shipmentData
+     * @param ServiceRateInterface|null $dynamicServiceRate
+     * @return ServiceRateInterface[]
+     * @throws RequestException
+     */
+    public function resolveDynamicServiceRates($shipmentData, $dynamicServiceRate = null);
+
+    /**
+     * Get shipments for a given shop. If no shop is given the default shop is used.
      *
      * @param ShopInterface|null $shop
      * @param int                $ttl Cache time to live (in seconds)
@@ -199,10 +214,12 @@ interface MyParcelComApiInterface
      * used. When no default value is available, an exception should be thrown.
      *
      * @param ShipmentInterface $shipment
+     * @param string|null $idempotencyKey Use idempotency feature
+     *                                    (see https://docs.myparcel.com/api/create-a-shipment/idempotency.html)
      * @return ShipmentInterface
      * @throws MyParcelComException
      */
-    public function createShipment(ShipmentInterface $shipment);
+    public function createShipment(ShipmentInterface $shipment, $idempotencyKey = null);
 
     /**
      * Get the resource of given type with given id.

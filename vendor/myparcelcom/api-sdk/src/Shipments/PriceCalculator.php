@@ -23,6 +23,10 @@ class PriceCalculator
             $serviceRate = $this->determineServiceRateForShipment($shipment);
         }
 
+        if ($serviceRate->isDynamic()) {
+            $serviceRate = $serviceRate->resolveDynamicRateForShipment($shipment);
+        }
+
         if ($shipment->getPhysicalProperties() === null
             || $shipment->getPhysicalProperties()->getWeight() === null
             || $shipment->getPhysicalProperties()->getWeight() < $serviceRate->getWeightMin()
@@ -30,6 +34,18 @@ class PriceCalculator
             throw new CalculationException(
                 'Could not calculate price for the given service rate since it does not support the shipment weight.'
             );
+        }
+
+        if ($serviceRate->getPrice() === null && !empty($serviceRate->getWeightBracket())) {
+            $bracketPrice = $serviceRate->getBracketPrice()
+                ? $serviceRate->getBracketPrice()
+                : $serviceRate->calculateBracketPrice($shipment->getPhysicalProperties()->getWeight());
+            $bracketCurrency = $serviceRate->getBracketCurrency()
+                ? $serviceRate->getBracketCurrency()
+                : $serviceRate->getContract()->getCurrency();
+
+            $serviceRate->setPrice($bracketPrice);
+            $serviceRate->setCurrency($bracketCurrency);
         }
 
         $serviceRatePrice = $serviceRate->getPrice();

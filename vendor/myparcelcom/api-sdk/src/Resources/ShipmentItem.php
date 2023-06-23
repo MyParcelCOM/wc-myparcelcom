@@ -2,7 +2,9 @@
 
 namespace MyParcelCom\ApiSdk\Resources;
 
+use MyParcelCom\ApiSdk\Enums\WeightUnitEnum;
 use MyParcelCom\ApiSdk\Exceptions\MyParcelComException;
+use MyParcelCom\ApiSdk\Helpers\WeightConverter;
 use MyParcelCom\ApiSdk\Resources\Interfaces\PhysicalPropertiesInterface;
 use MyParcelCom\ApiSdk\Resources\Interfaces\ShipmentItemInterface;
 use MyParcelCom\ApiSdk\Resources\Traits\JsonSerializable;
@@ -43,6 +45,12 @@ class ShipmentItem implements ShipmentItemInterface
 
     /** @var int|null */
     private $itemWeight;
+
+    /** @var string */
+    private $itemWeightUnit = WeightUnitEnum::GRAM;
+
+    /** @var bool */
+    private $isPreferentialOrigin = false;
 
     /**
      * @param string|null $sku
@@ -220,17 +228,48 @@ class ShipmentItem implements ShipmentItemInterface
     }
 
     /**
-     * @param int|null $weight
-     * @param string   $unit
+     * This method can also set the weight unit, so you do not have to call setItemWeightUnit() separately.
+     *
+     * @param int|null    $weight
+     * @param string|null $unit
      * @return $this
      */
-    public function setItemWeight($weight, $unit = PhysicalPropertiesInterface::WEIGHT_GRAM)
+    public function setItemWeight($weight, $unit = null)
     {
-        if (!isset(PhysicalProperties::$unitConversion[$unit])) {
-            throw new MyParcelComException('invalid unit: ' . $unit);
+        // Because we supported unit conversion in the SDK before we did this in the API, `grams` and `g` are supported.
+        switch ($unit) {
+            case null:
+                // We do not want this function to alter $this->itemWeightUnit when it's called without a parameter.
+                // In that case `grams` are implied, which is already the default item weight unit set on this class.
+                break;
+            case WeightUnitEnum::MILLIGRAM:
+                $this->itemWeightUnit = WeightUnitEnum::MILLIGRAM;
+                break;
+            case PhysicalPropertiesInterface::WEIGHT_GRAM:
+            case WeightUnitEnum::GRAM:
+                $this->itemWeightUnit = WeightUnitEnum::GRAM;
+                break;
+            case PhysicalPropertiesInterface::WEIGHT_KILOGRAM:
+            case WeightUnitEnum::KILOGRAM:
+                $this->itemWeightUnit = WeightUnitEnum::KILOGRAM;
+                break;
+            case PhysicalPropertiesInterface::WEIGHT_OUNCE:
+            case WeightUnitEnum::OUNCE:
+                $this->itemWeightUnit = WeightUnitEnum::OUNCE;
+                break;
+            case PhysicalPropertiesInterface::WEIGHT_POUND:
+            case WeightUnitEnum::POUND:
+                $this->itemWeightUnit = WeightUnitEnum::POUND;
+                break;
+            case PhysicalPropertiesInterface::WEIGHT_STONE:
+                // Our API does not support stones. If anyone is using stones, we will work with the old implementation.
+                $this->itemWeight = (int) ceil($weight * PhysicalProperties::$unitConversion[$unit]);
+                return $this;
+            default:
+                throw new MyParcelComException('invalid unit: ' . $unit);
         }
 
-        $this->itemWeight = (int) round($weight * PhysicalProperties::$unitConversion[$unit]);
+        $this->itemWeight = (int) ceil($weight);
 
         return $this;
     }
@@ -239,12 +278,92 @@ class ShipmentItem implements ShipmentItemInterface
      * @param string $unit
      * @return int|null
      */
-    public function getItemWeight($unit = PhysicalPropertiesInterface::WEIGHT_GRAM)
+    public function getItemWeight($unit = null)
     {
-        if (!isset(PhysicalProperties::$unitConversion[$unit])) {
-            throw new MyParcelComException('invalid unit: ' . $unit);
+        if ($this->itemWeight === null) {
+            return $this->itemWeight;
         }
 
-        return (int) round($this->itemWeight / PhysicalProperties::$unitConversion[$unit]);
+        // Convert old PhysicalPropertiesInterface units to the new WeightUnitEnum used by our API and WeightConverter.
+        switch ($unit) {
+            case null:
+                // We use the default item weight unit set on this class if this function is called without a parameter.
+                $unit = $this->itemWeightUnit;
+                break;
+            case WeightUnitEnum::MILLIGRAM:
+                $unit = WeightUnitEnum::MILLIGRAM;
+                break;
+            case PhysicalPropertiesInterface::WEIGHT_GRAM:
+            case WeightUnitEnum::GRAM:
+                $unit = WeightUnitEnum::GRAM;
+                break;
+            case PhysicalPropertiesInterface::WEIGHT_KILOGRAM:
+            case WeightUnitEnum::KILOGRAM:
+                $unit = WeightUnitEnum::KILOGRAM;
+                break;
+            case PhysicalPropertiesInterface::WEIGHT_OUNCE:
+            case WeightUnitEnum::OUNCE:
+                $unit = WeightUnitEnum::OUNCE;
+                break;
+            case PhysicalPropertiesInterface::WEIGHT_POUND:
+            case WeightUnitEnum::POUND:
+                $unit = WeightUnitEnum::POUND;
+                break;
+            case PhysicalPropertiesInterface::WEIGHT_STONE:
+                // Our API does not support stones. If anyone is using stones, we will work with the old implementation.
+                return (int) ceil($this->itemWeight / PhysicalProperties::$unitConversion[$unit]);
+            default:
+                throw new MyParcelComException('invalid unit: ' . $unit);
+        }
+
+        $convertedWeight = WeightConverter::convert(
+            $this->itemWeight,
+            $this->itemWeightUnit,
+            $unit
+        );
+
+        return (int) ceil($convertedWeight);
+    }
+
+    /**
+     * @param string $weightUnit
+     * @return $this
+     */
+    public function setItemWeightUnit($weightUnit)
+    {
+        if (!WeightUnitEnum::isValid($weightUnit)) {
+            throw new MyParcelComException('$weightUnit should be one of: ' . implode(', ', WeightUnitEnum::toArray()));
+        }
+
+        $this->itemWeightUnit = $weightUnit;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getItemWeightUnit()
+    {
+        return $this->itemWeightUnit;
+    }
+
+    /**
+     * @param bool $isPreferentialOrigin
+     * @return $this
+     */
+    public function setIsPreferentialOrigin($isPreferentialOrigin)
+    {
+        $this->isPreferentialOrigin = $isPreferentialOrigin;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsPreferentialOrigin()
+    {
+        return $this->isPreferentialOrigin;
     }
 }

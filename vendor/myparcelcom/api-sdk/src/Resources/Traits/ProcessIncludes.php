@@ -2,20 +2,36 @@
 
 namespace MyParcelCom\ApiSdk\Resources\Traits;
 
+use MyParcelCom\ApiSdk\Resources\Interfaces\ResourceInterface;
+
 trait ProcessIncludes
 {
+    /**
+     * Replace relationships ResourceProxys (id + type) with full Resources built from `included` to avoid lazy loading.
+     * It will only process included data for which $this::INCLUDES defines which include belongs to which relationship.
+     *
+     * @param ResourceInterface[] $includedResources
+     */
     public function processIncludedResources(array $includedResources)
     {
-        foreach ($this::INCLUDES as $resourceType => $relationshipKey) {
-            $relationship = $this->relationships[$relationshipKey]['data'];
-
-            // Only support included resources for single relationships - TODO: add support for relationship arrays.
-            if (is_array($relationship)) {
+        foreach ($includedResources as $resource) {
+            if (!array_key_exists($resource->getType(), self::INCLUDES)) {
                 return;
             }
 
-            foreach ($includedResources as $resource) {
-                if ($resource->getType() === $resourceType && $resource->getId() === $relationship->getId()) {
+            $relationshipKey = $this::INCLUDES[$resource->getType()];
+            $relationship = $this->relationships[$relationshipKey]['data'];
+
+            /** @var ResourceInterface|ResourceInterface[] $relationship */
+            if (is_array($relationship)) {
+                foreach ($relationship as $index => $item) {
+                    if ($resource->getType() === $item->getType() && $resource->getId() === $item->getId()) {
+                        $this->relationships[$relationshipKey]['data'][$index] = $resource;
+                        break;
+                    }
+                }
+            } else {
+                if ($resource->getType() === $relationship->getType() && $resource->getId() === $relationship->getId()) {
                     $this->relationships[$relationshipKey]['data'] = $resource;
                 }
             }
