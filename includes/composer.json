@@ -1,6 +1,0 @@
-{
-  "require": {
-    "myparcelcom/api-sdk": "^2.10",
-    "php-http/curl-client": "^1.7"
-  }
-}
