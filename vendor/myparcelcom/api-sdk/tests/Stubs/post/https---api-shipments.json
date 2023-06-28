@@ -1,0 +1,50 @@
+{
+  "data": {
+    "type": "shipments",
+    "id": "new-shipment",
+    "attributes": {
+      "physical_properties": {
+        "weight": 500
+      },
+      "recipient_address": {
+        "street_1": "Newbourne Hill",
+        "street_number": 12,
+        "postal_code": "B48 7QN",
+        "city": "Birmingham",
+        "country_code": "GB",
+        "first_name": "Bobby",
+        "last_name": "Tables"
+      },
+      "return_address": {
+        "street_1": "Newbourne Hill",
+        "street_number": 12,
+        "postal_code": "B48 7QN",
+        "city": "Birmingham",
+        "country_code": "GB",
+        "first_name": "Bobby",
+        "last_name": "Tables"
+      },
+      "sender_address": {
+        "street_1": "Hoofdweg",
+        "street_number": 679,
+        "postal_code": "1AA BB2",
+        "city": "London",
+        "country_code": "GB",
+        "first_name": "Mister",
+        "last_name": "Sender",
+        "company": "MyParcel.com",
+        "email": "info@myparcel.com",
+        "phone_number": "+31 85 208 5997"
+      },
+      "price": 6000
+    },
+    "relationships": {
+      "shop": {
+        "data": {
+          "id": "shop-id-1",
+          "type": "shops"
+        }
+      }
+    }
+  }
+}

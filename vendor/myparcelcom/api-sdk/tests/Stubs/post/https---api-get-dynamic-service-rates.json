@@ -1,0 +1,49 @@
+{
+  "data": [
+    {
+      "id": "dee71cb4-1a21-48eb-adde-ebca98bd24fe",
+      "type": "service-rates",
+      "attributes": {
+        "weight_min": 0,
+        "weight_max": 10000,
+        "price": {
+          "amount": 321,
+          "currency": "CAD"
+        },
+        "is_dynamic": false
+      },
+      "links": {
+        "self": "https://api/service-rates/dee71cb4-1a21-48eb-adde-ebca98bd24fe"
+      },
+      "relationships": {
+        "service": {
+          "data": {
+            "id": "e097a359-5e05-465c-a75f-42ed5ed799e6",
+            "type": "services"
+          },
+          "links": {
+            "related": "https://api/services/e097a359-5e05-465c-a75f-42ed5ed799e6"
+          }
+        },
+        "contract": {
+          "data": {
+            "id": "f38b573e-35e1-41c8-a354-a2752898ef34",
+            "type": "contracts"
+          },
+          "links": {
+            "related": "https://api/contracts/f38b573e-35e1-41c8-a354-a2752898ef34"
+          }
+        }
+      }
+    }
+  ],
+  "meta": {
+    "total_pages": 1,
+    "total_records": 1
+  },
+  "links": {
+    "self": "https://api/get-dynamic-service-rates?page[size]=100&page[number]=1",
+    "first": "https://api/get-dynamic-service-rates?page[size]=100&page[number]=1",
+    "last": "https://api/get-dynamic-service-rates?page[size]=100&page[number]=1"
+  }
+}

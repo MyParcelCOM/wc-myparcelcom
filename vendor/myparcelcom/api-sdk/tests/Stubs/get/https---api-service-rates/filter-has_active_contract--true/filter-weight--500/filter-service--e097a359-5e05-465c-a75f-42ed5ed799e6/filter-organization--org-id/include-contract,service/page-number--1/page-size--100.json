@@ -1,0 +1,119 @@
+{
+  "data": [
+    {
+      "id": "dee71cb4-1a21-48eb-adde-ebca98bd24fe",
+      "type": "service-rates",
+      "attributes": {
+        "weight_min": 0,
+        "weight_max": 10000,
+        "is_dynamic": true
+      },
+      "links": {
+        "self": "https://api/service-rates/dee71cb4-1a21-48eb-adde-ebca98bd24fe"
+      },
+      "relationships": {
+        "service": {
+          "data": {
+            "id": "e097a359-5e05-465c-a75f-42ed5ed799e6",
+            "type": "services"
+          },
+          "links": {
+            "related": "https://api/services/e097a359-5e05-465c-a75f-42ed5ed799e6"
+          }
+        },
+        "contract": {
+          "data": {
+            "id": "f38b573e-35e1-41c8-a354-a2752898ef34",
+            "type": "contracts"
+          },
+          "links": {
+            "related": "https://api/contracts/f38b573e-35e1-41c8-a354-a2752898ef34"
+          }
+        }
+      }
+    }
+  ],
+  "meta": {
+    "total_pages": 1,
+    "total_records": 1
+  },
+  "included": [
+    {
+      "id": "f38b573e-35e1-41c8-a354-a2752898ef34",
+      "type": "contracts",
+      "attributes": {
+        "currency": "CAD",
+        "status": "active",
+        "name": "Contract Z",
+        "created_at": 1623395638,
+        "updated_at": 1623395669
+      },
+      "links": {
+        "self": "https://api/contracts/f38b573e-35e1-41c8-a354-a2752898ef34"
+      },
+      "relationships": {
+        "carrier": {
+          "data": {
+            "id": "eef00b32-177e-43d3-9b26-715365e4ce46",
+            "type": "carriers"
+          },
+          "links": {
+            "related": "https://api/carriers/eef00b32-177e-43d3-9b26-715365e4ce46"
+          }
+        },
+        "owner": {
+          "data": {
+            "id": "9056afa7-e88a-4c94-8a98-6cc124382112",
+            "type": "brokers"
+          },
+          "links": {
+            "related": "https://api/brokers/9056afa7-e88a-4c94-8a98-6cc124382112"
+          }
+        }
+      }
+    },
+    {
+      "id": "e097a359-5e05-465c-a75f-42ed5ed799e6",
+      "type": "services",
+      "attributes": {
+        "name": "Dynamic Test",
+        "code": "dynamic-test",
+        "package_type": "parcel",
+        "handover_method": "drop-off",
+        "delivery_method": "delivery",
+        "regions_from": [
+          {
+            "country_code": "GB"
+          }
+        ],
+        "regions_to": [
+          {
+            "country_code": "CA"
+          }
+        ],
+        "uses_volumetric_weight": false,
+        "strict_consolidation": false
+      },
+      "links": {
+        "self": "https://api/services/e097a359-5e05-465c-a75f-42ed5ed799e6",
+        "contracts": "https://api/services/e097a359-5e05-465c-a75f-42ed5ed799e6/contracts"
+      },
+      "relationships": {
+        "carrier": {
+          "links": {
+            "related": "https://api/carriers/eef00b32-177e-43d3-9b26-715365e4ce46"
+          },
+          "data": {
+            "id": "eef00b32-177e-43d3-9b26-715365e4ce46",
+            "type": "carriers"
+          }
+        }
+      }
+    }
+  ],
+  "links": {
+    "self": "https://api/service-rates?filter[has_active_contract]=true&filter[weight]=500&filter[service]=eef00b32-177e-43d3-9b26-715365e4ce46&page[size]=100&page[number]=1",
+    "first": "https://api/service-rates?filter[has_active_contract]=true&filter[weight]=500&filter[service]=eef00b32-177e-43d3-9b26-715365e4ce46&page[size]=100&page[number]=1",
+    "last": "https://api/service-rates?filter[has_active_contract]=true&filter[weight]=500&filter[service]=eef00b32-177e-43d3-9b26-715365e4ce46&page[size]=100&page[number]=1"
+  }
+}
