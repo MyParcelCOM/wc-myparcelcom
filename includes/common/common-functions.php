@@ -303,6 +303,9 @@ function getRegisteredShopId(): string
 function getShipmentFiles($post_id)
 {
     $getOrderMetaData = get_post_meta($post_id, GET_META_SHIPMENT_TRACKING_KEY, true);
+    if (!$getOrderMetaData) {
+        return;
+    }
     $getOrderMeta     = json_decode($getOrderMetaData);
 
     if (!$getOrderMeta) {
@@ -397,6 +400,9 @@ function getShipmentCurrentStatus($post_id)
 {
     $shipmentData     = [];
     $getOrderMetaData = get_post_meta($post_id, GET_META_SHIPMENT_TRACKING_KEY, true);
+    if (!$getOrderMetaData) {
+        return;
+    }
     $getOrderMeta     = json_decode($getOrderMetaData);
     if (!$getOrderMeta) {
         return;
