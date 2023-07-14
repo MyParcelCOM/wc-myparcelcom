@@ -1,14 +1,15 @@
 {
-    "name": "myparcelcom/wc-myparcelcom",
-    "description": "WooCommerce plugin to import orders into the MyParcel.com platform.",
-    "type": "wordpress-plugin",
-    "require": {
-        "myparcelcom/api-sdk": "^2.10",
-        "php-http/curl-client": "^1.7"
-    },
-    "config": {
-        "allow-plugins": {
-            "php-http/discovery": true
-        }
+  "name": "myparcelcom/wc-myparcelcom",
+  "description": "WooCommerce plugin to import orders into the MyParcel.com platform.",
+  "type": "wordpress-plugin",
+  "require": {
+    "ext-json": "*",
+    "myparcelcom/api-sdk": "^2.10",
+    "php-http/curl-client": "^1.7"
+  },
+  "config": {
+    "allow-plugins": {
+      "php-http/discovery": true
     }
+  }
 }
