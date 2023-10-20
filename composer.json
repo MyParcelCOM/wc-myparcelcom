@@ -7,6 +7,9 @@
     "myparcelcom/api-sdk": "^2.10",
     "php-http/curl-client": "^1.7"
   },
+  "require-dev": {
+    "roave/security-advisories": "dev-latest"
+  },
   "config": {
     "allow-plugins": {
       "php-http/discovery": true
