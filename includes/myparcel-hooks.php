@@ -168,7 +168,7 @@ function exportPrintBulkActionAdminNotice()
                     $errorMessages = array_map('htmlspecialchars', $_REQUEST['shipment_error_messages']);
 
                     echo '<div class="notice notice-success is-dismissible" style="color:red;"><p>'
-                        . implode($errorMessages, '<br>')
+                        . implode('<br>', $errorMessages)
                         . '</p></div>';
                     break;
             }
@@ -234,7 +234,7 @@ function createShipmentForOrder($orderId)
         )
         ->setCustomerReference((string) $orderId)
         ->setDescription('Order #' . $orderId)
-        ->setTags(array_filter([$orderData['payment_method_title'], $order->get_shipping_method()]))
+        ->setTags(array_values(array_filter([$orderData['payment_method_title'], $order->get_shipping_method()])))
         ->setItems($shipmentItems)
         ->setShop($shop)
         ->setChannel('WooCommerce_' . MYPARCEL_PLUGIN_VERSION);
