@@ -168,7 +168,7 @@ function exportPrintBulkActionAdminNotice()
                     $errorMessages = array_map('htmlspecialchars', $_REQUEST['shipment_error_messages']);
 
                     echo '<div class="notice notice-success is-dismissible" style="color:red;"><p>'
-                        . implode($errorMessages, '<br>')
+                        . implode('<br>', $errorMessages)
                         . '</p></div>';
                     break;
             }
