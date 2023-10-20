@@ -1,6 +1,6 @@
 <?php
 
-define('MYPARCEL_PLUGIN_VERSION', '2.1.9');
+define('MYPARCEL_PLUGIN_VERSION', '2.1.10');
 define('SHIPMENT_PLUGIN_NOTICE', 'alive');
 define('GET_META_MYPARCEL_SHIPMENT_KEY', 'myparcel_shipment_key');
 define('GET_META_SHIPMENT_TRACKING_KEY', 'shipment_track_key');
