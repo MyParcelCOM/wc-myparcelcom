@@ -36,9 +36,8 @@ add_filter('manage_edit-shop_order_columns', 'customShopOrderColumn', 11);
 function customOrdersListColumnContent($column)
 {
     global $post, $the_order;
-    $order   = new WC_Order($post->ID);
-    $orderId = trim(str_replace('#', '', $order->get_order_number()));
-    renderOrderColumnContent($column, $orderId, $the_order);
+    $order = new WC_Order($post->ID);
+    renderOrderColumnContent($column, $order->get_id(), $the_order);
 }
 
 add_action('manage_shop_order_posts_custom_column', 'customOrdersListColumnContent', 10, 2);
@@ -233,7 +232,7 @@ function createShipmentForOrder($orderId)
             (new PhysicalProperties())->setWeight((int) round($countAllWeight))
         )
         ->setCustomerReference((string) $orderId)
-        ->setDescription('Order #' . $orderId)
+        ->setDescription($order->get_order_number())
         ->setTags(array_values(array_filter([$orderData['payment_method_title'], $order->get_shipping_method()])))
         ->setItems($shipmentItems)
         ->setShop($shop)
@@ -268,24 +267,25 @@ function isEUCountry($countryCode)
         'DE',
         'DK',
         'EE',
-        'EL',
         'ES',
         'FI',
         'FR',
+        'GR',
         'HU',
         'IE',
         'IT',
+        'LV',
         'LT',
         'LU',
-        'LV',
         'MT',
+        'MC',
         'NL',
         'PL',
         'PT',
         'RO',
-        'SE',
-        'SI',
         'SK',
+        'SI',
+        'SE',
     ];
 
     return in_array($countryCode, $euCountryCodes);
