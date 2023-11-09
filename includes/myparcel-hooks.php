@@ -223,6 +223,10 @@ function createShipmentForOrder($orderId)
         ->setEmail($orderData['billing']['email'])
         ->setPhoneNumber($orderData['billing']['phone']);
 
+    if (is_string($orderData['shipping']['state']) && strlen($orderData['shipping']['state']) <= 3) {
+        $recipient->setStateCode($orderData['shipping']['state']);
+    }
+
     $shipment
         ->setRegisterAt(0)
         ->setSenderAddress($senderAddress)
