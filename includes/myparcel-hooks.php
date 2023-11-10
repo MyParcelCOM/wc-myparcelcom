@@ -223,7 +223,7 @@ function createShipmentForOrder($orderId)
         ->setEmail($orderData['billing']['email'])
         ->setPhoneNumber($orderData['billing']['phone']);
 
-    if (is_string($orderData['shipping']['state']) && strlen($orderData['shipping']['state']) <= 3) {
+    if (isset($orderData['shipping']['state']) && preg_match('/^[A-Z\d]{1,3}$/', $orderData['shipping']['state'])) {
         $recipient->setStateCode($orderData['shipping']['state']);
     }
 
