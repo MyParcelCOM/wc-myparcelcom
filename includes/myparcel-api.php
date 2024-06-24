@@ -3,51 +3,30 @@
 declare(strict_types=1);
 
 use MyParcelCom\ApiSdk\Authentication\ClientCredentials;
-use MyParcelCom\ApiSdk\Exceptions\AuthenticationException;
 use MyParcelCom\ApiSdk\MyParcelComApi;
 
-class MyParcelApi
+class MyParcelApi extends MyParcelComApi
 {
     protected const PRODUCTION_API_URL = 'https://api.myparcel.com';
     protected const PRODUCTION_AUTH_URL = 'https://auth.myparcel.com';
     protected const SANDBOX_API_URL = 'https://api.sandbox.myparcel.com';
     protected const SANDBOX_AUTH_URL = 'https://auth.sandbox.myparcel.com';
 
-    public function apiAuthentication(): ?MyParcelComApi
+    public static function createSingletonFromConfig(array $config = null): MyParcelComApi
     {
-        $clientKey = get_option('client_key');
-        $clientSecretKey = get_option('client_secret_key');
-        $actTestMode = get_option('act_test_mode');
+        $testMode = $config ? $config['act_test_mode'] : get_option('act_test_mode');
+        $apiUrl = $testMode ? self::SANDBOX_API_URL : self::PRODUCTION_API_URL;
+        $authUrl = $testMode ? self::SANDBOX_AUTH_URL : self::PRODUCTION_AUTH_URL;
 
-        return $this->doAuthentication($clientKey, $clientSecretKey, $actTestMode);
-    }
+        $authenticator = new ClientCredentials(
+            $config ? $config['client_key'] : (string) get_option('client_key'),
+            $config ? $config['client_secret_key'] : (string) get_option('client_secret_key'),
+            $authUrl,
+        );
 
-    public function doAuthentication($clientId = null, $clientSecret = null, $testMode = null): ?MyParcelComApi
-    {
-        if (!empty($testMode) && $testMode === '1') {
-            $apiUrl = self::SANDBOX_API_URL;
-            $authUrl = self::SANDBOX_AUTH_URL;
-        } else {
-            $apiUrl = self::PRODUCTION_API_URL;
-            $authUrl = self::PRODUCTION_AUTH_URL;
-        }
-        if (!empty($apiUrl) && !empty($authUrl) && !empty($clientId) && !empty($clientSecret)) {
-            try {
-                $api = new MyParcelComApi($apiUrl);
-                $authenticator = new ClientCredentials(
-                    $clientId,
-                    $clientSecret,
-                    $authUrl
-                );
-                $authenticator->getAuthorizationHeader(true);
-                $api->authenticate($authenticator);
+        // force token refresh (to get a token with new ACL scopes)
+        $authenticator->clearCache();
 
-                return $api;
-            } catch (AuthenticationException $e) {
-                return null;
-            }
-        } else {
-            return new MyParcelComApi();
-        }
+        return MyParcelComApi::createSingleton($authenticator, $apiUrl);
     }
 }

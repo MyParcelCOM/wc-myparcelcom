@@ -9,18 +9,31 @@ use MyParcelCom\ApiSdk\Resources\PhysicalProperties;
 use MyParcelCom\ApiSdk\Resources\Shipment;
 
 /**
- * @param array $columns
- * @return array
+ * Register our scripts and make sure they are only injected when viewing the orders overview.
  */
-function customShopOrderColumn($columns): array
+function ordersOverviewJsCss()
+{
+    // The WooCommerce order overview is called "edit-shop_order" while their order detail page is called "shop_order".
+    if (get_current_screen()->id === 'edit-shop_order') {
+        $assetsPath = plugins_url('', __FILE__) . '/../assets';
+        wp_enqueue_style('myparcelcom-orders', $assetsPath . '/admin/css/admin-orders.css');
+        wp_enqueue_script('jquery-ui-dialog');
+        wp_enqueue_script('myparcelcom-orders', $assetsPath . '/../assets/admin/js/admin-orders.js', ['jquery']);
+    }
+}
+
+add_action('admin_enqueue_scripts', 'ordersOverviewJsCss', 999);
+
+/**
+ * Insert our column in the order overview table after the "order_status" column.
+ */
+function customShopOrderColumn(array $columns): array
 {
     $customShopOrderColumn = [];
     foreach ($columns as $key => $value) {
         $customShopOrderColumn[$key] = $value;
         if ($key === 'order_status') {
-            $customShopOrderColumn['get_shipment_status'] = __('MyParcel.com status', 'get_shipment_status');
-            // TODO: reactivate the label column once webhooks are properly implemented
-            //$customShopOrderColumn['shipped_label'] = __('Label', 'shipped_label');
+            $customShopOrderColumn['myparcelcom_shipment_status'] = __('MyParcel.com status', 'get_shipment_status');
         }
     }
 
@@ -30,14 +43,21 @@ function customShopOrderColumn($columns): array
 add_filter('manage_edit-shop_order_columns', 'customShopOrderColumn', 11);
 
 /**
- * @param string $column
- * @return void
+ * This function is called for every cell of every column that is rendered in the "shop_order" table.
  */
-function customOrdersListColumnContent($column)
+function customOrdersListColumnContent(string $column, int $orderId): void
 {
-    global $post, $the_order;
-    $order = new WC_Order($post->ID);
-    renderOrderColumnContent($column, $order->get_id(), $the_order);
+    switch ($column) {
+        case 'myparcelcom_shipment_status':
+            $shipmentData = getShipmentCurrentStatus($orderId);
+            if (!empty($shipmentData)) {
+                $shipmentValues = json_decode($shipmentData);
+                echo '<div class="order-status status-completed" title="' . $shipmentValues->description . '">';
+                echo '<span>' . ucfirst($shipmentValues->name) . '</span>';
+                echo '</div>';
+            }
+            break;
+    }
 }
 
 add_action('manage_shop_order_posts_custom_column', 'customOrdersListColumnContent', 10, 2);
@@ -142,18 +162,18 @@ function exportPrintLabelBulkActionHandler($redirectTo, $action, $postIds): stri
 
 add_filter('handle_bulk_actions-edit-shop_order', 'exportPrintLabelBulkActionHandler', 10, 3);
 
-set_transient('shipment-plugin-notice', SHIPMENT_PLUGIN_NOTICE, 3);
+set_transient('shipment-plugin-notice', 'alive', 3);
 
 /**
  * @return void
  */
 function exportPrintBulkActionAdminNotice()
 {
-    if (SHIPMENT_PLUGIN_NOTICE === get_transient("shipment-plugin-notice")) {
+    if (get_transient('shipment-plugin-notice') === 'alive') {
         if (isset($_REQUEST['check_action'])) {
             switch ($_REQUEST['check_action']) {
                 case 'shipment_created':
-                    $orderShippedCount = intval(isset($_REQUEST['shipment_created_amount']) ? $_REQUEST['shipment_created_amount'] : 0);
+                    $orderShippedCount = intval( $_REQUEST['shipment_created_amount'] ?? 0 );
                     echo '<div class="notice notice-success is-dismissible" style="color:green;"><p>'
                         . sprintf(_n('%s order successfully exported to MyParcel.com', '%s orders successfully exported to MyParcel.com', $orderShippedCount), $orderShippedCount)
                         . '</p></div>';
@@ -185,6 +205,7 @@ add_action('admin_notices', 'exportPrintBulkActionAdminNotice');
  */
 function createShipmentForOrder($orderId)
 {
+    $pluginData     = get_plugin_data(plugin_dir_path(__FILE__) . '../woocommerce-connect-myparcel.php', false, false);
     $totalWeight    = getTotalWeightByPostID($orderId) * 1000;
     $countAllWeight = $totalWeight > 1000 ? $totalWeight : 1000;
     $order          = wc_get_order($orderId);
@@ -240,7 +261,7 @@ function createShipmentForOrder($orderId)
         ->setTags(array_values(array_filter([$orderData['payment_method_title'], $order->get_shipping_method()])))
         ->setItems($shipmentItems)
         ->setShop($shop)
-        ->setChannel('WooCommerce_' . MYPARCEL_PLUGIN_VERSION);
+        ->setChannel('WooCommerce_' . $pluginData['Version']);
 
     if ($orderData['total']) {
         $shipment
@@ -248,8 +269,7 @@ function createShipmentForOrder($orderId)
             ->setTotalValueCurrency($currency);
     }
 
-    $getAuth = new MyParcelApi();
-    $api = $getAuth->apiAuthentication();
+    $api = MyParcelApi::createSingletonFromConfig();
     $createdShipment = $api->createShipment($shipment);
 
     return $createdShipment->getId();

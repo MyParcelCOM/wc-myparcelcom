@@ -2,23 +2,35 @@
 
 declare(strict_types=1);
 
-function adminLoadJsCss()
+function myparcelcomWebhookPermissionCallback(WP_REST_Request $request)
 {
-    echo '<script>const myparcelAdminAjaxUrl = "' . admin_url('admin-ajax.php') . '"</script>';
-    $screen = get_current_screen();
+    $hash = hash_hmac('sha256', $request->get_body(), get_option(MYPARCEL_WEBHOOK_SECRET, ''));
+    $signature = $request->get_header('X-MYPARCELCOM-SIGNATURE');
 
-    if ('edit-shop_order' === $screen->id) {
-        wp_enqueue_style('myparcelcom-orders', plugins_url('', __FILE__) . '/../assets/admin/css/admin-orders.css');
-        wp_enqueue_script('jquery-ui-dialog');
-        wp_register_script(
-            'myparcelcom-orders',
-            plugins_url('', __FILE__) . '/../assets/admin/js/admin-orders.js',
-            ['jquery'],
-            '',
-            true
-        );
-        wp_enqueue_script('myparcelcom-orders');
-    }
+    return $hash === $signature;
 }
 
-add_action('admin_enqueue_scripts', 'adminLoadJsCss', 999);
+function myparcelcomWebhookCallback(WP_REST_Request $request)
+{
+    $body = $request->get_json_params();
+
+    $shipmentData = $body['data']['relationships']['shipment']['data'];
+    $statusData = $body['data']['relationships']['status']['data'];
+    $included = $body['included'];
+
+    var_dump($shipmentData['id']);die;
+
+    exit('ok');
+}
+
+function registerMyparcelcomRoutes()
+{
+    register_rest_route('myparcelcom', '/webhook', [
+        'methods'             => 'POST',
+        'callback'            => 'myparcelcomWebhookCallback',
+        'permission_callback' => 'myparcelcomWebhookPermissionCallback',
+        'show_in_index'       => false,
+    ]);
+}
+
+add_action('rest_api_init', 'registerMyparcelcomRoutes');

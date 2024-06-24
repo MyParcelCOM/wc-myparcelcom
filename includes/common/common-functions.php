@@ -10,7 +10,7 @@ use MyParcelCom\ApiSdk\Resources\Shop;
 
 /**
  * @param $orderId
- * @return array
+ * @return WC_Order_Item[]
  */
 function getOrderItems($orderId)
 {
@@ -37,6 +37,9 @@ function getTotalWeightByPostID($postId)
     return $totalWeight;
 }
 
+/**
+ * @return ShipmentItem[]
+ */
 function getShipmentItems($orderId, $currency, $originCountryCode)
 {
     $items = getOrderItems($orderId);
@@ -67,8 +70,8 @@ function getShipmentItems($orderId, $currency, $originCountryCode)
 }
 
 /**
- * @param int  $postId
- * @param null $shipKey
+ * @param int   $postId
+ * @param mixed $shipKey
  */
 function updateShipmentKey($postId, $shipKey = null)
 {
@@ -79,317 +82,9 @@ function updateShipmentKey($postId, $shipKey = null)
     }
 }
 
-/**
- * @return array
- */
-function getMyParcelShopList()
-{
-    $shops = [];
-    if (get_option('client_key') && get_option('client_secret_key')) {
-        $getAuth = new MyParcelApi();
-        $api = $getAuth->apiAuthentication();
-        if ($api) {
-            $shops = $api->getShops()->limit(100)->get();
-            usort($shops, function ($a, $b) {
-                return strcmp(strtolower($a->getName()), strtolower($b->getName()));
-            });
-        }
-    }
-
-    return $shops;
-}
-
-/**
- * @desc setting page html
- */
-function prepareHtmlForSettingPage()
-{
-    ?>
-  <div class="wrap">
-    <h1><?php echo MYPARCEL_API_SETTING_TEXT; ?></h1>
-    <table class="form-table">
-      <tr valign="top">
-        <th scope="row"><label>Current version</label></th>
-        <td><?php echo MYPARCEL_PLUGIN_VERSION; ?></td>
-      </tr>
-      <tr valign="top">
-        <th scope="row"><label>MyParcel.com support</label></th>
-        <td>
-          <a href="<?php echo MYPARCEL_SUPPORT_TEXT_AND_URL; ?>" target="_blank"><?php echo MYPARCEL_SUPPORT_TEXT_AND_URL; ?></a>
-        </td>
-      </tr>
-    </table>
-    <form method="post" action="options.php" id="myparcelcom-settings-form">
-        <?php settings_fields('myplugin_options_group'); ?>
-      <table class="form-table">
-        <tbody>
-          <tr>
-            <th scope="row">Activate testmode</th>
-            <td>
-              <fieldset>
-                <legend class="screen-reader-text"><span></span></legend>
-                <label for="users_can_register">
-                  <input type="checkbox" id="act_test_mode" name="act_test_mode"
-                         value="1" <?php checked(1, (int) get_option('act_test_mode')); ?>>
-                </label>
-              </fieldset>
-              <p class="description">
-                If enabled, the plugin wil communicate with the MyParcel.com sandbox.<br>
-                Make sure to use the client ID and secret from the correct environment (production / sandbox).
-              </p>
-            </td>
-          </tr>
-          <tr valign="top">
-            <th scope="row"><label for="client_key">Client ID *</label></th>
-            <td>
-              <input type="text" id="client_key" class="regular-text" name="client_key"
-                     value="<?php echo get_option('client_key'); ?>"/>
-            </td>
-          </tr>
-          <tr valign="top">
-            <th scope="row"><label for="client_secret_key">Client secret *</label>
-            </th>
-            <td>
-              <input type="password" id="client_secret_key" class="regular-text" name="client_secret_key"
-                     value="<?php echo get_option('client_secret_key'); ?>"/>
-            </td>
-          </tr>
-          <tr valign="top">
-            <th scope="row"><label for="myparcel_shopid">Default shop</label></th>
-            <td>
-              <select class="regular-text" id="myparcel_shopid" name="myparcel_shopid">
-                <option value="">Please enter your client ID and secret</option>
-              </select>
-              <script>const initialShop = '<?php echo get_option('myparcel_shopid'); ?>'</script>
-              <p class="description">Please select the related MyParcel.com shop for this WordPress shop.</p>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-        <?php submit_button('Save changes'); ?>
-    </form>
-  </div>
-    <?php
-}
-
-/**
- * @param        $column
- * @param int    $orderId
- * @param object $the_order
- */
-function renderOrderColumnContent($column, $orderId, $the_order)
-{
-    switch ($column) {
-        case 'shipped_label' :
-            if (!$orderId) {
-                return;
-            }
-            getShipmentFiles($orderId);
-            break;
-
-        case 'get_shipment_status' :
-            if (!$orderId) {
-                return;
-            }
-            $shipmentData = getShipmentCurrentStatus($orderId);
-            if (!empty($shipmentData)) {
-                $shipmentValues = json_decode($shipmentData);
-                ?>
-              <div class="order-status status-completed" title="<?php echo $shipmentValues->description; ?>">
-                <span><?php echo ucfirst($shipmentValues->name); ?></span>
-              </div>
-                <?php
-            }
-            break;
-    }
-}
-
-/**
- * Get Auth Token
- */
-function getAuthTokenAndRegisterWebhook()
-{
-    $clientKey = get_option('client_key');
-    $clientSecretKey = get_option('client_secret_key');
-    if ($clientKey && $clientSecretKey) {
-        $dataString = json_encode([
-            'grant_type'    => 'client_credentials',
-            'client_id'     => $clientKey,
-            'client_secret' => $clientSecretKey,
-            'scope'         => '*',
-        ]);
-        $result = createCurlRequest(MYPARCEL_WEBHOOK_ACCESS_TOKEN, $dataString);
-        if (!empty($result)) {
-            $getToken = json_decode($result);
-            if (isset($getToken->access_token)) {
-                registerMyParcelWebHook($getToken->access_token);
-            }
-        }
-    }
-}
-
-/**
- * @param $accessToken
- */
-function registerMyParcelWebHook($accessToken)
-{
-    $shop            = getSelectedShop();
-    $webHookUrl      = plugins_url('', dirname(__FILE__)).'/webhook.php';
-    $webHookName     = getRegisteredShopId().'-'.$shop->getName();
-    $data            = [
-        "data" =>
-            [
-                "type"          => "hooks",
-                "attributes"    =>
-                    [
-                        "name"    => $webHookName,
-                        "order"   => 100,
-                        "active"  => true,
-                        "trigger" => [
-                            "resource_type"   => "shipment-statuses",
-                            "resource_action" => "create",
-                        ],
-                        "action"  => [
-                            "action_type" => "send-resource",
-                            "values"      => [
-                                [
-                                    "url"      => $webHookUrl,
-                                    "includes" => [
-                                        "status",
-                                        "shipment",
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                "relationships" => [
-                    "owner" => [
-                        "data" => [
-                            "type" => "shops",
-                            "id"   => getRegisteredShopId(),
-                        ],
-                    ],
-                ],
-
-            ],
-    ];
-    $dataString      = json_encode($data);
-    $authorization   = "Authorization: Bearer $accessToken";
-    $url             = MYPARCEL_WEBHOOK_URL;
-    $result          = createCurlRequest($url, $dataString, $authorization);
-    $webHookResponse = json_decode($result);
-    if (get_option(MYPARCEL_WEBHOOK_OPTION_ID) !== false) {
-        update_option(MYPARCEL_WEBHOOK_OPTION_ID, $webHookResponse->data->id);
-    } else {
-        $deprecated = null;
-        $autoload   = 'no';
-        add_option(MYPARCEL_WEBHOOK_OPTION_ID, $webHookResponse->data->id, $deprecated, $autoload);
-    }
-}
-
-/**
- * @return string
- */
 function getRegisteredShopId(): string
 {
     return get_option('myparcel_shopid');
-}
-
-/**
- * @param $post_id
- *
- * @throws Exception
- */
-function getShipmentFiles($post_id)
-{
-    $getOrderMetaData = get_post_meta($post_id, GET_META_SHIPMENT_TRACKING_KEY, true);
-    if (!$getOrderMetaData) {
-        return;
-    }
-    $getOrderMeta     = json_decode($getOrderMetaData);
-
-    if (!$getOrderMeta) {
-        return;
-    }
-    if (!isset($getOrderMeta->trackingKey)) {
-        return;
-    }
-
-    $webHookData = get_option(MYPARCEL_WEBHOOK_RESPONSE);
-    if (!empty($webHookData)) {
-        $getShipmentContent = json_decode($webHookData, true);
-        $getShipmentData    = $getShipmentContent['included'];
-        if (!empty($getShipmentData)) {
-            $id = array_column($getShipmentData, 'id');
-            if (in_array($getOrderMeta->trackingKey, $id)) {
-                update_post_meta($post_id, MYPARCEL_RESPONSE_META, 1);
-            }
-        }
-    }
-
-    $webHookResponseMeta = get_post_meta($post_id, MYPARCEL_RESPONSE_META, true);
-    if (($webHookResponseMeta == 1) && !empty($getOrderMeta->trackingKey)) {
-        $getAuth        = new MyParcelApi();
-        $api            = $getAuth->apiAuthentication();
-        $shipment       = $api->getShipment($getOrderMeta->trackingKey);
-        $getRegisterAt  = $shipment->getRegisterAt();
-        $shipmentStatus = $shipment->getShipmentStatus();
-        $status         = $shipmentStatus->getStatus();
-        if (!empty($getRegisterAt) && ($status->getCode() === MYPARCEL_SHIPMENT_REGISTERED)) {
-            $getAuth  = new MyParcelApi();
-            $file     = new File();
-            $api      = $getAuth->apiAuthentication();
-            $shipment = $api->getShipment($getOrderMeta->trackingKey);
-            $labels   = $shipment->getFiles(File::DOCUMENT_TYPE_LABEL);
-            $label    = "myparcelcom-".date('Ymdhis')."-label.pdf";
-            if (!empty($labels)) {
-                foreach ($labels as $label) {
-                    $label = $label->getBase64Data('application/pdf');
-                    echo '<p><a class="button download-label" download="'.$label.'" href="data:application/octet-stream;base64,'.$label.'">download</a></p>';
-                    ?>
-                    <?php
-                }
-                ?>
-              <script type="text/javascript">
-                jQuery(document).ready(function ($) {
-                  let a = $('.download-label')
-                  a.click()
-                })
-              </script>
-            <?php }
-        } else {
-            $shipment->setRegisterAt(0);
-            $api->updateShipment($shipment);
-        }
-    }
-}
-
-/**
- * @param      $url
- * @param      $dataString
- * @param null $authorization
- * @return bool|string
- */
-function createCurlRequest($url, $dataString, $authorization = null)
-{
-    $httpHeader = array_filter([
-        'Content-Type: application/json',
-        $authorization,
-    ]);
-
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
-    $result = curl_exec($ch);
-    if (curl_errno($ch)) {
-        $error_msg = curl_error($ch);
-    }
-    curl_close($ch);
-
-    return $result;
 }
 
 /**
@@ -407,8 +102,7 @@ function getShipmentCurrentStatus($post_id)
     if (!$getOrderMeta) {
         return;
     }
-    $getAuth  = new MyParcelApi();
-    $api      = $getAuth->apiAuthentication();
+    $api = MyParcelApi::createSingletonFromConfig();
     if (!empty($getOrderMeta->trackingKey)) {
         try {
             $shipment                    = $api->getShipment($getOrderMeta->trackingKey);
@@ -503,8 +197,7 @@ function downloadPdf()
     $selectOrientation = intval($_POST['selectOrientation']);
     $orderIds          = $_POST['orderIds'];
     $labelPrinter      = intval($_POST['labelPrinter']);
-    $getAuth           = new MyParcelApi();
-    $api               = $getAuth->apiAuthentication();
+    $api               = MyParcelApi::createSingletonFromConfig();
     $shipments         = [];
 
     foreach ($orderIds as $orderId) {
@@ -577,8 +270,7 @@ function labelPrinter($labelPrinter)
  */
 function getSelectedShop()
 {
-    $getAuth = new MyParcelApi();
-    $api = $getAuth->apiAuthentication();
+    $api = MyParcelApi::createSingletonFromConfig();
     $shops = $api->getShops()->limit(100)->get();
     foreach ($shops as $shop) {
         if ($shop->getId() == getRegisteredShopId()) {

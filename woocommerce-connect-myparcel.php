@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * Plugin Name: MyParcel.com
- * Plugin URI: https://help.myparcel.com/home/integrations#Integrations-WooCommerce
+ * Plugin URI: https://help.myparcel.com/home/integrations-1#Integrations-WooCommerce
  * Description: This plugin enables you to export WooCommerce orders to MyParcel.com.
  * Version: 2.1.14
  * Author: MyParcel.com
@@ -48,12 +48,12 @@ if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get
             echo '<div class="notice notice-error is-dismissible">' . $phpVersionMessage . '</div>';
         });
     } else {
-        include_once dirname(__FILE__) . '/vendor/autoload.php';
-        include_once dirname(__FILE__) . '/includes/myparcel-api.php';
-        include_once dirname(__FILE__) . '/includes/common/myparcel-constant.php';
-        include_once dirname(__FILE__) . '/includes/common/common-functions.php';
-        include_once dirname(__FILE__) . '/includes/myparcel-hooks.php';
-        include_once dirname(__FILE__) . '/includes/myparcel-shipment-hooks.php';
-        include_once dirname(__FILE__) . '/includes/myparcel-settings.php';
+        require_once dirname(__FILE__) . '/vendor/autoload.php';
+        require_once dirname(__FILE__) . '/includes/myparcel-api.php';
+        require_once dirname(__FILE__) . '/includes/common/myparcel-constant.php';
+        require_once dirname(__FILE__) . '/includes/common/common-functions.php';
+        require_once dirname(__FILE__) . '/includes/myparcel-hooks.php';
+        require_once dirname(__FILE__) . '/includes/myparcel-shipment-hooks.php';
+        require_once dirname(__FILE__) . '/includes/myparcel-settings.php';
     }
 }

@@ -43,7 +43,7 @@ jQuery(function ($) {
         'orderIds': selected,
         'labelPrinter': selectVal
       }
-      jQuery.post(myparcelAdminAjaxUrl, data, function (response) {
+      jQuery.post(ajaxurl, data, function (response) {
         if (response === 'Failed') {
           $('#loadingmessage').hide()
           $('.modal-footer .alert').show().delay(5000).slideUp(500)
