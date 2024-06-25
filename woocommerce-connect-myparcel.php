@@ -6,7 +6,7 @@ declare(strict_types=1);
  * Plugin Name: MyParcel.com
  * Plugin URI: https://help.myparcel.com/home/integrations-1#Integrations-WooCommerce
  * Description: This plugin enables you to export WooCommerce orders to MyParcel.com.
- * Version: 2.1.14
+ * Version: 3.0.0
  * Author: MyParcel.com
  * Author URI: https://www.myparcel.com
  * Requires at least:
@@ -18,16 +18,10 @@ declare(strict_types=1);
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
-if (!defined('MY_PARCEL_PLUGIN')) {
-    define('MY_PARCEL_PLUGIN', __FILE__);
-}
-if (!defined('MY_PARCEL_PLUGIN_NAME')) {
-    define('MY_PARCEL_PLUGIN_NAME', 'MyParcel.com');
-}
 
 $phpVersion = (float) phpversion();
-$phpVersionMessage = '<p>' . MY_PARCEL_PLUGIN_NAME . ' plugin needs PHP 7.1 or higher.</p>';
-$wooVersionMessage = '<p>Please install <a href="https://wordpress.org/plugins/woocommerce/" target="_blank">WooCommerce</a> to use the ' . MY_PARCEL_PLUGIN_NAME . ' plugin.</p>';
+$phpVersionMessage = '<p>The MyParcel.com plugin needs PHP 8.0 or higher since v3.0 (use the latest v2.0 version if you are still on PHP 7).</p>';
+$wooVersionMessage = '<p>Please install <a href="https://wordpress.org/plugins/woocommerce/" target="_blank">WooCommerce</a> to use the MyParcel.com plugin.</p>';
 
 if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
     global $pagenow;
@@ -36,14 +30,14 @@ if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get
             echo '<div class="notice notice-error is-dismissible">' . $wooVersionMessage . '</div>';
         });
 
-        if ($phpVersion < 7.0) {
+        if ($phpVersion < 8.0) {
             add_action('admin_notices', function () use ($phpVersionMessage) {
                 echo '<div class="notice notice-error is-dismissible">' . $phpVersionMessage . '</div>';
             });
         }
     }
 } else {
-    if ($phpVersion < 7.0) {
+    if ($phpVersion < 8.0) {
         add_action('admin_notices', function () use ($phpVersionMessage) {
             echo '<div class="notice notice-error is-dismissible">' . $phpVersionMessage . '</div>';
         });

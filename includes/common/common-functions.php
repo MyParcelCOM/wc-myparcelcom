@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+if (!defined('ABSPATH')) {
+    exit; // Exit if accessed directly.
+}
+
 use MyParcelCom\ApiSdk\LabelCombiner;
 use MyParcelCom\ApiSdk\LabelCombinerInterface;
 use MyParcelCom\ApiSdk\Resources\File;
@@ -70,56 +74,9 @@ function getShipmentItems($orderId, $currency, $originCountryCode)
 }
 
 /**
- * @param int   $postId
- * @param mixed $shipKey
+ * Render the hidden label dialog on the order overview table. JavaScript monitoring the mass action will show this.
  */
-function updateShipmentKey($postId, $shipKey = null)
-{
-    if (!empty($shipKey)) {
-        update_post_meta($postId, GET_META_MYPARCEL_SHIPMENT_KEY, $shipKey); //Update the shipment key on database
-    } else {
-        add_post_meta($postId, GET_META_MYPARCEL_SHIPMENT_KEY, uniqid()); //Update the shipment key on database
-    }
-}
-
-function getRegisteredShopId(): string
-{
-    return get_option('myparcel_shopid');
-}
-
-/**
- * @param $post_id
- * @return array|false|string|void
- */
-function getShipmentCurrentStatus($post_id)
-{
-    $shipmentData     = [];
-    $getOrderMetaData = get_post_meta($post_id, GET_META_SHIPMENT_TRACKING_KEY, true);
-    if (!$getOrderMetaData) {
-        return;
-    }
-    $getOrderMeta     = json_decode($getOrderMetaData);
-    if (!$getOrderMeta) {
-        return;
-    }
-    $api = MyParcelApi::createSingletonFromConfig();
-    if (!empty($getOrderMeta->trackingKey)) {
-        try {
-            $shipment                    = $api->getShipment($getOrderMeta->trackingKey);
-            $shipmentStatus              = $shipment->getShipmentStatus();
-            $status                      = $shipmentStatus->getStatus();
-            $shipmentData['name']        = $status->getName();
-            $shipmentData['description'] = $status->getDescription();
-            $shipmentData                = json_encode($shipmentData);
-        } catch (\Exception $e) {
-        }
-
-        return $shipmentData;
-    }
-}
-
-add_action('manage_posts_extra_tablenav', 'admin_order_list_top_bar_button', 20, 1);
-function admin_order_list_top_bar_button($which)
+function admin_order_list_top_bar_button(string $which): void
 {
     global $typenow;
     if ('shop_order' === $typenow && 'top' === $which) {
@@ -182,8 +139,12 @@ function admin_order_list_top_bar_button($which)
     }
 }
 
-add_action('wp_ajax_myparcelcom_download_pdf', 'downloadPdf');
-function downloadPdf()
+add_action('manage_posts_extra_tablenav', 'admin_order_list_top_bar_button', 20, 1);
+
+/**
+ * Handle the "print_label_shipment" action after the label dialog is shown to select the print position.
+ */
+function downloadPdf(): void
 {
     define('LOCATION_TOP', 1);
     define('LOCATION_BOTTOM', 2);
@@ -201,10 +162,19 @@ function downloadPdf()
     $shipments         = [];
 
     foreach ($orderIds as $orderId) {
-        $getShipmentKey = get_post_meta($orderId, GET_META_SHIPMENT_TRACKING_KEY, true);
-        if (!empty($getShipmentKey)) {
-            $getShipmentKey = json_decode($getShipmentKey);
-            $shipments[]    = $api->getShipment($getShipmentKey->trackingKey);
+        $shipmentId = get_post_meta($orderId, MYPARCEL_SHIPMENT_ID, true);
+
+        // If no shipment ID is found, we check the legacy meta, which is used by our v2.x plugin.
+        if (empty($shipmentId)) {
+            $legacyMeta = get_post_meta($orderId, MYPARCEL_LEGACY_SHIPMENT_META, true);
+            if (!empty($legacyMeta)) {
+                $legacyData = json_decode($legacyMeta, true);
+                $shipmentId = $legacyData[MYPARCEL_LEGACY_SHIPMENT_ID];
+            }
+        }
+
+        if (!empty($shipmentId)) {
+            $shipments[] = $api->getShipment($shipmentId);
         }
     }
 
@@ -223,47 +193,24 @@ function downloadPdf()
     if (count($files) === 1) {
         echo $files[0]->getBase64Data();
     } else {
-        $combinedFile = (new LabelCombiner())->combineLabels(
-            $files,
-            labelPrinter($labelPrinter),
-            getOrientation($selectOrientation)
-        );
-        echo $combinedFile->getBase64Data();
+        $pageSize = (!empty($labelPrinter) && ($labelPrinter === 1))
+            ? LabelCombinerInterface::PAGE_SIZE_A4
+            : LabelCombinerInterface::PAGE_SIZE_A6;
+        $startLocation = match ($selectOrientation) {
+            1       => LOCATION_TOP_LEFT,
+            2       => LOCATION_TOP_RIGHT,
+            3       => LOCATION_BOTTOM_LEFT,
+            default => LOCATION_BOTTOM_RIGHT,
+        };
+        echo (new LabelCombiner())
+            ->combineLabels($files, $pageSize, $startLocation)
+            ->getBase64Data();
     }
 
     wp_die(); // this is required to terminate immediately and return a proper response
 }
 
-/**
- * @param $selectOrientation
- * @return int
- */
-function getOrientation($selectOrientation)
-{
-    switch ($selectOrientation) {
-        case 1:
-            return LOCATION_TOP_LEFT;
-        case 2:
-            return LOCATION_TOP_RIGHT;
-        case 3:
-            return LOCATION_BOTTOM_LEFT;
-        default:
-            return LOCATION_BOTTOM_RIGHT;
-    }
-}
-
-/**
- * @param $labelPrinter
- * @return string
- */
-function labelPrinter($labelPrinter)
-{
-    if (!empty($labelPrinter) && ($labelPrinter === 1)) {
-        return LabelCombinerInterface::PAGE_SIZE_A4;
-    } else {
-        return LabelCombinerInterface::PAGE_SIZE_A6;
-    }
-}
+add_action('wp_ajax_myparcelcom_download_pdf', 'downloadPdf');
 
 /**
  * @return Shop
@@ -273,7 +220,7 @@ function getSelectedShop()
     $api = MyParcelApi::createSingletonFromConfig();
     $shops = $api->getShops()->limit(100)->get();
     foreach ($shops as $shop) {
-        if ($shop->getId() == getRegisteredShopId()) {
+        if ($shop->getId() == get_option(MYPARCEL_SHOP_ID)) {
             return $shop;
         }
     }

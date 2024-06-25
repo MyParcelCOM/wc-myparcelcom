@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+if (!defined('ABSPATH')) {
+    exit; // Exit if accessed directly.
+}
+
 /**
  * Register our scripts and make sure they are only injected when viewing our settings page.
  */
@@ -24,12 +28,12 @@ function registerSettings(): void
     add_option('client_key', '');
     add_option('client_secret_key', '');
     add_option('act_test_mode', '0');
-    add_option('myparcel_shopid', '');
+    add_option(MYPARCEL_SHOP_ID, '');
 
     register_setting('myparcelcom', 'client_key');
     register_setting('myparcelcom', 'client_secret_key');
     register_setting('myparcelcom', 'act_test_mode');
-    register_setting('myparcelcom', 'myparcel_shopid');
+    register_setting('myparcelcom', MYPARCEL_SHOP_ID);
 }
 
 add_action('admin_init', 'registerSettings');
@@ -88,7 +92,7 @@ function registerMyParcelWebHook()
 
     try {
         $api->doRequest('/hooks/' . get_option(MYPARCEL_WEBHOOK_ID), 'delete');
-    } catch (Throwable $throwable) {
+    } catch (Throwable) {
         // Assume the hook could not be found because it has already been deleted.
     }
 
@@ -122,7 +126,7 @@ function registerMyParcelWebHook()
                 'owner' => [
                     'data' => [
                         'type' => 'shops',
-                        'id'   => getRegisteredShopId(),
+                        'id'   => get_option(MYPARCEL_SHOP_ID),
                     ],
                 ],
             ],
@@ -132,32 +136,10 @@ function registerMyParcelWebHook()
     try {
         $response = $api->doRequest('/hooks', 'post', $body);
         $responseJson = json_decode((string) $response->getBody(), true);
-    } catch (Exception $e) {}
 
-    update_option(MYPARCEL_WEBHOOK_ID, $responseJson['data']['id']);
-    update_option(MYPARCEL_WEBHOOK_SECRET, $secret);
-}
-
-function createCurlRequest($url, $dataString, $authorization = null)
-{
-    $httpHeader = array_filter([
-        'Content-Type: application/json',
-        $authorization,
-    ]);
-
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
-    $result = curl_exec($ch);
-    if (curl_errno($ch)) {
-        $error_msg = curl_error($ch);
-    }
-    curl_close($ch);
-
-    return $result;
+        update_option(MYPARCEL_WEBHOOK_ID, $responseJson['data']['id']);
+        update_option(MYPARCEL_WEBHOOK_SECRET, $secret);
+    } catch (Exception) {}
 }
 
 /**
@@ -251,7 +233,7 @@ function prepareHtmlForSettingPage()
             <select class="regular-text" id="myparcel_shopid" name="myparcel_shopid">
               <option value="">Please enter your client ID and secret</option>
             </select>
-            <script>const initialShop = '<?php echo get_option('myparcel_shopid'); ?>'</script>
+            <script>const initialShop = '<?php echo get_option(MYPARCEL_SHOP_ID); ?>'</script>
             <p class="description">Please select the related MyParcel.com shop for this WordPress shop.</p>
           </td>
         </tr>

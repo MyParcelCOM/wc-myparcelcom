@@ -5,6 +5,10 @@ declare(strict_types=1);
 use MyParcelCom\ApiSdk\Authentication\ClientCredentials;
 use MyParcelCom\ApiSdk\MyParcelComApi;
 
+if (!defined('ABSPATH')) {
+    exit; // Exit if accessed directly.
+}
+
 class MyParcelApi extends MyParcelComApi
 {
     protected const PRODUCTION_API_URL = 'https://api.myparcel.com';
