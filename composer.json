@@ -3,9 +3,10 @@
   "description": "WooCommerce plugin to import orders into the MyParcel.com platform.",
   "type": "wordpress-plugin",
   "require": {
+    "php": ">=8.0",
     "ext-json": "*",
-    "myparcelcom/api-sdk": "^2.10",
-    "php-http/curl-client": "^1.7"
+    "myparcelcom/api-sdk": "^3.0",
+    "php-http/guzzle7-adapter": "^1.0"
   },
   "require-dev": {
     "roave/security-advisories": "dev-latest"
