@@ -1,14 +1,11 @@
 <?php
 
-define('MYPARCEL_PLUGIN_VERSION', '2.1.14');
-define('SHIPMENT_PLUGIN_NOTICE', 'alive');
-define('GET_META_MYPARCEL_SHIPMENT_KEY', 'myparcel_shipment_key');
-define('GET_META_SHIPMENT_TRACKING_KEY', 'shipment_track_key');
-define('MYPARCEL_SUPPORT_TEXT_AND_URL', 'https://help.myparcel.com/home/integrations#Integrations-WooCommerce');
-define('MYPARCEL_API_SETTING_TEXT', 'MyParcel.com');
-define('MYPARCEL_WEBHOOK_URL', 'https://api.sandbox.myparcel.com/hooks');
-define('MYPARCEL_WEBHOOK_ACCESS_TOKEN', 'https://auth.sandbox.myparcel.com/access-token');
-define('MYPARCEL_SHIPMENT_REGISTERED', 'shipment-registered');
-define('MYPARCEL_WEBHOOK_OPTION_ID', 'myparcel_web_hook_id');
-define('MYPARCEL_RESPONSE_META', 'webhook_response_meta');
-define('MYPARCEL_WEBHOOK_RESPONSE', 'webhook_response_option');
+const MYPARCEL_SHIPMENT_ID = 'myparcelcom_shipment_id';
+const MYPARCEL_SHIPMENT_DATA = 'myparcelcom_shipment_data';
+const MYPARCEL_SHOP_ID = 'myparcel_shopid';
+const MYPARCEL_WEBHOOK_ID = 'myparcelcom_webhook_id';
+const MYPARCEL_WEBHOOK_SECRET = 'myparcelcom_webhook_secret';
+
+// Legacy constants used in v2 and v1 versions of this plugin.
+const MYPARCEL_LEGACY_SHIPMENT_ID = 'trackingKey';
+const MYPARCEL_LEGACY_SHIPMENT_META = 'shipment_track_key';

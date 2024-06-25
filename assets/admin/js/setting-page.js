@@ -54,7 +54,7 @@ jQuery(function ($) {
         client_secret_key: secret,
         act_test_mode: testmode
       }
-      jQuery.post(myparcelAdminAjaxUrl, data, function (response) {
+      jQuery.post(ajaxurl, data, function (response) {
         const shops = JSON.parse(response)
 
         if (shops.length === 0) {
