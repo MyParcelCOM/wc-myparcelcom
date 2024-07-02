@@ -18,13 +18,13 @@ class MyParcelApi extends MyParcelComApi
 
     public static function createSingletonFromConfig(array $config = null): MyParcelComApi
     {
-        $testMode = $config ? $config['act_test_mode'] : get_option('act_test_mode');
+        $testMode = $config ? $config[MYPARCEL_TEST_MODE] : get_option(MYPARCEL_TEST_MODE);
         $apiUrl = $testMode ? self::SANDBOX_API_URL : self::PRODUCTION_API_URL;
         $authUrl = $testMode ? self::SANDBOX_AUTH_URL : self::PRODUCTION_AUTH_URL;
 
         $authenticator = new ClientCredentials(
-            $config ? $config['client_key'] : (string) get_option('client_key'),
-            $config ? $config['client_secret_key'] : (string) get_option('client_secret_key'),
+            $config ? $config[MYPARCEL_CLIENT_ID] : (string) get_option(MYPARCEL_CLIENT_ID),
+            $config ? $config[MYPARCEL_CLIENT_SECRET] : (string) get_option(MYPARCEL_CLIENT_SECRET),
             $authUrl,
         );
 

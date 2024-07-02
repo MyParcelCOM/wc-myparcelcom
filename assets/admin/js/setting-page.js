@@ -1,24 +1,24 @@
 jQuery(function ($) {
   $('#myparcelcom-settings-form').validate({
     rules: {
-      client_key: {
+      myparcelcom_client_id: {
         required: true
       },
-      client_secret_key: {
+      myparcelcom_client_secret: {
         required: true
       },
-      myparcel_shopid: {
+      myparcelcom_shop_id: {
         required: true
       }
     },
     messages: {
-      client_key: {
+      myparcelcom_client_id: {
         required: 'Required'
       },
-      client_secret_key: {
+      myparcelcom_client_secret: {
         required: 'Required'
       },
-      myparcel_shopid: {
+      myparcelcom_shop_id: {
         required: 'Required'
       }
     },
@@ -35,12 +35,12 @@ jQuery(function ($) {
     },
   })
 
-  const shopSelect = $('#myparcel_shopid')
+  const shopSelect = $('#myparcelcom_shop_id')
 
   function resetShopList () {
-    const id = $('#client_key').val()
-    const secret = $('#client_secret_key').val()
-    const testmode = $('#act_test_mode').prop('checked') ? '1' : '0'
+    const id = $('#myparcelcom_client_id').val()
+    const secret = $('#myparcelcom_client_secret').val()
+    const testmode = $('#myparcelcom_test_mode').prop('checked') ? '1' : '0'
 
     if (id && secret) {
       shopSelect.empty().append($('<option>', {
@@ -50,9 +50,9 @@ jQuery(function ($) {
 
       const data = {
         action: 'myparcelcom_get_shops_for_client',
-        client_key: id,
-        client_secret_key: secret,
-        act_test_mode: testmode
+        myparcelcom_client_id: id,
+        myparcelcom_client_secret: secret,
+        myparcelcom_test_mode: testmode
       }
       jQuery.post(ajaxurl, data, function (response) {
         const shops = JSON.parse(response)
@@ -79,7 +79,7 @@ jQuery(function ($) {
     }
   }
 
-  $('#act_test_mode, #client_key, #client_secret_key').change(function () {
+  $('#myparcelcom_test_mode, #myparcelcom_client_id, #myparcelcom_client_secret').change(function () {
     resetShopList()
   })
   resetShopList()
