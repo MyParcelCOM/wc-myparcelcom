@@ -55,6 +55,31 @@ function customOrdersListColumnContent(string $column, int $orderId): void
     switch ($column) {
         case 'myparcelcom_shipment_status':
             $shipmentData = get_post_meta($orderId, MYPARCEL_SHIPMENT_DATA, true);
+
+            // If no shipment data is found, we check the legacy meta, which is used by our v2.x plugin.
+            if (empty($shipmentData)) {
+                $legacyMeta = get_post_meta($orderId, MYPARCEL_LEGACY_SHIPMENT_META, true);
+                if (!empty($legacyMeta)) {
+                    $legacyData = json_decode($legacyMeta, true);
+                    $shipmentId = $legacyData[MYPARCEL_LEGACY_SHIPMENT_ID];
+
+                    // Our v2.x plugin fired a request for every shipment, but our v3.x plugin uses webhook data.
+                    // To support shipments which have been made prior to the webhooks, we request them one more time.
+                    try {
+                        $api = MyParcelApi::createSingletonFromConfig();
+                        $shipment = $api->getShipment($shipmentId);
+
+                        update_post_meta($orderId, MYPARCEL_SHIPMENT_ID, $shipment->getId());
+                        update_post_meta($orderId, MYPARCEL_SHIPMENT_DATA, json_encode([
+                            'status_code'   => $shipment->getShipmentStatus()->getStatus()->getCode(),
+                            'status_name'   => $shipment->getShipmentStatus()->getStatus()->getName(),
+                            'tracking_code' => $shipment->getTrackingCode(),
+                            'tracking_url'  => $shipment->getTrackingUrl(),
+                        ]));
+                    } catch (Exception) {}
+                }
+            }
+
             if (!empty($shipmentData)) {
                 $shipmentValues = json_decode($shipmentData, true);
                 echo '<div class="order-status status-completed" title="' . $shipmentValues['status_code'] . '">';
@@ -113,7 +138,7 @@ function myparcelcomBulkActionHandler(string $redirectTo, string $action, array 
                     update_post_meta($postId, MYPARCEL_SHIPMENT_ID, $shipment->getId());
                     update_post_meta($postId, MYPARCEL_SHIPMENT_DATA, json_encode([
                         'status_code' => 'shipment-processing',
-                        'status_name' => 'Shipment processing',
+                        'status_name' => 'Shipment is processing',
                     ]));
                     $orderShippedCount++;
                 } catch (RequestException $exception) {

@@ -25,14 +25,39 @@ add_action('admin_enqueue_scripts', 'settingPageJsCss', 999);
  */
 function registerSettings(): void
 {
-    add_option('client_key', '');
-    add_option('client_secret_key', '');
-    add_option('act_test_mode', '0');
-    add_option(MYPARCEL_SHOP_ID, '');
+    // Migrate old settings to the new prefixed values (we check for "act_test_mode" because that option was always set)
+    if (get_option(MYPARCEL_LEGACY_TEST_MODE) !== false) {
+        update_option(MYPARCEL_CLIENT_ID, get_option(MYPARCEL_LEGACY_CLIENT_KEY));
+        update_option(MYPARCEL_CLIENT_SECRET, get_option(MYPARCEL_LEGACY_CLIENT_SECRET));
+        update_option(MYPARCEL_TEST_MODE, get_option(MYPARCEL_LEGACY_TEST_MODE));
+        update_option(MYPARCEL_SHOP_ID, get_option(MYPARCEL_LEGACY_SHOP_ID));
 
-    register_setting('myparcelcom', 'client_key');
-    register_setting('myparcelcom', 'client_secret_key');
-    register_setting('myparcelcom', 'act_test_mode');
+        delete_option(MYPARCEL_LEGACY_CLIENT_KEY);
+        delete_option(MYPARCEL_LEGACY_CLIENT_SECRET);
+        delete_option(MYPARCEL_LEGACY_TEST_MODE);
+        delete_option(MYPARCEL_LEGACY_SHOP_ID);
+
+        add_action('admin_notices', function () {
+            echo '<div class="notice notice-success is-dismissible">';
+            echo '<p>MyParcel.com plugin settings have successfully been migrated.</p>';
+            echo '</div>';
+        });
+    }
+
+    // Try to register the webhook if no webhook_id is set at all (for shop owners who upgrade from v2.x to v3.x)
+    if (get_option(MYPARCEL_WEBHOOK_ID) === false && get_option(MYPARCEL_SHOP_ID) !== false) {
+        registerMyParcelWebHook();
+
+        add_action('admin_notices', function () {
+            echo '<div class="notice notice-success is-dismissible">';
+            echo '<p>MyParcel.com plugin webhooks successfully set up.</p>';
+            echo '</div>';
+        });
+    }
+
+    register_setting('myparcelcom', MYPARCEL_CLIENT_ID);
+    register_setting('myparcelcom', MYPARCEL_CLIENT_SECRET);
+    register_setting('myparcelcom', MYPARCEL_TEST_MODE);
     register_setting('myparcelcom', MYPARCEL_SHOP_ID);
 }
 
@@ -47,9 +72,9 @@ function getShopsForClient()
 
     try {
         $api = MyParcelApi::createSingletonFromConfig([
-            'client_key'        => $_POST['client_key'],
-            'client_secret_key' => $_POST['client_secret_key'],
-            'act_test_mode'     => $_POST['act_test_mode'],
+            MYPARCEL_CLIENT_ID     => $_POST[MYPARCEL_CLIENT_ID],
+            MYPARCEL_CLIENT_SECRET => $_POST[MYPARCEL_CLIENT_SECRET],
+            MYPARCEL_TEST_MODE     => $_POST[MYPARCEL_TEST_MODE],
         ]);
         $shops = $api->getShops()->limit(100)->get();
         usort($shops, function ($a, $b) {
@@ -61,7 +86,7 @@ function getShopsForClient()
                 'name' => $shop->getName(),
             ];
         }
-    } catch (Exception $e) {}
+    } catch (Exception) {}
 
     echo json_encode($shopData);
     exit;
@@ -70,10 +95,10 @@ function getShopsForClient()
 add_action('wp_ajax_myparcelcom_get_shops_for_client', 'getShopsForClient');
 
 /**
- * After the "myparcel_shopid" option has been changed, we need to (re-)register the webhook to receive status updates.
+ * After the "myparcelcom_shop_id" option has changed, we need to (re-)register the webhook to receive status updates.
  */
 add_action(
-    'update_option_myparcel_shopid',
+    'update_option_myparcelcom_shop_id',
     function ($old_value, $new_value) {
         if ($old_value !== $new_value) {
             registerMyParcelWebHook();
@@ -185,15 +210,15 @@ function prepareHtmlForSettingPage()
       <table class="form-table">
         <tbody>
         <tr>
-          <th scope="row"><label for="act_test_mode">Activate testmode</label></th>
+          <th scope="row"><label for="<?php echo MYPARCEL_TEST_MODE; ?>">Activate testmode</label></th>
           <td>
             <fieldset>
               <input
                 type="checkbox"
-                id="act_test_mode"
-                name="act_test_mode"
+                id="<?php echo MYPARCEL_TEST_MODE; ?>"
+                name="<?php echo MYPARCEL_TEST_MODE; ?>"
                 value="1"
-                <?php checked(1, (int) get_option('act_test_mode')); ?>
+                <?php checked(1, (int) get_option(MYPARCEL_TEST_MODE)); ?>
               >
             </fieldset>
             <p class="description">
@@ -203,34 +228,34 @@ function prepareHtmlForSettingPage()
           </td>
         </tr>
         <tr>
-          <th scope="row"><label for="client_key">Client ID *</label></th>
+          <th scope="row"><label for="<?php echo MYPARCEL_CLIENT_ID; ?>">Client ID *</label></th>
           <td>
             <input
               type="text"
-              id="client_key"
+              id="<?php echo MYPARCEL_CLIENT_ID; ?>"
               class="regular-text"
-              name="client_key"
-              value="<?php echo get_option('client_key'); ?>"
+              name="<?php echo MYPARCEL_CLIENT_ID; ?>"
+              value="<?php echo get_option(MYPARCEL_CLIENT_ID); ?>"
             />
           </td>
         </tr>
         <tr valign="top">
-          <th scope="row"><label for="client_secret_key">Client secret *</label>
+          <th scope="row"><label for="<?php echo MYPARCEL_CLIENT_SECRET; ?>">Client secret *</label>
           </th>
           <td>
             <input
               type="password"
-              id="client_secret_key"
+              id="<?php echo MYPARCEL_CLIENT_SECRET; ?>"
               class="regular-text"
-              name="client_secret_key"
-              value="<?php echo get_option('client_secret_key'); ?>"
+              name="<?php echo MYPARCEL_CLIENT_SECRET; ?>"
+              value="<?php echo get_option(MYPARCEL_CLIENT_SECRET); ?>"
             />
           </td>
         </tr>
         <tr valign="top">
-          <th scope="row"><label for="myparcel_shopid">Default shop *</label></th>
+          <th scope="row"><label for="<?php echo MYPARCEL_SHOP_ID; ?>">Default shop *</label></th>
           <td>
-            <select class="regular-text" id="myparcel_shopid" name="myparcel_shopid">
+            <select class="regular-text" id="<?php echo MYPARCEL_SHOP_ID; ?>" name="<?php echo MYPARCEL_SHOP_ID; ?>">
               <option value="">Please enter your client ID and secret</option>
             </select>
             <script>const initialShop = '<?php echo get_option(MYPARCEL_SHOP_ID); ?>'</script>
