@@ -50,7 +50,7 @@ function registerSettings(): void
 
         add_action('admin_notices', function () {
             echo '<div class="notice notice-success is-dismissible">';
-            echo '<p>MyParcel.com plugin webhooks successfully set up.</p>';
+            echo '<p>MyParcel.com plugin webhook successfully set up.</p>';
             echo '</div>';
         });
     }
