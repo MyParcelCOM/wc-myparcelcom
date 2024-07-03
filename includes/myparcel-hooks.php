@@ -21,9 +21,9 @@ function ordersOverviewJsCss()
     // The WooCommerce order overview is called "edit-shop_order" while their order detail page is called "shop_order".
     if (get_current_screen()->id === 'edit-shop_order') {
         $assetsPath = plugins_url('', __FILE__) . '/../assets';
-        wp_enqueue_style('myparcelcom-orders', $assetsPath . '/admin/css/admin-orders.css');
+        wp_enqueue_style('myparcelcom-orders', $assetsPath . '/admin/css/admin-orders.css?v=3.0.0');
         wp_enqueue_script('jquery-ui-dialog');
-        wp_enqueue_script('myparcelcom-orders', $assetsPath . '/../assets/admin/js/admin-orders.js', ['jquery']);
+        wp_enqueue_script('myparcelcom-orders', $assetsPath . '/admin/js/admin-orders.js?v=3.0.0', ['jquery']);
     }
 }
 

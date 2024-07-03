@@ -14,7 +14,7 @@ function settingPageJsCss(): void
     if (get_current_screen()->id === 'settings_page_myparcelcom_settings') {
         $assetsPath = plugins_url('', __FILE__) . '/../assets';
         wp_enqueue_script('myparcelcom_validation_js', $assetsPath . '/admin/js/jquery.validate.js');
-        wp_enqueue_script('myparcelcom_setting_page_js', $assetsPath . '/admin/js/setting-page.js');
+        wp_enqueue_script('myparcelcom_setting_page_js', $assetsPath . '/admin/js/setting-page.js?v=3.0.0');
     }
 }
 
