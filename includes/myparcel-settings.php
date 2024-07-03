@@ -184,6 +184,19 @@ function addSettingMenu()
 add_action('admin_menu', 'addSettingMenu');
 
 /**
+ * Add a "Settings" link to our plugin on the Plugins page, which leads to our "Settings" tab of the WordPress admin.
+ */
+
+function addSettingLink($actions)
+{
+    return array_merge([
+        '<a href="' . admin_url( 'options-general.php?page=myparcelcom_settings' ) . '">Settings</a>',
+    ], $actions);
+}
+
+add_filter('plugin_action_links_wc-myparcelcom/woocommerce-connect-myparcel.php', 'addSettingLink');
+
+/**
  * Output the HTML content of the settings page.
  */
 function prepareHtmlForSettingPage()
