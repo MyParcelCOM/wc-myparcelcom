@@ -164,7 +164,13 @@ function registerMyParcelWebHook()
 
         update_option(MYPARCEL_WEBHOOK_ID, $responseJson['data']['id']);
         update_option(MYPARCEL_WEBHOOK_SECRET, $secret);
-    } catch (Exception) {}
+    } catch (Exception) {
+        add_action('admin_notices', function () {
+            echo '<div class="notice notice-error is-dismissible">';
+            echo '<p>MyParcel.com plugin webhook failed to set up.</p>';
+            echo '</div>';
+        });
+    }
 }
 
 /**
