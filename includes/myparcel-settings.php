@@ -14,7 +14,7 @@ function settingPageJsCss(): void
     if (get_current_screen()->id === 'settings_page_myparcelcom_settings') {
         $assetsPath = plugins_url('', __FILE__) . '/../assets';
         wp_enqueue_script('myparcelcom_validation_js', $assetsPath . '/admin/js/jquery.validate.js');
-        wp_enqueue_script('myparcelcom_setting_page_js', $assetsPath . '/admin/js/setting-page.js');
+        wp_enqueue_script('myparcelcom_setting_page_js', $assetsPath . '/admin/js/setting-page.js?v=3.0.0');
     }
 }
 
@@ -164,7 +164,13 @@ function registerMyParcelWebHook()
 
         update_option(MYPARCEL_WEBHOOK_ID, $responseJson['data']['id']);
         update_option(MYPARCEL_WEBHOOK_SECRET, $secret);
-    } catch (Exception) {}
+    } catch (Exception) {
+        add_action('admin_notices', function () {
+            echo '<div class="notice notice-error is-dismissible">';
+            echo '<p>MyParcel.com plugin webhook failed to set up.</p>';
+            echo '</div>';
+        });
+    }
 }
 
 /**
@@ -182,6 +188,19 @@ function addSettingMenu()
 }
 
 add_action('admin_menu', 'addSettingMenu');
+
+/**
+ * Add a "Settings" link to our plugin on the Plugins page, which leads to our "Settings" tab of the WordPress admin.
+ */
+
+function addSettingLink($actions)
+{
+    return array_merge([
+        '<a href="' . admin_url( 'options-general.php?page=myparcelcom_settings' ) . '">Settings</a>',
+    ], $actions);
+}
+
+add_filter('plugin_action_links_wc-myparcelcom/woocommerce-connect-myparcel.php', 'addSettingLink');
 
 /**
  * Output the HTML content of the settings page.

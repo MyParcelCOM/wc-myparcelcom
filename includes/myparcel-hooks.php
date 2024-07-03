@@ -21,9 +21,9 @@ function ordersOverviewJsCss()
     // The WooCommerce order overview is called "edit-shop_order" while their order detail page is called "shop_order".
     if (get_current_screen()->id === 'edit-shop_order') {
         $assetsPath = plugins_url('', __FILE__) . '/../assets';
-        wp_enqueue_style('myparcelcom-orders', $assetsPath . '/admin/css/admin-orders.css');
+        wp_enqueue_style('myparcelcom-orders', $assetsPath . '/admin/css/admin-orders.css?v=3.0.0');
         wp_enqueue_script('jquery-ui-dialog');
-        wp_enqueue_script('myparcelcom-orders', $assetsPath . '/../assets/admin/js/admin-orders.js', ['jquery']);
+        wp_enqueue_script('myparcelcom-orders', $assetsPath . '/admin/js/admin-orders.js?v=3.0.0', ['jquery']);
     }
 }
 
@@ -203,19 +203,19 @@ function exportPrintBulkActionAdminNotice(): void
             switch ($_REQUEST['check_action']) {
                 case 'shipment_created':
                     $orderShippedCount = intval( $_REQUEST['shipment_created_amount'] ?? 0 );
-                    echo '<div class="notice notice-success is-dismissible" style="color:green;"><p>'
+                    echo '<div class="notice notice-success is-dismissible"><p>'
                         . sprintf(_n('%s order successfully exported to MyParcel.com', '%s orders successfully exported to MyParcel.com', $orderShippedCount), $orderShippedCount)
                         . '</p></div>';
                     break;
 
                 case 'shipment_already_created':
-                    echo '<div class="notice notice-success is-dismissible" style="color:red;"><p>Order already exported to MyParcel.com</p></div>';
+                    echo '<div class="notice notice-warning is-dismissible"><p>Order already exported to MyParcel.com</p></div>';
                     break;
 
                 case 'shipment_error':
                     $errorMessages = array_map('htmlspecialchars', $_REQUEST['shipment_error_messages']);
 
-                    echo '<div class="notice notice-success is-dismissible" style="color:red;"><p>'
+                    echo '<div class="notice notice-error is-dismissible"><p>'
                         . implode('<br>', $errorMessages)
                         . '</p></div>';
                     break;
