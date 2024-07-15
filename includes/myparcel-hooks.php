@@ -163,6 +163,10 @@ function myparcelcomBulkActionHandler(string $redirectTo, string $action, array 
                                         $schemaError['message']
                                     ]);
                                 }
+                            } else if (isset($error['detail'])) {
+                                $errorMessages[] = $error['detail'];
+                            } else if (isset($error['title'])) {
+                                $errorMessages[] = $error['title'];
                             }
                         }
                     }
