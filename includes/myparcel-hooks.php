@@ -217,7 +217,10 @@ function exportPrintBulkActionAdminNotice(): void
                     break;
 
                 case 'shipment_error':
-                    $errorMessages = array_map('htmlspecialchars', $_REQUEST['shipment_error_messages']);
+                    $errorMessages = array_map(
+                        fn (string $message) => htmlspecialchars(stripslashes($message)),
+                        $_REQUEST['shipment_error_messages'], // Already urldecoded.
+                    );
 
                     echo '<div class="notice notice-error is-dismissible"><p>'
                         . implode('<br>', $errorMessages)
