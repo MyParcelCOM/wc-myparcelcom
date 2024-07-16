@@ -26,16 +26,13 @@ add_action('admin_enqueue_scripts', 'settingPageJsCss', 999);
 function registerSettings(): void
 {
     // Migrate old settings to the new prefixed values (we check for "act_test_mode" because that option was always set)
-    if (get_option(MYPARCEL_LEGACY_TEST_MODE) !== false) {
+    if (get_option(MYPARCEL_TEST_MODE) === false && get_option(MYPARCEL_LEGACY_TEST_MODE) !== false) {
         update_option(MYPARCEL_CLIENT_ID, get_option(MYPARCEL_LEGACY_CLIENT_KEY));
         update_option(MYPARCEL_CLIENT_SECRET, get_option(MYPARCEL_LEGACY_CLIENT_SECRET));
         update_option(MYPARCEL_TEST_MODE, get_option(MYPARCEL_LEGACY_TEST_MODE));
         update_option(MYPARCEL_SHOP_ID, get_option(MYPARCEL_LEGACY_SHOP_ID));
 
-        delete_option(MYPARCEL_LEGACY_CLIENT_KEY);
-        delete_option(MYPARCEL_LEGACY_CLIENT_SECRET);
-        delete_option(MYPARCEL_LEGACY_TEST_MODE);
-        delete_option(MYPARCEL_LEGACY_SHOP_ID);
+        // NOTE: do not delete the legacy options, since customers with cache plugins experienced a crash after install.
 
         add_action('admin_notices', function () {
             echo '<div class="notice notice-success is-dismissible">';
