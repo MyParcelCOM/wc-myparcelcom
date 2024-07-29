@@ -6,7 +6,8 @@
     "php": ">=8.0",
     "ext-json": "*",
     "myparcelcom/api-sdk": "^3.0",
-    "php-http/guzzle7-adapter": "^1.0"
+    "php-http/guzzle7-adapter": "^1.0",
+    "symfony/cache": "^5.0"
   },
   "require-dev": {
     "roave/security-advisories": "dev-latest"
