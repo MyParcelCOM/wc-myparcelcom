@@ -177,7 +177,7 @@ function downloadPdf(): void
            try {
                $shipments[] = $api->getShipment($shipmentId);
            } catch (Exception) {
-               wp_die('Error: no shipment found for order ' . $orderId . ' - please export this order first.');
+               wp_die('Error: no shipment found for order ' . $orderId . ' - the shipment might be voided or deleted.');
            }
         }
     }
@@ -192,7 +192,7 @@ function downloadPdf(): void
         }
     }
     if (empty($files)) {
-        wp_die('Error: label is not available - the shipment might be voided or deleted.');
+        wp_die('Error: label is not available - please export this order first.');
     }
     if (count($files) === 1) {
         echo $files[0]->getBase64Data();
