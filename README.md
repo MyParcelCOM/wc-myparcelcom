@@ -12,7 +12,7 @@ WooCommerce plugin to import orders into the MyParcel.com platform.
 ### Update composer while keeping PHP 8.0 polyfills
 
 ```shell
-docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app php:8.0-apache composer update
+docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app ghcr.io/devgine/composer-php:v2-php8.0-alpine composer update
 ```
 
 ### Create .zip file for release
@@ -20,6 +20,6 @@ docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app php:8.0-apache compos
 ```shell
 git clone git@github.com:MyParcelCOM/wc-myparcelcom.git
 rm -rf wc-myparcelcom/.git
-docker run -it --rm -v "$PWD"/wc-myparcelcom:/usr/src/app -w /usr/src/app php:8.0-apache composer install
+docker run -it --rm -v "$PWD"/wc-myparcelcom:/usr/src/app -w /usr/src/app ghcr.io/devgine/composer-php:v2-php8.0-alpine composer install
 zip -vr wc-myparcelcom-v3.0.0.zip wc-myparcelcom
 ```
