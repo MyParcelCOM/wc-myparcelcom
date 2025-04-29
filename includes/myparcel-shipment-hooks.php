@@ -37,15 +37,15 @@ function myparcelcomWebhookCallback(WP_REST_Request $request)
         }
     }
 
-    $order = wc_get_order((int) $shipmentData['attributes']['customer_reference']);
+    $order = wc_get_order((int) $shipmentData['attributes']['customer_reference'] ?? null);
     $shipmentId = get_post_meta((int) $order?->get_id(), MYPARCEL_SHIPMENT_ID, true);
 
     if ($shipmentId === $shipmentData['id']) {
         update_post_meta($order->get_id(), MYPARCEL_SHIPMENT_DATA, json_encode([
             'status_code'   => $statusData['attributes']['code'],
             'status_name'   => $statusData['attributes']['name'],
-            'tracking_code' => $shipmentData['attributes']['tracking_code'],
-            'tracking_url'  => $shipmentData['attributes']['tracking_url'],
+            'tracking_code' => $shipmentData['attributes']['tracking_code'] ?? null,
+            'tracking_url'  => $shipmentData['attributes']['tracking_url'] ?? null,
         ]));
     }
 
