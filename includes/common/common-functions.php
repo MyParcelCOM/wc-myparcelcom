@@ -129,7 +129,7 @@ function admin_order_list_top_bar_button(string $which): void
               <img class="img-responsive center-block" src="<?php echo $loader; ?>"/>
             </div>
             <div class="alert" style="display: none;">
-              <p>Label is not available - please export the order first.</p>
+              <p>Something went wrong, please check your WordPress error log and contact support.</p>
             </div>
             <button type="button" class="button" id="download-pdf">Download</button>
           </div>
@@ -174,7 +174,11 @@ function downloadPdf(): void
         }
 
         if (!empty($shipmentId)) {
-            $shipments[] = $api->getShipment($shipmentId);
+           try {
+               $shipments[] = $api->getShipment($shipmentId);
+           } catch (Exception) {
+               wp_die('Error: no shipment found for order ' . $orderId . ' - please export this order first.');
+           }
         }
     }
 
@@ -188,7 +192,7 @@ function downloadPdf(): void
         }
     }
     if (empty($files)) {
-        wp_die('Failed');
+        wp_die('Error: label is not available - the shipment might be voided or deleted.');
     }
     if (count($files) === 1) {
         echo $files[0]->getBase64Data();

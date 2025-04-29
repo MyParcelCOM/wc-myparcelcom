@@ -44,9 +44,10 @@ jQuery(function ($) {
         'labelPrinter': selectVal
       }
       jQuery.post(ajaxurl, data, function (response) {
-        if (response === 'Failed') {
+        if (response.startsWith('Error: ')) {
           $('#loadingmessage').hide()
-          $('.modal-footer .alert').show().delay(5000).slideUp(500)
+          $('.modal-footer .alert p').text(response)
+          $('.modal-footer .alert').show().delay(10000).slideUp(500)
         } else {
           const linkSource = 'data:application/pdf;base64,' + response
           const downloadLink = document.createElement('a')
