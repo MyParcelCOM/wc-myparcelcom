@@ -109,12 +109,14 @@ function bulkActionsEditProduct(array $actions): array
     return $actions;
 }
 
-add_filter('bulk_actions-edit-shop_order', 'bulkActionsEditProduct', 20, 1);
+// TODO: check that this still works without HPOS
+// add_filter('bulk_actions-edit-shop_order', 'bulkActionsEditProduct', 20, 1);
+add_filter('bulk_actions-woocommerce_page_wc-orders', 'bulkActionsEditProduct', 20, 1);
 
 /**
  * Handle bulk action to export orders.
  */
-function myparcelcomBulkActionHandler(string $redirectTo, string $action, array $postIds): string
+function myparcelcomBulkActionHandler(string $redirectTo, string $action, array $orderIds): string
 {
     $queryParam = ['_customer_user', 'm', 'check_action', 'shipment_created_amount', 'shipment_error_messages'];
     $redirectTo = remove_query_arg($queryParam, $redirectTo);
@@ -122,11 +124,12 @@ function myparcelcomBulkActionHandler(string $redirectTo, string $action, array 
     if ($action === 'export_myparcel_order') {
         $orderShippedCount = 0;
 
-        foreach ($postIds as $postId) {
-            $shipmentId = get_post_meta($postId, MYPARCEL_SHIPMENT_ID, true);
+        foreach ($orderIds as $orderId) {
+            $order = wc_get_order($orderId);
+            $shipmentId = $order->get_meta(MYPARCEL_SHIPMENT_ID, true);
 
             // If no shipment ID is found, we check the legacy meta, which is used by our v2.x plugin.
-            $legacyMeta = get_post_meta($postId, MYPARCEL_LEGACY_SHIPMENT_META, true);
+            $legacyMeta = $order->get_meta(MYPARCEL_LEGACY_SHIPMENT_META, true);
             if (!empty($legacyMeta)) {
                 $legacyData = json_decode($legacyMeta, true);
                 $shipmentId = $legacyData[MYPARCEL_LEGACY_SHIPMENT_ID] ?? null;
@@ -134,9 +137,9 @@ function myparcelcomBulkActionHandler(string $redirectTo, string $action, array 
 
             if (empty($shipmentId)) {
                 try {
-                    $shipment = createShipmentForOrder($postId);
-                    update_post_meta($postId, MYPARCEL_SHIPMENT_ID, $shipment->getId());
-                    update_post_meta($postId, MYPARCEL_SHIPMENT_DATA, json_encode([
+                    $shipment = createShipmentForOrder($orderId);
+                    $order->update_meta_data(MYPARCEL_SHIPMENT_ID, $shipment->getId());
+                    $order->update_meta_data(MYPARCEL_SHIPMENT_DATA, json_encode([
                         'status_code' => 'shipment-processing',
                         'status_name' => 'Shipment is processing',
                     ]));
@@ -144,7 +147,7 @@ function myparcelcomBulkActionHandler(string $redirectTo, string $action, array 
                 } catch (RequestException $exception) {
                     $response = json_decode((string) $exception->getResponse()->getBody(), true);
                     $errorMessages = [
-                        implode(' ', [$exception->getMessage(), 'for order', '#' . $postId]),
+                        implode(' ', [$exception->getMessage(), 'for order', '#' . $orderId]),
                     ];
 
                     if (isset($response['errors'])) {
@@ -193,7 +196,9 @@ function myparcelcomBulkActionHandler(string $redirectTo, string $action, array 
     return $redirectTo;
 }
 
-add_filter('handle_bulk_actions-edit-shop_order', 'myparcelcomBulkActionHandler', 10, 3);
+// TODO: check that this still works without HPOS
+//add_filter('handle_bulk_actions-edit-shop_order', 'myparcelcomBulkActionHandler', 10, 3);
+add_filter('handle_bulk_actions-woocommerce_page_wc-orders', 'myparcelcomBulkActionHandler', 10, 3);
 
 set_transient('shipment-plugin-notice', 'alive', 3);
 

@@ -13,6 +13,9 @@ declare(strict_types=1);
  * Tested up to:
  * Requires PHP: 8.0
  * Requires Plugins: woocommerce
+ * WC requires at least: 7.1
+ * WC tested up to: 8.0
+ * WC HPOS compatibility: yes
  *
  * @package WooCommerceConnectMyParcel
  */
