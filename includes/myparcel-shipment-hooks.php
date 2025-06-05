@@ -38,7 +38,7 @@ function myparcelcomWebhookCallback(WP_REST_Request $request)
     }
 
     $order = wc_get_order((int) $shipmentData['attributes']['customer_reference'] ?? null);
-    $shipmentId = get_post_meta((int) $order?->get_id(), MYPARCEL_SHIPMENT_ID, true);
+    $shipmentId = $order->get_meta(MYPARCEL_SHIPMENT_ID);
 
     if ($shipmentId === $shipmentData['id']) {
         $order->update_meta_data(MYPARCEL_SHIPMENT_DATA, json_encode([
