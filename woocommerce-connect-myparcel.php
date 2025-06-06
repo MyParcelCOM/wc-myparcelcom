@@ -13,16 +13,25 @@ declare(strict_types=1);
  * Tested up to:
  * Requires PHP: 8.0
  * Requires Plugins: woocommerce
- * WC requires at least: 7.1
- * WC tested up to: 8.0
- * WC HPOS compatibility: yes
  *
  * @package WooCommerceConnectMyParcel
  */
 
+use Automattic\WooCommerce\Utilities\FeaturesUtil;
+
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
+
+// Declare HPOS compatibility.
+add_action('before_woocommerce_init', function() {
+    if (class_exists(FeaturesUtil::class)) {
+        FeaturesUtil::declare_compatibility(
+            'custom_order_tables',
+            __FILE__
+        );
+    }
+});
 
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 require_once dirname(__FILE__) . '/includes/myparcel-api.php';
