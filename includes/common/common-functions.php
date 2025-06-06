@@ -13,10 +13,9 @@ use MyParcelCom\ApiSdk\Resources\ShipmentItem;
 use MyParcelCom\ApiSdk\Resources\Shop;
 
 /**
- * @param $orderId
  * @return WC_Order_Item[]
  */
-function getOrderItems($orderId)
+function getOrderItemsByOrderId(int $orderId): array
 {
     $order = wc_get_order($orderId);
 
@@ -24,12 +23,12 @@ function getOrderItems($orderId)
 }
 
 /**
- * @param int $postId
- * @return float|int
+ * @param int $orderId
+ * @return float
  */
-function getTotalWeightByPostID($postId)
+function getTotalWeightByOrderID(int $orderId): float
 {
-    $items = getOrderItems($postId);
+    $items = getOrderItemsByOrderId($orderId);
     $totalWeight = 0;
 
     foreach ($items as $item) {
@@ -44,9 +43,10 @@ function getTotalWeightByPostID($postId)
 /**
  * @return ShipmentItem[]
  */
-function getShipmentItems($orderId, $currency, $originCountryCode)
+function getShipmentItems($orderId, $currency, $originCountryCode): array
 {
-    $items = getOrderItems($orderId);
+    $order = wc_get_order($orderId);
+    $items = getOrderItemsByOrderId($orderId);
     $shipmentItems = [];
 
     foreach ($items as $item) {
@@ -55,8 +55,8 @@ function getShipmentItems($orderId, $currency, $originCountryCode)
         $imageUrl = $product->get_image_id() ? wp_get_attachment_image_url($product->get_image_id(), 'medium') : null;
         $itemValue = (int) round(floatval($product->get_price()) * 100);
         $itemWeight = $product->get_weight() ? (int) round(floatval($product->get_weight()) * 1000) : null;
-        $hsCode = get_post_meta($product->get_id(), 'myparcel_hs_code', true) ?: null;
-        $productCountry = get_post_meta($product->get_id(), 'myparcel_product_country', true);
+        $hsCode = $order->get_meta('myparcel_hs_code') ?: null;
+        $productCountry = $order->get_meta('myparcel_product_country');
 
         $shipmentItems[] = (new ShipmentItem())
             ->setSku($sku)
@@ -162,11 +162,12 @@ function downloadPdf(): void
     $shipments         = [];
 
     foreach ($orderIds as $orderId) {
-        $shipmentId = get_post_meta($orderId, MYPARCEL_SHIPMENT_ID, true);
+        $order = wc_get_order($orderId);
+        $shipmentId =  $order->get_meta(MYPARCEL_SHIPMENT_ID);
 
         // If no shipment ID is found, we check the legacy meta, which is used by our v2.x plugin.
         if (empty($shipmentId)) {
-            $legacyMeta = get_post_meta($orderId, MYPARCEL_LEGACY_SHIPMENT_META, true);
+            $legacyMeta = $order->get_meta(MYPARCEL_LEGACY_SHIPMENT_META);
             if (!empty($legacyMeta)) {
                 $legacyData = json_decode($legacyMeta, true);
                 $shipmentId = $legacyData[MYPARCEL_LEGACY_SHIPMENT_ID];
