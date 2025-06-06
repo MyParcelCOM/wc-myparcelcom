@@ -110,8 +110,6 @@ function bulkActionsEditProduct(array $actions): array
     return $actions;
 }
 
-// TODO: check that this still works without HPOS
-// add_filter('bulk_actions-edit-shop_order', 'bulkActionsEditProduct', 20, 1);
 add_filter('bulk_actions-woocommerce_page_wc-orders', 'bulkActionsEditProduct', 20, 1);
 
 /**
@@ -197,8 +195,6 @@ function myparcelcomBulkActionHandler(string $redirectTo, string $action, array 
     return $redirectTo;
 }
 
-// TODO: check that this still works without HPOS
-//add_filter('handle_bulk_actions-edit-shop_order', 'myparcelcomBulkActionHandler', 10, 3);
 add_filter('handle_bulk_actions-woocommerce_page_wc-orders', 'myparcelcomBulkActionHandler', 10, 3);
 
 set_transient('shipment-plugin-notice', 'alive', 3);
