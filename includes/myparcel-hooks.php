@@ -52,13 +52,14 @@ add_filter('manage_edit-shop_order_columns', 'customShopOrderColumn', 11);
  */
 function customOrdersListColumnContent(string $column, int $orderId): void
 {
+    $order = wc_get_order($orderId);
     switch ($column) {
         case 'myparcelcom_shipment_status':
-            $shipmentData = get_post_meta($orderId, MYPARCEL_SHIPMENT_DATA, true);
+            $shipmentData = $order->get_meta(MYPARCEL_SHIPMENT_DATA);
 
             // If no shipment data is found, we check the legacy meta, which is used by our v2.x plugin.
             if (empty($shipmentData)) {
-                $legacyMeta = get_post_meta($orderId, MYPARCEL_LEGACY_SHIPMENT_META, true);
+                $legacyMeta = $order->get_meta(MYPARCEL_LEGACY_SHIPMENT_META);
                 if (!empty($legacyMeta)) {
                     $legacyData = json_decode($legacyMeta, true);
                     $shipmentId = $legacyData[MYPARCEL_LEGACY_SHIPMENT_ID];
@@ -69,8 +70,8 @@ function customOrdersListColumnContent(string $column, int $orderId): void
                         $api = MyParcelApi::createSingletonFromConfig();
                         $shipment = $api->getShipment($shipmentId);
 
-                        update_post_meta($orderId, MYPARCEL_SHIPMENT_ID, $shipment->getId());
-                        update_post_meta($orderId, MYPARCEL_SHIPMENT_DATA, json_encode([
+                        $order->update_meta_data(MYPARCEL_SHIPMENT_ID, $shipment->getId());
+                        $order->update_meta_data(MYPARCEL_SHIPMENT_DATA, json_encode([
                             'status_code'   => $shipment->getShipmentStatus()->getStatus()->getCode(),
                             'status_name'   => $shipment->getShipmentStatus()->getStatus()->getName(),
                             'tracking_code' => $shipment->getTrackingCode(),
@@ -110,11 +111,12 @@ function bulkActionsEditProduct(array $actions): array
 }
 
 add_filter('bulk_actions-edit-shop_order', 'bulkActionsEditProduct', 20, 1);
+add_filter('bulk_actions-woocommerce_page_wc-orders', 'bulkActionsEditProduct', 20, 1);
 
 /**
  * Handle bulk action to export orders.
  */
-function myparcelcomBulkActionHandler(string $redirectTo, string $action, array $postIds): string
+function myparcelcomBulkActionHandler(string $redirectTo, string $action, array $orderIds): string
 {
     $queryParam = ['_customer_user', 'm', 'check_action', 'shipment_created_amount', 'shipment_error_messages'];
     $redirectTo = remove_query_arg($queryParam, $redirectTo);
@@ -122,11 +124,12 @@ function myparcelcomBulkActionHandler(string $redirectTo, string $action, array 
     if ($action === 'export_myparcel_order') {
         $orderShippedCount = 0;
 
-        foreach ($postIds as $postId) {
-            $shipmentId = get_post_meta($postId, MYPARCEL_SHIPMENT_ID, true);
+        foreach ($orderIds as $orderId) {
+            $order = wc_get_order($orderId);
+            $shipmentId = $order->get_meta(MYPARCEL_SHIPMENT_ID, true);
 
             // If no shipment ID is found, we check the legacy meta, which is used by our v2.x plugin.
-            $legacyMeta = get_post_meta($postId, MYPARCEL_LEGACY_SHIPMENT_META, true);
+            $legacyMeta = $order->get_meta(MYPARCEL_LEGACY_SHIPMENT_META, true);
             if (!empty($legacyMeta)) {
                 $legacyData = json_decode($legacyMeta, true);
                 $shipmentId = $legacyData[MYPARCEL_LEGACY_SHIPMENT_ID] ?? null;
@@ -134,9 +137,9 @@ function myparcelcomBulkActionHandler(string $redirectTo, string $action, array 
 
             if (empty($shipmentId)) {
                 try {
-                    $shipment = createShipmentForOrder($postId);
-                    update_post_meta($postId, MYPARCEL_SHIPMENT_ID, $shipment->getId());
-                    update_post_meta($postId, MYPARCEL_SHIPMENT_DATA, json_encode([
+                    $shipment = createShipmentForOrder($orderId);
+                    $order->update_meta_data(MYPARCEL_SHIPMENT_ID, $shipment->getId());
+                    $order->update_meta_data(MYPARCEL_SHIPMENT_DATA, json_encode([
                         'status_code' => 'shipment-processing',
                         'status_name' => 'Shipment is processing',
                     ]));
@@ -144,7 +147,7 @@ function myparcelcomBulkActionHandler(string $redirectTo, string $action, array 
                 } catch (RequestException $exception) {
                     $response = json_decode((string) $exception->getResponse()->getBody(), true);
                     $errorMessages = [
-                        implode(' ', [$exception->getMessage(), 'for order', '#' . $postId]),
+                        implode(' ', [$exception->getMessage(), 'for order', '#' . $orderId]),
                     ];
 
                     if (isset($response['errors'])) {
@@ -194,6 +197,7 @@ function myparcelcomBulkActionHandler(string $redirectTo, string $action, array 
 }
 
 add_filter('handle_bulk_actions-edit-shop_order', 'myparcelcomBulkActionHandler', 10, 3);
+add_filter('handle_bulk_actions-woocommerce_page_wc-orders', 'myparcelcomBulkActionHandler', 10, 3);
 
 set_transient('shipment-plugin-notice', 'alive', 3);
 
@@ -241,7 +245,7 @@ add_action('admin_notices', 'exportPrintBulkActionAdminNotice');
 function createShipmentForOrder(int $orderId): ShipmentInterface
 {
     $pluginData     = get_plugin_data(plugin_dir_path(__FILE__) . '../woocommerce-connect-myparcel.php', false, false);
-    $totalWeight    = getTotalWeightByPostID($orderId) * 1000;
+    $totalWeight    = getTotalWeightByOrderID($orderId) * 1000;
     $countAllWeight = max($totalWeight, 1000);
     $order          = wc_get_order($orderId);
     $orderData      = $order->get_data();
@@ -351,7 +355,7 @@ function isEUCountry(string $countryCode): bool
 /**
  * Add meta box input fields on the right side of the "product" edit page.
  */
-function addMyparcelcomProductMeta(WP_Post $post): void
+function addMyparcelcomProductMeta(WC_Order|WP_Post $object): void
 {
     add_meta_box('product_country', 'Country Of Origin', 'renderCountryOfOriginInput', 'product', 'side');
     add_meta_box('product_hs_code', 'HS code', 'renderHsCodeInput', 'product', 'side');
@@ -359,12 +363,14 @@ function addMyparcelcomProductMeta(WP_Post $post): void
 
 add_action('add_meta_boxes_product', 'addMyparcelcomProductMeta');
 
+
 /**
  * Render meta input field for Country Of Origin.
  */
-function renderCountryOfOriginInput(WP_Post $post): void
+function renderCountryOfOriginInput(WC_Order|WP_Post $object): void
 {
-    $value = get_post_meta($post->ID, 'myparcel_product_country', true);
+    $order = getWcOrderFromAddMetaBoxArg($object);
+    $value = $order->get_meta('myparcel_product_country');
     echo '<label for="coo_input">Country Of Origin</label>';
     echo '<input type="text" name="coo_input" id="coo_input" value="' . $value . '">';
 }
@@ -372,20 +378,22 @@ function renderCountryOfOriginInput(WP_Post $post): void
 /**
  * Render meta input field for HS code.
  */
-function renderHsCodeInput(WP_Post $post): void
+function renderHsCodeInput(WC_Order|WP_Post $object): void
 {
-    $value = get_post_meta($post->ID, 'myparcel_hs_code', true);
+    $order = getWcOrderFromAddMetaBoxArg($object);
+    $value = $order->get_meta('myparcel_hs_code');
     echo '<label for="hs_code_input">HS code</label>';
     echo '<input type="text" name="hs_code_input" id="hs_code_input" value="' . $value . '">';
 }
 
-function saveMyparcelcomProductMeta(int $postId): void
+function saveMyparcelcomProductMeta(int $orderId): void
 {
+    $order = wc_get_order($orderId);
     if (array_key_exists('hs_code_input', $_POST)) {
-        update_post_meta($postId, 'myparcel_hs_code', $_POST['hs_code_input']);
+        $order->update_meta_data('myparcel_hs_code', $_POST['hs_code_input']);
     }
     if (array_key_exists('coo_input', $_POST)) {
-        update_post_meta($postId, 'myparcel_product_country', $_POST['coo_input']);
+        $order->update_meta_data('myparcel_product_country', $_POST['coo_input']);
     }
 }
 
