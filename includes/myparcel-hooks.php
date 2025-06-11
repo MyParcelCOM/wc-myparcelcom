@@ -110,6 +110,7 @@ function bulkActionsEditProduct(array $actions): array
     return $actions;
 }
 
+add_filter('bulk_actions-edit-shop_order', 'bulkActionsEditProduct', 20, 1);
 add_filter('bulk_actions-woocommerce_page_wc-orders', 'bulkActionsEditProduct', 20, 1);
 
 /**
@@ -195,6 +196,7 @@ function myparcelcomBulkActionHandler(string $redirectTo, string $action, array 
     return $redirectTo;
 }
 
+add_filter('handle_bulk_actions-edit-shop_order', 'myparcelcomBulkActionHandler', 10, 3);
 add_filter('handle_bulk_actions-woocommerce_page_wc-orders', 'myparcelcomBulkActionHandler', 10, 3);
 
 set_transient('shipment-plugin-notice', 'alive', 3);
@@ -361,18 +363,6 @@ function addMyparcelcomProductMeta(WC_Order|WP_Post $object): void
 
 add_action('add_meta_boxes_product', 'addMyparcelcomProductMeta');
 
-/**
- * Get the order (WC_Order) from the given object. The object can be a WP_Post (WordPress class) or a WC_Order (Woocommerce class).
- * Src: https://stackoverflow.com/questions/78261367/add-a-custom-metabox-to-woocommerce-admin-orders-with-hpos-enabled
- * @param WC_Order|WP_Post $arg - the resource to get the order from.
- * @return WC_Order
- */
-function getWcOrderFromAddMetaBoxArg(WC_Order|WP_Post $arg): WC_Order
-{
-    return $arg instanceof WP_Post
-        ? wc_get_order($arg->ID)
-        : $arg;
-}
 
 /**
  * Render meta input field for Country Of Origin.
