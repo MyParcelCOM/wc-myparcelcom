@@ -26,10 +26,7 @@ if (!defined('ABSPATH')) {
 // Declare HPOS compatibility.
 add_action('before_woocommerce_init', function() {
     if (class_exists(FeaturesUtil::class)) {
-        FeaturesUtil::declare_compatibility(
-            'custom_order_tables',
-            __FILE__
-        );
+        FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__);
     }
 });
 

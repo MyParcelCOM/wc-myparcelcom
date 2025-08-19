@@ -19,7 +19,7 @@ use MyParcelCom\ApiSdk\Resources\Shipment;
 function ordersOverviewJsCss()
 {
     // The WooCommerce order overview is called "edit-shop_order" while their order detail page is called "shop_order".
-    if (get_current_screen()->id === 'edit-shop_order') {
+    if (in_array(get_current_screen()->id, ['edit-shop_order', 'woocommerce_page_wc-orders'])) {
         $assetsPath = plugins_url('', __FILE__) . '/../assets';
         wp_enqueue_style('myparcelcom-orders', $assetsPath . '/admin/css/admin-orders.css?v=3.0.0');
         wp_enqueue_script('jquery-ui-dialog');
@@ -46,6 +46,7 @@ function customShopOrderColumn(array $columns): array
 }
 
 add_filter('manage_edit-shop_order_columns', 'customShopOrderColumn', 11);
+add_filter('manage_woocommerce_page_wc-orders_columns', 'customShopOrderColumn', 11); // HPOS
 
 /**
  * This function is called for every cell of every column that is rendered in the "shop_order" table.
@@ -98,6 +99,7 @@ function customOrdersListColumnContent(string $column, int $orderId): void
 }
 
 add_action('manage_shop_order_posts_custom_column', 'customOrdersListColumnContent', 10, 2);
+add_action('manage_woocommerce_page_wc-orders_custom_column', 'customOrdersListColumnContent', 10, 2); // HPOS
 
 /**
  * Insert our actions in the order overview bulk action selection.
@@ -111,7 +113,7 @@ function bulkActionsEditProduct(array $actions): array
 }
 
 add_filter('bulk_actions-edit-shop_order', 'bulkActionsEditProduct', 20, 1);
-add_filter('bulk_actions-woocommerce_page_wc-orders', 'bulkActionsEditProduct', 20, 1);
+add_filter('bulk_actions-woocommerce_page_wc-orders', 'bulkActionsEditProduct', 20, 1); // HPOS
 
 /**
  * Handle bulk action to export orders.
@@ -197,7 +199,7 @@ function myparcelcomBulkActionHandler(string $redirectTo, string $action, array 
 }
 
 add_filter('handle_bulk_actions-edit-shop_order', 'myparcelcomBulkActionHandler', 10, 3);
-add_filter('handle_bulk_actions-woocommerce_page_wc-orders', 'myparcelcomBulkActionHandler', 10, 3);
+add_filter('handle_bulk_actions-woocommerce_page_wc-orders', 'myparcelcomBulkActionHandler', 10, 3); // HPOS
 
 set_transient('shipment-plugin-notice', 'alive', 3);
 
