@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use MyParcelCom\ApiSdk\MyParcelComApiInterface;
+
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
@@ -14,7 +16,7 @@ function settingPageJsCss(): void
     if (get_current_screen()->id === 'settings_page_myparcelcom_settings') {
         $assetsPath = plugins_url('', __FILE__) . '/../assets';
         wp_enqueue_script('myparcelcom_validation_js', $assetsPath . '/admin/js/jquery.validate.js');
-        wp_enqueue_script('myparcelcom_setting_page_js', $assetsPath . '/admin/js/setting-page.js?v=3.0.0');
+        wp_enqueue_script('myparcelcom_setting_page_js', $assetsPath . '/admin/js/setting-page.js?v=3.1.0');
     }
 }
 
@@ -73,7 +75,7 @@ function getShopsForClient()
             MYPARCEL_CLIENT_SECRET => $_POST[MYPARCEL_CLIENT_SECRET],
             MYPARCEL_TEST_MODE     => $_POST[MYPARCEL_TEST_MODE],
         ]);
-        $shops = $api->getShops()->limit(100)->get();
+        $shops = $api->getResourcesFromUri(MyParcelComApiInterface::PATH_SHOPS);
         usort($shops, function ($a, $b) {
             return strcmp(strtolower($a->getName()), strtolower($b->getName()));
         });
