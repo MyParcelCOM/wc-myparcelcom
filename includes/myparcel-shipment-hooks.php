@@ -38,15 +38,15 @@ function myparcelcomWebhookCallback(WP_REST_Request $request)
     }
 
     $order = wc_get_order((int) $shipmentData['attributes']['customer_reference'] ?? null);
-    $shipmentId = $order->get_meta(MYPARCEL_SHIPMENT_ID);
 
-    if ($shipmentId === $shipmentData['id']) {
+    if ($order && $order->get_meta(MYPARCEL_SHIPMENT_ID) === $shipmentData['id']) {
         $order->update_meta_data(MYPARCEL_SHIPMENT_DATA, json_encode([
             'status_code'   => $statusData['attributes']['code'],
             'status_name'   => $statusData['attributes']['name'],
             'tracking_code' => $shipmentData['attributes']['tracking_code'] ?? null,
             'tracking_url'  => $shipmentData['attributes']['tracking_url'] ?? null,
         ]));
+        $order->save_meta_data();
     }
 
     exit('ok');

@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 use MyParcelCom\ApiSdk\LabelCombiner;
 use MyParcelCom\ApiSdk\LabelCombinerInterface;
 use MyParcelCom\ApiSdk\Resources\File;
+use MyParcelCom\ApiSdk\Resources\Interfaces\ResourceInterface;
 use MyParcelCom\ApiSdk\Resources\ShipmentItem;
 use MyParcelCom\ApiSdk\Resources\Shop;
 
@@ -237,11 +238,6 @@ add_action('wp_ajax_myparcelcom_download_pdf', 'downloadPdf');
 function getSelectedShop()
 {
     $api = MyParcelApi::createSingletonFromConfig();
-    $shops = $api->getShops()->limit(100)->get();
-    foreach ($shops as $shop) {
-        if ($shop->getId() == get_option(MYPARCEL_SHOP_ID)) {
-            return $shop;
-        }
-    }
-    return $shops[0];
+
+    return $api->getResourceById(ResourceInterface::TYPE_SHOP, get_option(MYPARCEL_SHOP_ID));
 }

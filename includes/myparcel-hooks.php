@@ -21,9 +21,9 @@ function ordersOverviewJsCss()
     // The WooCommerce order overview is called "edit-shop_order" while their order detail page is called "shop_order".
     if (in_array(get_current_screen()->id, ['edit-shop_order', 'woocommerce_page_wc-orders'])) {
         $assetsPath = plugins_url('', __FILE__) . '/../assets';
-        wp_enqueue_style('myparcelcom-orders', $assetsPath . '/admin/css/admin-orders.css?v=3.0.0');
+        wp_enqueue_style('myparcelcom-orders', $assetsPath . '/admin/css/admin-orders.css?v=3.1.0');
         wp_enqueue_script('jquery-ui-dialog');
-        wp_enqueue_script('myparcelcom-orders', $assetsPath . '/admin/js/admin-orders.js?v=3.0.0', ['jquery']);
+        wp_enqueue_script('myparcelcom-orders', $assetsPath . '/admin/js/admin-orders.js?v=3.1.0', ['jquery']);
     }
 }
 
@@ -51,11 +51,12 @@ add_filter('manage_woocommerce_page_wc-orders_columns', 'customShopOrderColumn',
 /**
  * This function is called for every cell of every column that is rendered in the "shop_order" table.
  */
-function customOrdersListColumnContent(string $column, int $orderId): void
+function customOrdersListColumnContent(string $column, WC_Order|int $orderId): void
 {
-    $order = wc_get_order($orderId);
     switch ($column) {
         case 'myparcelcom_shipment_status':
+            $order = is_int($orderId) ? wc_get_order($orderId) : $orderId;
+
             $shipmentData = $order->get_meta(MYPARCEL_SHIPMENT_DATA);
 
             // If no shipment data is found, we check the legacy meta, which is used by our v2.x plugin.
@@ -78,6 +79,7 @@ function customOrdersListColumnContent(string $column, int $orderId): void
                             'tracking_code' => $shipment->getTrackingCode(),
                             'tracking_url'  => $shipment->getTrackingUrl(),
                         ]));
+                        $order->save_meta_data();
                     } catch (Exception) {}
                 }
             }
@@ -128,10 +130,10 @@ function myparcelcomBulkActionHandler(string $redirectTo, string $action, array 
 
         foreach ($orderIds as $orderId) {
             $order = wc_get_order($orderId);
-            $shipmentId = $order->get_meta(MYPARCEL_SHIPMENT_ID, true);
+            $shipmentId = $order->get_meta(MYPARCEL_SHIPMENT_ID);
 
             // If no shipment ID is found, we check the legacy meta, which is used by our v2.x plugin.
-            $legacyMeta = $order->get_meta(MYPARCEL_LEGACY_SHIPMENT_META, true);
+            $legacyMeta = $order->get_meta(MYPARCEL_LEGACY_SHIPMENT_META);
             if (!empty($legacyMeta)) {
                 $legacyData = json_decode($legacyMeta, true);
                 $shipmentId = $legacyData[MYPARCEL_LEGACY_SHIPMENT_ID] ?? null;
@@ -145,6 +147,7 @@ function myparcelcomBulkActionHandler(string $redirectTo, string $action, array 
                         'status_code' => 'shipment-processing',
                         'status_name' => 'Shipment is processing',
                     ]));
+                    $order->save_meta_data();
                     $orderShippedCount++;
                 } catch (RequestException $exception) {
                     $response = json_decode((string) $exception->getResponse()->getBody(), true);
@@ -282,8 +285,8 @@ function createShipmentForOrder(int $orderId): ShipmentInterface
         ->setPostalCode($orderData['shipping']['postcode'])
         ->setCity($orderData['shipping']['city'])
         ->setCountryCode($orderData['shipping']['country'])
-        ->setEmail($orderData['billing']['email'])
-        ->setPhoneNumber($orderData['billing']['phone']);
+        ->setEmail($orderData['shipping']['email'] ?: $orderData['billing']['email'])
+        ->setPhoneNumber($orderData['shipping']['phone'] ?: $orderData['billing']['phone']);
 
     if (isset($orderData['shipping']['state']) && preg_match('/^[A-Z\d]{1,3}$/', $orderData['shipping']['state'])) {
         $recipient->setStateCode($orderData['shipping']['state']);
@@ -397,6 +400,7 @@ function saveMyparcelcomProductMeta(int $orderId): void
     if (array_key_exists('coo_input', $_POST)) {
         $order->update_meta_data('myparcel_product_country', $_POST['coo_input']);
     }
+    $order->save_meta_data();
 }
 
 add_action('save_post', 'saveMyparcelcomProductMeta');
