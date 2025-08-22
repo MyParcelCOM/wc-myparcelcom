@@ -360,7 +360,7 @@ function isEUCountry(string $countryCode): bool
 /**
  * Add meta box input fields on the right side of the "product" edit page.
  */
-function addMyparcelcomProductMeta(WC_Order|WP_Post $object): void
+function addMyparcelcomProductMeta(WP_Post $post): void
 {
     add_meta_box('product_country', 'Country Of Origin', 'renderCountryOfOriginInput', 'product', 'side');
     add_meta_box('product_hs_code', 'HS code', 'renderHsCodeInput', 'product', 'side');
@@ -368,39 +368,37 @@ function addMyparcelcomProductMeta(WC_Order|WP_Post $object): void
 
 add_action('add_meta_boxes_product', 'addMyparcelcomProductMeta');
 
-
 /**
- * Render meta input field for Country Of Origin.
+ * Render product meta input field for Country Of Origin.
  */
-function renderCountryOfOriginInput(WC_Order|WP_Post $object): void
+function renderCountryOfOriginInput(WP_Post $post): void
 {
-    $order = getWcOrderFromAddMetaBoxArg($object);
-    $value = $order->get_meta('myparcel_product_country');
+    $value = get_post_meta($post->ID, 'myparcel_product_country', true);
     echo '<label for="coo_input">Country Of Origin</label>';
     echo '<input type="text" name="coo_input" id="coo_input" value="' . $value . '">';
 }
 
 /**
- * Render meta input field for HS code.
+ * Render product meta input field for HS code.
  */
-function renderHsCodeInput(WC_Order|WP_Post $object): void
+function renderHsCodeInput(WP_Post $post): void
 {
-    $order = getWcOrderFromAddMetaBoxArg($object);
-    $value = $order->get_meta('myparcel_hs_code');
+    $value = get_post_meta($post->ID, 'myparcel_hs_code', true);
     echo '<label for="hs_code_input">HS code</label>';
     echo '<input type="text" name="hs_code_input" id="hs_code_input" value="' . $value . '">';
 }
 
-function saveMyparcelcomProductMeta(int $orderId): void
+/**
+ * Make sure our meta fields are saved when a product is saved.
+ */
+function saveMyparcelcomProductMeta(int $postId): void
 {
-    $order = wc_get_order($orderId);
     if (array_key_exists('hs_code_input', $_POST)) {
-        $order->update_meta_data('myparcel_hs_code', $_POST['hs_code_input']);
+        update_post_meta($postId, 'myparcel_hs_code', $_POST['hs_code_input']);
     }
     if (array_key_exists('coo_input', $_POST)) {
-        $order->update_meta_data('myparcel_product_country', $_POST['coo_input']);
+        update_post_meta($postId, 'myparcel_product_country', $_POST['coo_input']);
     }
-    $order->save_meta_data();
 }
 
 add_action('save_post', 'saveMyparcelcomProductMeta');
