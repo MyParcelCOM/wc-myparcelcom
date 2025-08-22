@@ -14,19 +14,6 @@ use MyParcelCom\ApiSdk\Resources\ShipmentItem;
 use MyParcelCom\ApiSdk\Resources\Shop;
 
 /**
- * Get the order (WC_Order) from the given argument of calling `add_meta_box`. The argument can be a WP_Post (WordPress class) or a WC_Order (Woocommerce class).
- * Src: https://stackoverflow.com/questions/78261367/add-a-custom-metabox-to-woocommerce-admin-orders-with-hpos-enabled
- * @param WC_Order|WP_Post $arg - the resource to get the order from.
- * @return WC_Order
- */
-function getWcOrderFromAddMetaBoxArg(WC_Order|WP_Post $arg): WC_Order
-{
-    return $arg instanceof WP_Post
-        ? wc_get_order($arg->ID)
-        : $arg;
-}
-
-/**
  * @return WC_Order_Item[]
  */
 function getOrderItemsByOrderId(int $orderId): array
@@ -69,8 +56,8 @@ function getShipmentItems($orderId, $currency, $originCountryCode): array
         $imageUrl = $product->get_image_id() ? wp_get_attachment_image_url($product->get_image_id(), 'medium') : null;
         $itemValue = (int) round(floatval($product->get_price()) * 100);
         $itemWeight = $product->get_weight() ? (int) round(floatval($product->get_weight()) * 1000) : null;
-        $hsCode = $order->get_meta('myparcel_hs_code') ?: null;
-        $productCountry = $order->get_meta('myparcel_product_country');
+        $hsCode = get_post_meta($product->get_id(), 'myparcel_hs_code', true) ?: null;
+        $productCountry = get_post_meta($product->get_id(), 'myparcel_product_country', true);
 
         $shipmentItems[] = (new ShipmentItem())
             ->setSku($sku)
