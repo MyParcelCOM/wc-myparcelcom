@@ -285,8 +285,8 @@ function createShipmentForOrder(int $orderId): ShipmentInterface
         ->setPostalCode($orderData['shipping']['postcode'])
         ->setCity($orderData['shipping']['city'])
         ->setCountryCode($orderData['shipping']['country'])
-        ->setEmail($orderData['shipping']['email'] ?: $orderData['billing']['email'])
-        ->setPhoneNumber($orderData['shipping']['phone'] ?: $orderData['billing']['phone']);
+        ->setEmail(!empty($orderData['shipping']['email']) ? $orderData['shipping']['email'] : $orderData['billing']['email'])
+        ->setPhoneNumber(!empty($orderData['shipping']['phone']) ? $orderData['shipping']['phone'] : $orderData['billing']['phone']);
 
     if (isset($orderData['shipping']['state']) && preg_match('/^[A-Z\d]{1,3}$/', $orderData['shipping']['state'])) {
         $recipient->setStateCode($orderData['shipping']['state']);
