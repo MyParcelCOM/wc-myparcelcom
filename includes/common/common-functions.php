@@ -46,7 +46,6 @@ function getTotalWeightByOrderID(int $orderId): float
  */
 function getShipmentItems($orderId, $currency, $originCountryCode): array
 {
-    $order = wc_get_order($orderId);
     $items = getOrderItemsByOrderId($orderId);
     $shipmentItems = [];
 
@@ -80,7 +79,8 @@ function getShipmentItems($orderId, $currency, $originCountryCode): array
 function admin_order_list_top_bar_button(string $which): void
 {
     global $typenow;
-    if ('shop_order' === $typenow && 'top' === $which) {
+
+    if (('shop_order' === $typenow && 'top' === $which) || $which === 'shop_order') {
         ?>
       <div id="labelModal" tabindex="-1" aria-hidden="true" style="display:none">
         <div class="modal-content">
@@ -140,7 +140,8 @@ function admin_order_list_top_bar_button(string $which): void
     }
 }
 
-add_action('manage_posts_extra_tablenav', 'admin_order_list_top_bar_button', 20, 1);
+add_action('manage_posts_extra_tablenav', 'admin_order_list_top_bar_button', 20);
+add_action('woocommerce_order_list_table_extra_tablenav', 'admin_order_list_top_bar_button', 20); // HPOS
 
 /**
  * Handle the "print_label_shipment" action after the label dialog is shown to select the print position.
@@ -164,7 +165,7 @@ function downloadPdf(): void
 
     foreach ($orderIds as $orderId) {
         $order = wc_get_order($orderId);
-        $shipmentId =  $order->get_meta(MYPARCEL_SHIPMENT_ID);
+        $shipmentId = $order->get_meta(MYPARCEL_SHIPMENT_ID);
 
         // If no shipment ID is found, we check the legacy meta, which is used by our v2.x plugin.
         if (empty($shipmentId)) {

@@ -2,12 +2,12 @@ jQuery(function ($) {
   // Make mass action open modal and cancel form submit.
   $('#doaction').click(function (e) {
     if (jQuery('#bulk-action-selector-top').val() === 'print_label_shipment') {
-      jQuery('#labelModal').dialog('open')
+      labelModalDialog.dialog('open')
       e.preventDefault()
     }
   })
 
-  jQuery('#labelModal').dialog({
+  var labelModalDialog = jQuery('#labelModal').dialog({
     autoOpen: false,
     closeText: '',
     modal: true,
@@ -21,10 +21,12 @@ jQuery(function ($) {
     $('div.cntnr').hide()
     $('#orientation' + selectVal).show()
   })
-  $('#download-pdf').click(function (e) {
+  labelModalDialog.find('#download-pdf').click(function (e) {
     var selected = []
     e.preventDefault()
     $('#loadingmessage').show()
+
+    // Retrieve selected orders (non-HPOS)
     $('.wp-list-table #the-list tr input[name=\'post[]\']:checked').map(function () {
       if ($('.wp-list-table #the-list tr input[name=\'post[]\']').is(':checked')) {
         var idx = $.inArray($(this).val(), selected)
@@ -35,6 +37,12 @@ jQuery(function ($) {
         selected.splice($(this).val())
       }
     })
+
+    // Retrieve selected orders (HPOS)
+    $('.wp-list-table #the-list tr input[name=\'id[]\']:checked').map(function (index, element) {
+      selected.push(element.value)
+    })
+
     var selectOrientation = $('input[name=\'radio\']:checked').val()
     if (selectOrientation) {
       var data = {
@@ -57,7 +65,7 @@ jQuery(function ($) {
           downloadLink.download = fileName
           downloadLink.click()
           $('#loadingmessage').hide()
-          $('#labelModal').dialog('close')
+          labelModalDialog.dialog('close')
         }
       })
     }
