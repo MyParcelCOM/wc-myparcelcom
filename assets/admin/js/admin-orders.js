@@ -1,12 +1,4 @@
 jQuery(function ($) {
-  // Make mass action open modal and cancel form submit.
-  $('#doaction').click(function (e) {
-    if (jQuery('#bulk-action-selector-top').val() === 'print_label_shipment') {
-      labelModalDialog.dialog('open')
-      e.preventDefault()
-    }
-  })
-
   var labelModalDialog = jQuery('#labelModal').dialog({
     autoOpen: false,
     closeText: '',
@@ -15,8 +7,16 @@ jQuery(function ($) {
     width: 400,
   })
 
-  var selectVal = $('#printer-orientation input[name=\'selectorientation\']:checked').val()
-  $('#printer-orientation input[name=\'selectorientation\']').click(function () {
+  // Make mass action open modal and cancel form submit.
+  $('#doaction').click(function (e) {
+    if (jQuery('#bulk-action-selector-top').val() === 'print_label_shipment') {
+      labelModalDialog.dialog('open')
+      e.preventDefault()
+    }
+  })
+
+  var selectVal = $('#printer-orientation input[name="selectorientation"]:checked').val()
+  $('#printer-orientation input[name="selectorientation"]').click(function () {
     selectVal = $(this).val()
     $('div.cntnr').hide()
     $('#orientation' + selectVal).show()
@@ -27,8 +27,8 @@ jQuery(function ($) {
     $('#loadingmessage').show()
 
     // Retrieve selected orders (non-HPOS)
-    $('.wp-list-table #the-list tr input[name=\'post[]\']:checked').map(function () {
-      if ($('.wp-list-table #the-list tr input[name=\'post[]\']').is(':checked')) {
+    $('.wp-list-table #the-list tr input[name="post[]"]:checked').map(function () {
+      if ($('.wp-list-table #the-list tr input[name="post[]"]').is(':checked')) {
         var idx = $.inArray($(this).val(), selected)
         if (idx == -1) {
           selected.push($(this).val())
@@ -39,11 +39,11 @@ jQuery(function ($) {
     })
 
     // Retrieve selected orders (HPOS)
-    $('.wp-list-table #the-list tr input[name=\'id[]\']:checked').map(function (index, element) {
+    $('.wp-list-table #the-list tr input[name="id[]"]:checked').map(function (index, element) {
       selected.push(element.value)
     })
 
-    var selectOrientation = $('input[name=\'radio\']:checked').val()
+    var selectOrientation = $('input[name="radio"]:checked').val()
     if (selectOrientation) {
       var data = {
         'action': 'myparcelcom_download_pdf',
