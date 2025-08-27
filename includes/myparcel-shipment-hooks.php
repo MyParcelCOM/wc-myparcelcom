@@ -40,12 +40,23 @@ function myparcelcomWebhookCallback(WP_REST_Request $request)
     $order = wc_get_order((int) $shipmentData['attributes']['customer_reference'] ?? null);
 
     if ($order && $order->get_meta(MYPARCEL_SHIPMENT_ID) === $shipmentData['id']) {
-        $order->update_meta_data(MYPARCEL_SHIPMENT_DATA, json_encode([
+        // Fix for a very nasty bug where the MYPARCEL_SHIPMENT_DATA gets cleaned up by the HPOS compatibility mode.
+        // For some reason, encoded JSON containing a tracking_url is not properly saved into the wp_postmeta table.
+        if (get_option('woocommerce_custom_orders_table_data_sync_enabled') === 'yes') {
+            update_post_meta($order->get_id(), MYPARCEL_SHIPMENT_DATA, json_encode(array_filter([
+                'status_code'   => $statusData['attributes']['code'],
+                'status_name'   => $statusData['attributes']['name'],
+                'tracking_code' => $shipmentData['attributes']['tracking_code'] ?? null,
+                'tracking_url'  => $shipmentData['attributes']['tracking_url'] ?? null,
+            ])));
+        }
+
+        $order->update_meta_data(MYPARCEL_SHIPMENT_DATA, json_encode(array_filter([
             'status_code'   => $statusData['attributes']['code'],
             'status_name'   => $statusData['attributes']['name'],
             'tracking_code' => $shipmentData['attributes']['tracking_code'] ?? null,
             'tracking_url'  => $shipmentData['attributes']['tracking_url'] ?? null,
-        ]));
+        ])));
         $order->save_meta_data();
     }
 
