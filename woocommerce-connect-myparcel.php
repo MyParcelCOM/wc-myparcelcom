@@ -23,13 +23,6 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
-// Declare HPOS compatibility.
-add_action('before_woocommerce_init', function() {
-    if (class_exists(FeaturesUtil::class)) {
-        FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__);
-    }
-});
-
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 require_once dirname(__FILE__) . '/includes/myparcel-api.php';
 require_once dirname(__FILE__) . '/includes/common/myparcel-constant.php';
@@ -37,3 +30,24 @@ require_once dirname(__FILE__) . '/includes/common/common-functions.php';
 require_once dirname(__FILE__) . '/includes/myparcel-hooks.php';
 require_once dirname(__FILE__) . '/includes/myparcel-shipment-hooks.php';
 require_once dirname(__FILE__) . '/includes/myparcel-settings.php';
+
+// Declare HPOS compatibility.
+add_action('before_woocommerce_init', function() {
+    if (class_exists(FeaturesUtil::class)) {
+        FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__);
+    }
+});
+
+// Declare the custom order meta.
+add_action('woocommerce_init', function () {
+    register_post_meta('shop_order', MYPARCEL_SHIPMENT_ID, [
+        'type'         => 'string',
+        'single'       => true,
+        'show_in_rest' => false,
+    ]);
+    register_post_meta('shop_order', MYPARCEL_SHIPMENT_DATA, [
+        'type'         => 'string',
+        'single'       => true,
+        'show_in_rest' => false,
+    ]);
+});
