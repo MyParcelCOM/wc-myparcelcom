@@ -5,14 +5,13 @@ declare(strict_types=1);
 /**
  * Plugin Name: MyParcel.com
  * Plugin URI: https://help.myparcel.com/home/integrations-1#Integrations-WooCommerce
- * Description: This plugin enables you to export WooCommerce orders to MyParcel.com.
- * Version: 3.1.0
+ * Description: Enables you to export WooCommerce orders to MyParcel.com and print shipping labels from the admin table.
+ * Version: 3.2.0
  * Author: MyParcel.com
  * Author URI: https://www.myparcel.com
- * Requires at least:
- * Tested up to:
  * Requires PHP: 8.0
  * Requires Plugins: woocommerce
+ * WC HPOS Compatible: yes
  *
  * @package WooCommerceConnectMyParcel
  */
