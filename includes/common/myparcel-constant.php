@@ -5,6 +5,7 @@ const MYPARCEL_CLIENT_SECRET = 'myparcelcom_client_secret';
 const MYPARCEL_SHIPMENT_ID = 'myparcelcom_shipment_id';
 const MYPARCEL_SHIPMENT_DATA = 'myparcelcom_shipment_data';
 const MYPARCEL_SHOP_ID = 'myparcelcom_shop_id';
+const MYPARCEL_EXPORT_NEW_ORDERS = 'myparcelcom_export_new_orders';
 const MYPARCEL_TEST_MODE = 'myparcelcom_test_mode';
 const MYPARCEL_WEBHOOK_ID = 'myparcelcom_webhook_id';
 const MYPARCEL_WEBHOOK_SECRET = 'myparcelcom_webhook_secret';

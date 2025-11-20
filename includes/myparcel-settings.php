@@ -58,6 +58,7 @@ function registerSettings(): void
     register_setting('myparcelcom', MYPARCEL_CLIENT_SECRET);
     register_setting('myparcelcom', MYPARCEL_TEST_MODE);
     register_setting('myparcelcom', MYPARCEL_SHOP_ID);
+    register_setting('myparcelcom', MYPARCEL_EXPORT_NEW_ORDERS);
 }
 
 add_action('admin_init', 'registerSettings');
@@ -240,7 +241,7 @@ function prepareHtmlForSettingPage()
               >
             </fieldset>
             <p class="description">
-              If enabled, the plugin wil communicate with the MyParcel.com sandbox.<br>
+              If enabled, the plugin will communicate with the MyParcel.com sandbox.<br>
               Make sure to use the client ID and secret from the correct environment (production / sandbox).
             </p>
           </td>
@@ -278,6 +279,24 @@ function prepareHtmlForSettingPage()
             </select>
             <script>const initialShop = '<?php echo get_option(MYPARCEL_SHOP_ID); ?>'</script>
             <p class="description">Please select the related MyParcel.com shop for this WordPress shop.</p>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row"><label for="<?php echo MYPARCEL_EXPORT_NEW_ORDERS; ?>">Activate auto-export</label></th>
+          <td>
+            <fieldset>
+              <input
+                type="checkbox"
+                id="<?php echo MYPARCEL_EXPORT_NEW_ORDERS; ?>"
+                name="<?php echo MYPARCEL_EXPORT_NEW_ORDERS; ?>"
+                value="1"
+                <?php checked(1, (int) get_option(MYPARCEL_EXPORT_NEW_ORDERS)); ?>
+              >
+            </fieldset>
+            <p class="description">
+              If enabled, the plugin will automatically create MyParcel.com shipments for all newly created orders.<br>
+              This saves you from manually executing the "Export to MyParcel.com" bulk action in the order overview.
+            </p>
           </td>
         </tr>
         </tbody>
