@@ -402,3 +402,27 @@ function saveMyparcelcomProductMeta(int $postId): void
 }
 
 add_action('save_post', 'saveMyparcelcomProductMeta');
+
+function myparcelcomNewOrder(int $orderId): void
+{
+    if (get_option(MYPARCEL_EXPORT_NEW_ORDERS)) {
+        $order = wc_get_order($orderId);
+        $shipmentId = $order->get_meta(MYPARCEL_SHIPMENT_ID);
+
+        if (empty($shipmentId)) {
+            try {
+                $shipment = createShipmentForOrder($orderId);
+                $order->update_meta_data(MYPARCEL_SHIPMENT_ID, $shipment->getId());
+                $order->update_meta_data(MYPARCEL_SHIPMENT_DATA, json_encode([
+                    'status_code' => 'shipment-processing',
+                    'status_name' => 'Shipment is processing',
+                ]));
+                $order->save_meta_data();
+            } catch (Throwable $throwable) {
+                // We do not interrupt the process of order creation. Failures can be manually retriggered by the admin.
+            }
+        }
+    }
+}
+
+add_action('woocommerce_new_order', 'myparcelcomNewOrder');
